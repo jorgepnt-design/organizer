@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de" data-theme="light">
 <head>
   <meta charset="UTF-8" />
@@ -19,7 +19,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* â”€â”€ THEME VARS â”€â”€ */
+    /* ── THEME VARS ── */
     :root {
       --bg: #f1f5f9;
       --surface: #ffffff;
@@ -72,10 +72,10 @@
       outline-offset: 2px;
     }
     input:focus-visible, select:focus-visible, textarea:focus-visible {
-      outline: none; /* Inputs zeigen Fokus Ã¼ber border-color */
+      outline: none; /* Inputs zeigen Fokus über border-color */
     }
 
-    /* â”€â”€ LOGIN â”€â”€ */
+    /* ── LOGIN ── */
     #login-screen {
       display: flex; flex-direction: column; align-items: center;
       justify-content: center; min-height: 100vh; gap: 24px; padding: 24px;
@@ -180,7 +180,7 @@
       cursor: not-allowed;
     }
 
-    /* â”€â”€ APP â”€â”€ */
+    /* ── APP ── */
     #app { display: none; flex-direction: column; min-height: 100vh; }
     header {
       background: var(--surface); border-bottom: 1px solid var(--border);
@@ -219,7 +219,7 @@
     }
     .btn-signout:hover { background: var(--surface2); color: var(--danger); border-color: var(--danger); }
 
-    /* â”€â”€ MAIN TABS â”€â”€ */
+    /* ── MAIN TABS ── */
     .tabs {
       display: flex; background: var(--surface); border-bottom: 1px solid var(--border);
       position: sticky; top: calc(56px + env(safe-area-inset-top, 0px)); z-index: 9;
@@ -235,7 +235,7 @@
     .tab-content { display: none; padding: 16px; max-width: 1100px; margin: 0 auto; width: 100%; }
     .tab-content.active { display: block; }
 
-    /* â”€â”€ CARDS & FIELDS â”€â”€ */
+    /* ── CARDS & FIELDS ── */
     .card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 18px; margin-bottom: 14px;
@@ -279,7 +279,7 @@
     .btn-export:active, .btn-pdf:active, .btn-toggle:active { transform: scale(0.97); }
     .save-hint { font-size: 0.73rem; color: var(--text-muted); margin-top: 6px; text-align: right; min-height: 15px; }
 
-    /* â”€â”€ DICHTE â”€â”€ */
+    /* ── DICHTE ── */
     .dichte-layout { display: grid; grid-template-columns: 340px 1fr; gap: 14px; align-items: start; }
     .result-box {
       background: var(--primary-light); border: 1.5px solid var(--primary-border);
@@ -298,7 +298,7 @@
     .result-box.hidden { display: none; }
     .formula-hint { font-size: 0.74rem; color: var(--text-muted); margin-top: -6px; margin-bottom: 12px; }
 
-    /* â”€â”€ TABELLEN-BAR (shared for Dichte + Todos + Notizen) â”€â”€ */
+    /* ── TABELLEN-BAR (shared for Dichte + Todos + Notizen) ── */
     .tabellen-bar {
       display: flex; align-items: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;
     }
@@ -328,7 +328,7 @@
     }
     .btn-new-tabelle:hover { border-color: var(--primary); color: var(--primary); }
 
-    /* â”€â”€ ERGEBNIS-TABELLE â”€â”€ */
+    /* ── ERGEBNIS-TABELLE ── */
     .ergebnis-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
     .ergebnis-card-header {
       display: flex; align-items: center; justify-content: space-between;
@@ -382,7 +382,7 @@
     .avg-value { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
     .table-empty { padding: 28px 14px; text-align: center; color: var(--text-muted); font-size: 0.83rem; }
 
-    /* â”€â”€ TODO FILTER BAR â”€â”€ */
+    /* ── TODO FILTER BAR ── */
     .todo-toolbar {
       display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;
     }
@@ -441,7 +441,7 @@
       font-size: 0.8rem;
     }
 
-    /* â”€â”€ TODO STATS â”€â”€ */
+    /* ── TODO STATS ── */
     .todo-stats {
       display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;
     }
@@ -456,7 +456,7 @@
     [data-theme="dark"] .stat-pill.progress { background: #1e3a5f; }
     [data-theme="dark"] .stat-pill.erledigt { background: #14532d; border-color: #166534; }
 
-    /* â”€â”€ ADD TODO FORM â”€â”€ */
+    /* ── ADD TODO FORM ── */
     .add-todo { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
     .add-todo input[type="text"] { flex: 1; min-width: 140px; }
     .add-todo-extra {
@@ -569,7 +569,7 @@
       white-space: nowrap;
     }
 
-    /* â”€â”€ TODO LIST â”€â”€ */
+    /* ── TODO LIST ── */
     .todo-list { display: flex; flex-direction: column; gap: 7px; }
     .todo-item {
       background: var(--surface); border: 1.5px solid var(--border);
@@ -725,7 +725,7 @@
     }
     .btn-delete:hover { color: var(--danger); background: #fee2e2; }
     .btn-delete:active { color: var(--danger); }
-    /* Ergebnis-Tabelle: MÃ¼lleimer klar als lÃ¶schbar erkennbar + groÃŸe Touch-FlÃ¤che */
+    /* Ergebnis-Tabelle: Mülleimer klar als löschbar erkennbar + große Touch-Fläche */
     .ergebnis-table-wrap .btn-delete {
       color: var(--danger);
       background: #fee2e2;
@@ -744,7 +744,7 @@
     .empty-title { font-weight: 600; font-size: 0.95rem; color: var(--text); margin-bottom: 4px; }
     .empty-hint  { font-size: 0.8rem; color: var(--text-muted); max-width: 320px; margin: 0 auto; line-height: 1.5; }
 
-    /* â”€â”€ NOTIZEN â”€â”€ */
+    /* ── NOTIZEN ── */
     .notiz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
     .notiz-card {
       background: var(--surface); border: 1px solid var(--border);
@@ -813,7 +813,7 @@
     }
     .notiz-add-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
-    /* â”€â”€ TODO-NOTIZ â”€â”€ */
+    /* ── TODO-NOTIZ ── */
     .todo-notiz-section {
       width: 100%; border-top: 1px solid var(--border); padding-top: 6px; margin-top: 4px;
     }
@@ -850,7 +850,7 @@
     }
     .todo-notiz-btn.has-notiz:hover { background: #1d4ed8; color: #fff; }
 
-    /* â”€â”€ SUBTASKS â”€â”€ */
+    /* ── SUBTASKS ── */
     .subtask-section {
       width: 100%; margin-top: 4px; border-top: 1px solid var(--border); padding-top: 6px;
     }
@@ -913,7 +913,7 @@
     }
     .subtask-add-btn:hover { opacity: 0.85; }
 
-    /* â”€â”€ MODAL â”€â”€ */
+    /* ── MODAL ── */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 100;
       display: flex; align-items: center; justify-content: center; padding: 20px;
@@ -947,10 +947,10 @@
     .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .modal-save-hint { font-size: 0.73rem; color: var(--text-muted); }
 
-    /* â”€â”€ UTILS â”€â”€ */
+    /* ── UTILS ── */
     .hidden { display: none !important; }
 
-    /* â”€â”€ MOBILE TODO LAYOUT â”€â”€ */
+    /* ── MOBILE TODO LAYOUT ── */
     .todo-controls-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
 
     @media (max-width: 700px) {
@@ -1030,7 +1030,7 @@
     body:not(.signed-in) #fab-wrap,
     body:not(.signed-in) .bottom-nav { display: none !important; }
 
-    /* â”€â”€ BOTTOM NAV (mobile) â”€â”€ */
+    /* ── BOTTOM NAV (mobile) ── */
     .bottom-nav { display: none; }
     @media (max-width: 600px) {
       .tabs { display: none; }
@@ -1058,7 +1058,7 @@
       .bottom-nav-btn.active::before { transform: translateX(-50%) scaleX(1); }
       .bottom-nav-btn svg { transition: transform 0.15s; flex-shrink: 0; }
       .bottom-nav-btn.active svg { transform: scale(1.1); }
-      /* Platz fÃ¼r Bottom-Nav + FAB â€“ nur einmal, am Inhalt */
+      /* Platz für Bottom-Nav + FAB – nur einmal, am Inhalt */
       .tab-content { padding-bottom: calc(150px + env(safe-area-inset-bottom, 0px)); }
 
       /* iOS: kein Auto-Zoom beim Fokussieren (braucht >= 16px) */
@@ -1067,7 +1067,7 @@
       .todo-search, .dash-search-field, .auth-email-input {
         font-size: 16px;
       }
-      /* GrÃ¶ÃŸere Touch-FlÃ¤chen */
+      /* Größere Touch-Flächen */
       .btn-icon { padding: 9px; }
       .btn-primary, .btn-secondary, .btn-danger { min-height: 44px; }
       .tabelle-tab, .btn-new-tabelle, .katalog-chip { min-height: 38px; }
@@ -1085,12 +1085,12 @@
       .btn-delete, .btn-edit { padding: 8px; }
     }
 
-    /* â”€â”€ FAB â”€â”€ */
+    /* ── FAB ── */
     #fab-wrap {
       position: fixed; bottom: 24px; right: 18px; z-index: 30;
       display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
-      /* Container ist klick-durchlÃ¤ssig â€“ sonst verdeckt der (unsichtbare)
-         MenÃ¼-Bereich darunterliegende Buttons, z. B. in der Ergebnistabelle */
+      /* Container ist klick-durchlässig – sonst verdeckt der (unsichtbare)
+         Menü-Bereich darunterliegende Buttons, z. B. in der Ergebnistabelle */
       pointer-events: none;
     }
     #fab-main { pointer-events: auto; }
@@ -1128,7 +1128,7 @@
     #fab-todo-btn { background: #6366f1; color: #fff; }
     #fab-notiz-btn { background: #f59e0b; color: #fff; }
 
-    /* â”€â”€ NOTIFICATION BELL â”€â”€ */
+    /* ── NOTIFICATION BELL ── */
     .notif-wrap {
       position: relative;
       display: inline-flex;
@@ -1169,7 +1169,7 @@
       display: flex; align-items: center; justify-content: center; pointer-events: none;
     }
 
-    /* â”€â”€ DASHBOARD â”€â”€ */
+    /* ── DASHBOARD ── */
     .dash-overview {
       display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 270px);
       gap: 14px; align-items: start; margin-bottom: 14px;
@@ -1194,7 +1194,7 @@
     .dash-stat-card.s-overdue  .dash-stat-value { color: #dc2626; }
     .dash-stat-card.s-overdue  { border-color: #fca5a5; }
 
-    /* â”€â”€ WETTER & REGENRADAR â”€â”€ */
+    /* ── WETTER & REGENRADAR ── */
     .wetter-panel { margin-bottom: 14px; }
     .wetter-head {
       display: flex; align-items: center; justify-content: space-between;
@@ -1433,7 +1433,7 @@
       line-height: 1.2; flex-shrink: 0; margin-top: 1px;
     }
 
-    /* â”€â”€ CALENDAR â”€â”€ */
+    /* ── CALENDAR ── */
     .cal-wrap {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 10px;
@@ -1470,7 +1470,7 @@
     .cal-dot.done    { background: #22c55e; }
     .cal-dot.overdue { background: #dc2626; }
 
-    /* â”€â”€ DRAG & DROP â”€â”€ */
+    /* ── DRAG & DROP ── */
     .drag-handle {
       cursor: grab; color: var(--border); flex-shrink: 0;
       line-height: 0; padding: 2px 3px; border-radius: 3px;
@@ -1482,7 +1482,7 @@
       outline: 2px dashed var(--primary); outline-offset: 1px;
       background: var(--primary-light);
     }
-    /* Mobile: grÃ¶ÃŸeres Touch-Target fÃ¼r Handle */
+    /* Mobile: größeres Touch-Target für Handle */
     @media (max-width: 600px) {
       .drag-handle {
         padding: 6px 5px;
@@ -1492,7 +1492,7 @@
       }
     }
 
-    /* â”€â”€ PIN NOTIZEN â”€â”€ */
+    /* ── PIN NOTIZEN ── */
     .notiz-card-top {
       display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; margin-bottom: 6px;
     }
@@ -1509,7 +1509,7 @@
     .btn-pin:hover  { color: #f59e0b; opacity: 1; }
     .btn-pin.active { color: #f59e0b; opacity: 1; }
 
-    /* â”€â”€ SHARE MODAL â”€â”€ */
+    /* ── SHARE MODAL ── */
     .share-code {
       background: var(--surface2); border: 1.5px solid var(--primary-border);
       border-radius: 6px; padding: 10px 14px; font-family: monospace;
@@ -1535,7 +1535,7 @@
       max-height: 160px; overflow-y: auto;
     }
 
-    /* â”€â”€ EINKAUFSLISTE â”€â”€ */
+    /* ── EINKAUFSLISTE ── */
     .einkauf-sticky-top {
       position: sticky;
       top: calc(101px + env(safe-area-inset-top, 0px)); /* 56px header + ~45px tabs */
@@ -1574,7 +1574,7 @@
     @media (max-width: 600px) {
       .katalog-chips { flex-wrap: wrap; }
     }
-    /* Disable scroll anchoring â€” prevents iOS from jumping when list rebuilds */
+    /* Disable scroll anchoring — prevents iOS from jumping when list rebuilds */
     #tab-einkauf { overflow-anchor: none; }
     #einkauf-list { overflow-anchor: none; min-height: 60px; }
     .katalog-chip {
@@ -1626,7 +1626,7 @@
     }
     .remember-chip-remove:hover { background: rgba(255,255,255,0.7); border-color: var(--primary-border); }
 
-    /* â”€â”€ PDF / PRINT â”€â”€ */
+    /* ── PDF / PRINT ── */
     .btn-pdf {
       display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px;
       background: #dc2626; color: #fff; border: none; border-radius: 7px;
@@ -1722,7 +1722,7 @@
     }
     .btn-clear-checked:hover { border-color: var(--danger); color: var(--danger); background: #fee2e2; }
 
-    /* â”€â”€ AUTOCOMPLETE â”€â”€ */
+    /* ── AUTOCOMPLETE ── */
     input[list]::-webkit-calendar-picker-indicator { display: none !important; }
 
     @media (max-width: 900px) {
@@ -1745,7 +1745,7 @@
       .radar-time-label { min-width: 84px; font-size: 0.76rem; }
     }
 
-    /* â”€â”€ TOAST â”€â”€ */
+    /* ── TOAST ── */
     #toast-container {
       position: fixed; bottom: calc(80px + env(safe-area-inset-bottom, 0px));
       left: 50%; transform: translateX(-50%);
@@ -1761,7 +1761,7 @@
     .toast.toast-error  { background: #dc2626; }
     .toast.toast-success{ background: #16a34a; }
 
-    /* â”€â”€ DARK MODE: fehlende Overrides (hartkodierte Hell-Farben) â”€â”€ */
+    /* ── DARK MODE: fehlende Overrides (hartkodierte Hell-Farben) ── */
     [data-theme="dark"] .todo-inline-edit-btn.ok     { border-color: #166534; background: #14532d; color: #86efac; }
     [data-theme="dark"] .todo-inline-edit-btn.cancel { border-color: #991b1b; background: #7f1d1d; color: #fca5a5; }
     [data-theme="dark"] .btn-delete:hover            { background: #7f1d1d; color: #fca5a5; }
@@ -1775,24 +1775,24 @@
     [data-theme="dark"] .btn-clear-checked:hover     { background: #7f1d1d; }
     [data-theme="dark"] #auth-error-box              { background: #7f1d1d !important; border-color: #991b1b !important; }
 
-    /* â”€â”€ Feinschliff: dezente Hover-Effekte (nur GerÃ¤te mit Maus) â”€â”€ */
+    /* ── Feinschliff: dezente Hover-Effekte (nur Geräte mit Maus) ── */
     @media (hover: hover) {
       .todo-item:hover   { box-shadow: var(--shadow); }
       .notiz-card:hover  { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--primary-border); }
       .notiz-card:hover::before { opacity: 1; }
     }
 
-    /* â”€â”€ MOBILE (iPhone): Zoom-Fix + Touch-Ziele â”€â”€ */
+    /* ── MOBILE (iPhone): Zoom-Fix + Touch-Ziele ── */
     @media (max-width: 600px) {
       /* iOS Safari zoomt automatisch in Inputs mit Schrift < 16px.
-         !important nÃ¶tig, um auch Inline-Styles (FAB-Modal) zu Ã¼bersteuern. */
+         !important nötig, um auch Inline-Styles (FAB-Modal) zu übersteuern. */
       input[type="text"], input[type="number"], input[type="date"], input[type="time"],
       input[type="datetime-local"], input[type="email"], input[type="password"],
       select, textarea {
         font-size: 16px !important;
       }
 
-      /* Touch-Ziele: Apple-Richtlinie min. 44x44px, hier min. 40px fÃ¼r dichte Listen */
+      /* Touch-Ziele: Apple-Richtlinie min. 44x44px, hier min. 40px für dichte Listen */
       .btn-delete, .btn-edit {
         min-width: 40px; min-height: 40px;
         display: inline-flex; align-items: center; justify-content: center;
@@ -1808,7 +1808,7 @@
       .katalog-chip { padding: 8px 14px; }
     }
 
-    /* â”€â”€ CUSTOM DIALOGS (iOS PWA compat) â”€â”€ */
+    /* ── CUSTOM DIALOGS (iOS PWA compat) ── */
     #safe-confirm-overlay, #safe-prompt-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9998;
       display: flex; align-items: center; justify-content: center; padding: 20px;
@@ -1836,18 +1836,18 @@
 
   <!-- Fehlerbox -->
   <div id="auth-error-box" style="display:none; background:#fee2e2; border:1.5px solid #dc2626; border-radius:10px; padding:14px 16px; margin-bottom:14px; max-width:340px; text-align:left;">
-    <strong style="color:#dc2626; font-size:0.9rem;">âš ï¸ Login-Fehler:</strong>
+    <strong style="color:#dc2626; font-size:0.9rem;">⚠️ Login-Fehler:</strong>
     <p id="auth-error-text" style="color:#7f1d1d; font-size:0.85rem; margin-top:6px; word-break:break-word;"></p>
     <p id="auth-error-code" style="color:#9ca3af; font-size:0.75rem; margin-top:4px;"></p>
-    <button onclick="clearAuthCache()" style="margin-top:10px; background:#dc2626; color:white; border:none; border-radius:6px; padding:7px 14px; font-size:0.82rem; cursor:pointer;">ðŸ”„ Cache leeren &amp; neu laden</button>
+    <button onclick="clearAuthCache()" style="margin-top:10px; background:#dc2626; color:white; border:none; border-radius:6px; padding:7px 14px; font-size:0.82rem; cursor:pointer;">🔄 Cache leeren &amp; neu laden</button>
   </div>
 
   <!-- Weiterleitung-Hinweis (beim Redirect) -->
   <div id="auth-redirect-box" style="display:none; background:#dbeafe; border:1.5px solid #2563eb; border-radius:10px; padding:14px 16px; margin-bottom:14px; max-width:340px; text-align:left;">
-    <strong style="color:#1d4ed8; font-size:0.9rem;">ðŸ”„ Weiterleitung zu Googleâ€¦</strong>
+    <strong style="color:#1d4ed8; font-size:0.9rem;">🔄 Weiterleitung zu Google…</strong>
     <p style="color:#1e40af; font-size:0.82rem; margin-top:6px;">Du wirst gleich zur Google-Anmeldeseite weitergeleitet. Bitte warte kurz.</p>
     <p id="auth-redirect-help" style="display:none; color:#1e40af; font-size:0.82rem; margin-top:10px;">
-      Falls nichts passiert, Ã¶ffne diese Adresse bitte im normalen Safari-Browser:
+      Falls nichts passiert, öffne diese Adresse bitte im normalen Safari-Browser:
       <strong id="auth-open-url">/</strong>
     </p>
     <button id="auth-open-safari" class="btn-secondary" style="display:none; margin-top:10px;">In Safari anmelden</button>
@@ -1868,13 +1868,13 @@
     <input id="auth-email" class="auth-email-input" type="email" placeholder="E-Mail" autocomplete="email" />
     <div class="auth-password-wrap">
       <input id="auth-password" class="auth-email-input" type="password" placeholder="Passwort (min. 6 Zeichen)" autocomplete="current-password" />
-      <button id="btn-toggle-password" class="auth-toggle-pass" type="button" title="Passwort anzeigen">ðŸ‘</button>
+      <button id="btn-toggle-password" class="auth-toggle-pass" type="button" title="Passwort anzeigen">👁</button>
     </div>
     <div id="auth-password-hint" class="auth-pass-hint"></div>
     <div class="auth-email-btns">
       <button id="btn-email-login" class="auth-email-btn primary">Anmelden</button>
       <button id="btn-email-register" class="auth-email-btn">Registrieren</button>
-      <button id="btn-email-reset" class="auth-email-btn">Passwort zurÃ¼cksetzen</button>
+      <button id="btn-email-reset" class="auth-email-btn">Passwort zurücksetzen</button>
     </div>
   </div>
 </div>
@@ -1912,25 +1912,25 @@
     <button class="tab-btn" data-tab="einkauf">Einkauf</button>
   </div>
 
-  <!-- â•â• TAB: DASHBOARD â•â• -->
+  <!-- ══ TAB: DASHBOARD ══ -->
   <div id="tab-dashboard" class="tab-content active">
     <div class="dash-overview">
       <div class="dash-stat-grid">
         <div class="dash-stat-card s-offen">
           <div class="dash-stat-label">Offen</div>
-          <div class="dash-stat-value" id="d-stat-offen">â€“</div>
+          <div class="dash-stat-value" id="d-stat-offen">–</div>
         </div>
         <div class="dash-stat-card s-progress">
           <div class="dash-stat-label">In Arbeit</div>
-          <div class="dash-stat-value" id="d-stat-progress">â€“</div>
+          <div class="dash-stat-value" id="d-stat-progress">–</div>
         </div>
         <div class="dash-stat-card s-done">
           <div class="dash-stat-label">Erledigt</div>
-          <div class="dash-stat-value" id="d-stat-done">â€“</div>
+          <div class="dash-stat-value" id="d-stat-done">–</div>
         </div>
         <div class="dash-stat-card s-overdue">
-          <div class="dash-stat-label">ÃœberfÃ¤llig</div>
-          <div class="dash-stat-value" id="d-stat-overdue">â€“</div>
+          <div class="dash-stat-label">Überfällig</div>
+          <div class="dash-stat-value" id="d-stat-overdue">–</div>
         </div>
       </div>
 
@@ -1954,19 +1954,19 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
             Aktualisieren
           </button>
-          <button class="btn-toggle active" id="btn-radar-open" title="Regenradar Ã¶ffnen">
+          <button class="btn-toggle active" id="btn-radar-open" title="Regenradar öffnen">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             Regenradar
           </button>
         </div>
       </div>
       <div id="wetter-content">
-        <div class="dash-empty">Wetter wird geladen â€¦</div>
+        <div class="dash-empty">Wetter wird geladen …</div>
       </div>
       <div class="wetter-cities" id="wetter-cities-bar"></div>
       <div class="wetter-add-row" style="margin-top:8px;">
-        <input type="text" id="wetter-add-input" class="wetter-add-input" placeholder="+ Stadt hinzufÃ¼gen â€¦"
-               autocomplete="off" aria-label="Stadt suchen und hinzufÃ¼gen" />
+        <input type="text" id="wetter-add-input" class="wetter-add-input" placeholder="+ Stadt hinzufügen …"
+               autocomplete="off" aria-label="Stadt suchen und hinzufügen" />
       </div>
     </div>
 
@@ -1977,11 +1977,11 @@
         <div id="dash-today"></div>
       </div>
       <div class="dash-panel">
-        <div class="dash-panel-title">ÃœberfÃ¤llig</div>
+        <div class="dash-panel-title">Überfällig</div>
         <div id="dash-overdue-list"></div>
       </div>
       <div class="dash-panel">
-        <div class="dash-panel-title">NÃ¤chste Schritte</div>
+        <div class="dash-panel-title">Nächste Schritte</div>
         <div id="dash-upcoming"></div>
       </div>
     </div>
@@ -1989,7 +1989,7 @@
     <div class="dash-secondary">
       <div class="dash-panel">
         <div class="dash-panel-title">Globale Suche</div>
-        <input id="dash-global-search" class="dash-search-field" type="text" placeholder="Suche in Todos, Notizen und Einkauf â€¦" />
+        <input id="dash-global-search" class="dash-search-field" type="text" placeholder="Suche in Todos, Notizen und Einkauf …" />
         <div id="dash-search-results" class="dash-search-results">
           <div class="dash-empty">Suchbegriff eingeben</div>
         </div>
@@ -2001,7 +2001,7 @@
     </div>
   </div>
 
-  <!-- â•â• TAB: DICHTE â•â• -->
+  <!-- ══ TAB: DICHTE ══ -->
   <div id="tab-dichte" class="tab-content">
     <div class="tabellen-bar" id="tabellen-bar">
       <button class="btn-new-tabelle" id="btn-new-tabelle">
@@ -2013,16 +2013,16 @@
       <div>
         <div class="card">
           <h2>Abmessungen &amp; Masse</h2>
-          <p class="formula-hint">Dichte = Masse Ã· (LÃ¤nge Ã— Breite Ã— Dicke) â€“ Ergebnis in kg/mÂ³</p>
+          <p class="formula-hint">Dichte = Masse ÷ (Länge × Breite × Dicke) – Ergebnis in kg/m³</p>
           <div class="grid-2">
-            <div class="field"><label>LÃ¤nge (mm)</label><input type="number" id="d-laenge" placeholder="z. B. 100" min="0" step="any" /></div>
+            <div class="field"><label>Länge (mm)</label><input type="number" id="d-laenge" placeholder="z. B. 100" min="0" step="any" /></div>
             <div class="field"><label>Breite (mm)</label><input type="number" id="d-breite" placeholder="z. B. 50"  min="0" step="any" /></div>
             <div class="field"><label>Dicke (mm)</label> <input type="number" id="d-dicke"  placeholder="z. B. 10"  min="0" step="any" /></div>
             <div class="field"><label>Masse (g)</label>  <input type="number" id="d-masse"  placeholder="z. B. 250" min="0" step="any" /></div>
           </div>
           <div class="field" style="margin-top:10px;">
             <label>Notiz (optional)</label>
-            <input type="text" id="d-notiz" placeholder="z. B. Material, Charge â€¦" />
+            <input type="text" id="d-notiz" placeholder="z. B. Material, Charge …" />
           </div>
           <div style="margin-top:14px;">
             <button class="btn-primary" id="btn-berechnen">Berechnen &amp; Speichern</button>
@@ -2031,8 +2031,8 @@
         </div>
         <div id="dichte-result" class="result-box hidden">
           <span class="result-label">Dichte:</span>
-          <span class="result-value" id="dichte-wert">â€”</span>
-          <span class="result-unit">kg/mÂ³</span>
+          <span class="result-value" id="dichte-wert">—</span>
+          <span class="result-unit">kg/m³</span>
         </div>
       </div>
       <div class="ergebnis-card">
@@ -2057,26 +2057,26 @@
           <table>
             <thead><tr>
               <th>Nr.</th><th>Datum</th><th>L (mm)</th><th>B (mm)</th><th>D (mm)</th>
-              <th>Masse (g)</th><th>Dichte (kg/mÂ³)</th><th>Notiz</th><th></th>
+              <th>Masse (g)</th><th>Dichte (kg/m³)</th><th>Notiz</th><th></th>
             </tr></thead>
             <tbody id="ergebnis-tbody">
-              <tr id="ergebnis-empty-row"><td colspan="9" class="table-empty">Noch keine Ergebnisse â€“ gib links MaÃŸe und Masse ein und tippe auf â€žBerechnen &amp; Speichernâ€œ.</td></tr>
+              <tr id="ergebnis-empty-row"><td colspan="9" class="table-empty">Noch keine Ergebnisse – gib links Maße und Masse ein und tippe auf „Berechnen &amp; Speichern“.</td></tr>
             </tbody>
           </table>
         </div>
         <div class="avg-row" id="avg-row" style="display:none;">
           <span class="avg-label">Durchschnitt</span>
-          <span class="avg-value"><span id="avg-wert">â€”</span> kg/mÂ³</span>
+          <span class="avg-value"><span id="avg-wert">—</span> kg/m³</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- â•â• TAB: TO-DOS â•â• -->
+  <!-- ══ TAB: TO-DOS ══ -->
   <div id="tab-todos" class="tab-content">
     <!-- Toolbar: Suche + Filter + Export -->
     <div class="todo-toolbar">
-      <input class="todo-search" id="todo-search" type="text" placeholder="ðŸ”  Suchen â€¦" />
+      <input class="todo-search" id="todo-search" type="text" placeholder="🔍  Suchen …" />
       <button class="btn-toggle" id="btn-hide-done">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
         Erledigte
@@ -2117,24 +2117,24 @@
     </div>
     <!-- Neue Aufgabe -->
     <div class="add-todo">
-      <input type="text" id="todo-input" placeholder="Neue Aufgabe â€¦" list="todo-suggestions" autocomplete="off" />
+      <input type="text" id="todo-input" placeholder="Neue Aufgabe …" list="todo-suggestions" autocomplete="off" />
       <select id="todo-ordner-select" style="display:none; max-width:130px;"></select>
-      <button class="btn-primary" id="btn-todo-add">HinzufÃ¼gen</button>
+      <button class="btn-primary" id="btn-todo-add">Hinzufügen</button>
     </div>
     <div class="add-todo-extra">
-      <button type="button" class="todo-date-toggle" id="todo-date-toggle">ðŸ“… FÃ¤lligkeit setzen</button>
+      <button type="button" class="todo-date-toggle" id="todo-date-toggle">📅 Fälligkeit setzen</button>
       <div class="todo-date-row todo-date-panel hidden" id="todo-date-panel">
-        <span class="todo-date-row-label">FÃ¤llig</span>
+        <span class="todo-date-row-label">Fällig</span>
         <label class="todo-date-field">
           <span>Datum</span>
-        <input type="text" id="todo-faellig-input" title="FÃ¤lligkeitsdatum" placeholder="26.04.2026" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" />
+        <input type="text" id="todo-faellig-input" title="Fälligkeitsdatum" placeholder="26.04.2026" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" />
         </label>
         <label class="todo-date-field">
           <span>Zeit</span>
         <input type="text" id="todo-uhrzeit-input" title="Uhrzeit (optional)" placeholder="20:00" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" />
         </label>
       </div>
-      <button type="button" class="todo-date-toggle" id="todo-reminder-toggle">â° Erinnerung setzen</button>
+      <button type="button" class="todo-date-toggle" id="todo-reminder-toggle">⏰ Erinnerung setzen</button>
       <div class="todo-date-row todo-reminder-panel hidden" id="todo-reminder-panel">
         <span class="todo-date-row-label">Erinnerung</span>
         <label class="todo-date-field">
@@ -2152,12 +2152,12 @@
       <div class="empty-state" id="todo-empty">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         <div class="empty-title">Noch keine Aufgaben</div>
-        <div class="empty-hint">Gib oben eine Aufgabe ein und tippe auf â€žHinzufÃ¼genâ€œ. Mit Ordnern kannst du Aufgaben thematisch gruppieren.</div>
+        <div class="empty-hint">Gib oben eine Aufgabe ein und tippe auf „Hinzufügen“. Mit Ordnern kannst du Aufgaben thematisch gruppieren.</div>
       </div>
     </div>
   </div>
 
-  <!-- â•â• TAB: NOTIZEN â•â• -->
+  <!-- ══ TAB: NOTIZEN ══ -->
   <div id="tab-notizen" class="tab-content">
     <div class="tabellen-bar" id="notiz-ordner-bar">
       <button class="btn-new-tabelle" id="btn-new-notiz-ordner">
@@ -2169,33 +2169,33 @@
       <div class="empty-state" id="notiz-empty">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <div class="empty-title">Noch keine Notizen</div>
-        <div class="empty-hint">Tippe unten rechts auf â€ž+â€œ, um deine erste Notiz anzulegen. Formatierungen wie **fett** und Listen werden unterstÃ¼tzt.</div>
+        <div class="empty-hint">Tippe unten rechts auf „+“, um deine erste Notiz anzulegen. Formatierungen wie **fett** und Listen werden unterstützt.</div>
       </div>
     </div>
   </div>
 
-  <!-- â•â• TAB: EINKAUF â•â• -->
+  <!-- ══ TAB: EINKAUF ══ -->
   <div id="tab-einkauf" class="tab-content">
 
-    <!-- Artikel hinzufÃ¼gen + FrÃ¼here Artikel (sticky) -->
+    <!-- Artikel hinzufügen + Frühere Artikel (sticky) -->
     <div class="einkauf-sticky-top">
       <div class="einkauf-add-row">
-        <input type="text" id="einkauf-input" placeholder="Artikel hinzufÃ¼gen â€¦"
+        <input type="text" id="einkauf-input" placeholder="Artikel hinzufügen …"
                list="einkauf-suggestions" autocomplete="off" />
         <button class="btn-primary" id="btn-einkauf-add">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          HinzufÃ¼gen
+          Hinzufügen
         </button>
       </div>
       <div class="remember-wrap" id="remember-wrap" style="display:none;">
-        <div class="katalog-title">FÃ¼r den nÃ¤chsten Einkauf merken</div>
+        <div class="katalog-title">Für den nächsten Einkauf merken</div>
         <div class="remember-chips" id="remember-chips"></div>
       </div>
-      <!-- FrÃ¼here Artikel: ausklappbar, horizontal scrollbar auf Mobile -->
+      <!-- Frühere Artikel: ausklappbar, horizontal scrollbar auf Mobile -->
       <div class="katalog-wrap" id="katalog-wrap" style="display:none;">
         <button class="katalog-toggle" id="katalog-toggle">
-          <span>FrÃ¼here Artikel</span>
-          <span class="katalog-toggle-chevron">â–¶</span>
+          <span>Frühere Artikel</span>
+          <span class="katalog-toggle-chevron">▶</span>
         </button>
         <div class="katalog-chips" id="katalog-chips" style="display:none;"></div>
       </div>
@@ -2207,7 +2207,7 @@
       <div class="empty-state" id="einkauf-empty">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
         <div class="empty-title">Deine Einkaufsliste ist leer</div>
-        <div class="empty-hint">Gib oben einen Artikel ein â€“ frÃ¼her gekaufte Artikel erscheinen als VorschlÃ¤ge zum schnellen Antippen.</div>
+        <div class="empty-hint">Gib oben einen Artikel ein – früher gekaufte Artikel erscheinen als Vorschläge zum schnellen Antippen.</div>
       </div>
     </div>
 
@@ -2236,7 +2236,7 @@
 <div class="modal-overlay hidden" id="notiz-modal" role="dialog" aria-modal="true" aria-label="Notiz bearbeiten">
   <div class="modal">
     <div class="modal-header">
-      <input type="text" id="notiz-modal-title" placeholder="Titel â€¦" style="flex:1; font-size:1rem; font-weight:600; border:none; border-bottom:2px solid var(--border); border-radius:0; padding:4px 0; background:transparent; color:var(--text);" />
+      <input type="text" id="notiz-modal-title" placeholder="Titel …" style="flex:1; font-size:1rem; font-weight:600; border:none; border-bottom:2px solid var(--border); border-radius:0; padding:4px 0; background:transparent; color:var(--text);" />
       <button class="btn-icon" id="notiz-modal-close" style="margin-left:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -2245,14 +2245,14 @@
       <button type="button" class="notiz-fmt-btn" id="nfmt-bold" title="Fett (Ctrl+B)"><strong>B</strong></button>
       <button type="button" class="notiz-fmt-btn" id="nfmt-italic" title="Kursiv (Ctrl+I)"><em>I</em></button>
       <button type="button" class="notiz-fmt-btn" id="nfmt-strike" title="Durchstreichen"><s>S</s></button>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-bullet" title="AufzÃ¤hlung">â€¢ Liste</button>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-preview" title="Vorschau" style="margin-left:auto;">ðŸ‘ Vorschau</button>
+      <button type="button" class="notiz-fmt-btn" id="nfmt-bullet" title="Aufzählung">• Liste</button>
+      <button type="button" class="notiz-fmt-btn" id="nfmt-preview" title="Vorschau" style="margin-left:auto;">👁 Vorschau</button>
     </div>
-    <textarea id="notiz-modal-text" placeholder="Notiz schreiben â€¦ (**fett**, *kursiv*, ~~durchgestrichen~~, - Liste)"></textarea>
+    <textarea id="notiz-modal-text" placeholder="Notiz schreiben … (**fett**, *kursiv*, ~~durchgestrichen~~, - Liste)"></textarea>
     <div class="notiz-md-preview hidden" id="notiz-md-preview"></div>
     <div class="modal-footer">
       <span class="modal-save-hint" id="notiz-save-hint"></span>
-      <button class="btn-delete" id="notiz-modal-delete" title="Notiz lÃ¶schen" style="color:#d1d5db;">
+      <button class="btn-delete" id="notiz-modal-delete" title="Notiz löschen" style="color:#d1d5db;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
       </button>
     </div>
@@ -2268,7 +2268,7 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;">Gib jeder Farbe einen Namen â€“ er erscheint im Picker und als Tooltip.</p>
+    <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;">Gib jeder Farbe einen Namen – er erscheint im Picker und als Tooltip.</p>
     <div style="display:flex;flex-direction:column;gap:10px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="width:18px;height:18px;border-radius:50%;background:#ef4444;flex-shrink:0;display:inline-block;"></span>
@@ -2314,22 +2314,22 @@
       </button>
     </div>
     <div>
-      <p id="share-code-label" style="font-size:0.83rem;color:var(--text-muted);margin-bottom:8px;">Dein Join-Code fÃ¼r diesen Ordner:</p>
-      <div class="share-code" id="share-code-box">â€“</div>
+      <p id="share-code-label" style="font-size:0.83rem;color:var(--text-muted);margin-bottom:8px;">Dein Join-Code für diesen Ordner:</p>
+      <div class="share-code" id="share-code-box">–</div>
       <button class="btn-copy" id="btn-copy-code">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         Code kopieren
       </button>
     </div>
-    <div class="share-sep" id="share-email-sep">E-Mail des EmpfÃ¤ngers hinzufÃ¼gen</div>
+    <div class="share-sep" id="share-email-sep">E-Mail des Empfängers hinzufügen</div>
     <div style="display:flex;gap:8px;">
       <input type="email" id="share-email-input" placeholder="name@example.com" class="todo-search" style="flex:1;" />
-      <button class="btn-primary" id="btn-share-add">HinzufÃ¼gen</button>
+      <button class="btn-primary" id="btn-share-add">Hinzufügen</button>
     </div>
     <div id="share-email-list" style="font-size:0.8rem;color:var(--text-muted);min-height:18px;"></div>
     <details style="margin-top:4px;">
-      <summary style="font-size:0.78rem;color:var(--text-muted);cursor:pointer;margin-bottom:6px;">âš™ï¸ Einmalig: Firestore-Regeln aktualisieren</summary>
-      <p style="font-size:0.76rem;color:var(--text-muted);margin-bottom:6px;">Kopiere diese Regeln in <b>Firebase Console â†’ Firestore â†’ Regeln</b>:</p>
+      <summary style="font-size:0.78rem;color:var(--text-muted);cursor:pointer;margin-bottom:6px;">⚙️ Einmalig: Firestore-Regeln aktualisieren</summary>
+      <p style="font-size:0.76rem;color:var(--text-muted);margin-bottom:6px;">Kopiere diese Regeln in <b>Firebase Console → Firestore → Regeln</b>:</p>
       <div class="share-rules">rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -2389,15 +2389,15 @@ service cloud.firestore {
   <div class="modal radar-modal">
     <div class="modal-header">
       <h3>Regenradar</h3>
-      <button class="btn-icon" id="radar-close" title="SchlieÃŸen">
+      <button class="btn-icon" id="radar-close" title="Schließen">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="radar-map-wrap">
       <div id="radar-map"></div>
-      <div id="radar-loading" class="radar-loading">Radar wird geladen â€¦</div>
+      <div id="radar-loading" class="radar-loading">Radar wird geladen …</div>
     </div>
-    <div id="radar-regen-prognose" class="radar-regen-prognose" title="Regenprognose fÃ¼r die nÃ¤chsten 5 Stunden"></div>
+    <div id="radar-regen-prognose" class="radar-regen-prognose" title="Regenprognose für die nächsten 5 Stunden"></div>
     <div class="radar-controls">
       <button class="radar-play-btn" id="radar-play" title="Animation abspielen/pausieren">&#9654;</button>
       <input type="range" id="radar-slider" min="0" max="0" value="0" step="1" />
@@ -2420,7 +2420,7 @@ service cloud.firestore {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-// â”€â”€ FIREBASE CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── FIREBASE CONFIG ──────────────────────────────────────────
 const firebaseConfig = {
   apiKey:            "AIzaSyBBMU-KPmSzu0F9iFGV_AF049Aivtnx0S4",
   authDomain:        "arbeitsapp-3364c.firebaseapp.com",
@@ -2502,21 +2502,21 @@ function isLocalhostHost(hostname) {
 
 function getPushSupportIssue() {
   if (typeof Notification === "undefined") {
-    return "Push wird auf diesem GerÃ¤t nicht unterstÃ¼tzt.";
+    return "Push wird auf diesem Gerät nicht unterstützt.";
   }
   if (!("serviceWorker" in navigator)) {
-    return "Service Worker fehlt. Push nicht mÃ¶glich.";
+    return "Service Worker fehlt. Push nicht möglich.";
   }
   if (!window.isSecureContext && !isLocalhostHost(window.location.hostname)) {
-    return "Push funktioniert nur Ã¼ber HTTPS oder auf localhost.";
+    return "Push funktioniert nur über HTTPS oder auf localhost.";
   }
   if (_isIOS && !_isPWA) {
-    return "Auf dem iPhone funktioniert Web-Push nur in der installierten Home-Bildschirm-App. Bitte in Safari Ã¶ffnen, Teilen -> Zum Home-Bildschirm und dort den Organizer starten.";
+    return "Auf dem iPhone funktioniert Web-Push nur in der installierten Home-Bildschirm-App. Bitte in Safari öffnen, Teilen -> Zum Home-Bildschirm und dort den Organizer starten.";
   }
   if (!firebase.messaging || !firebase.messaging.isSupported()) {
     return _isIOS
-      ? "Firebase Messaging ist auf diesem iPhone in der aktuellen Umgebung nicht verfÃ¼gbar. Starte den Organizer aus der installierten Home-Bildschirm-App."
-      : "Firebase Messaging wird in diesem Browser nicht unterstÃ¼tzt.";
+      ? "Firebase Messaging ist auf diesem iPhone in der aktuellen Umgebung nicht verfügbar. Starte den Organizer aus der installierten Home-Bildschirm-App."
+      : "Firebase Messaging wird in diesem Browser nicht unterstützt.";
   }
   return "";
 }
@@ -2536,14 +2536,14 @@ async function enableTruePush(userId) {
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
     showToast(permission === "denied"
-      ? "Benachrichtigungen wurden blockiert. Bitte in den iPhone-Einstellungen fÃ¼r diese Home-Bildschirm-App wieder erlauben."
+      ? "Benachrichtigungen wurden blockiert. Bitte in den iPhone-Einstellungen für diese Home-Bildschirm-App wieder erlauben."
       : "Benachrichtigungen nicht erlaubt.", "error");
     return false;
   }
 
   const messaging = await ensurePushMessagingInitialized();
   if (!messaging) {
-    showToast(getPushSupportIssue() || "Firebase Messaging wird in diesem Browser nicht unterstÃ¼tzt.", "error");
+    showToast(getPushSupportIssue() || "Firebase Messaging wird in diesem Browser nicht unterstützt.", "error");
     return false;
   }
 
@@ -2586,7 +2586,7 @@ async function disableTruePush(userId) {
   }
 }
 
-// â”€â”€ PDF EXPORT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── PDF EXPORT ───────────────────────────────────────────────
 function printArea(html, title) {
   const area = $("print-area");
   area.style.display = "block";
@@ -2665,7 +2665,7 @@ async function shareEinkaufPdf() {
   const { filename, file, blob } = await buildEinkaufPdf();
   if (!file || typeof navigator.share !== "function") {
     downloadBlob(filename, blob);
-    showToast("Teilen nicht unterstÃ¼tzt. PDF wurde geladen.");
+    showToast("Teilen nicht unterstützt. PDF wurde geladen.");
     return;
   }
   try {
@@ -2676,7 +2676,7 @@ async function shareEinkaufPdf() {
     };
     if (typeof navigator.canShare === "function" && !navigator.canShare({ files: [file] })) {
       downloadBlob(filename, blob);
-      showToast("Datei-Teilen nicht unterstÃ¼tzt. PDF wurde geladen.");
+      showToast("Datei-Teilen nicht unterstützt. PDF wurde geladen.");
       return;
     }
     await navigator.share(shareData);
@@ -2695,16 +2695,16 @@ function printTodos(ordnerName) {
     const faellig = el.dataset.faellig || "";
     const done   = status === "erledigt";
     return `<div class="print-item${done ? " checked" : ""}">
-      <span>${done ? "â˜‘" : "â˜"}</span>
+      <span>${done ? "☑" : "☐"}</span>
       <span>${text}</span>
-      ${faellig ? `<span class="print-meta">FÃ¤llig: ${faellig}</span>` : ""}
+      ${faellig ? `<span class="print-meta">Fällig: ${faellig}</span>` : ""}
     </div>`;
   }).join("");
-  const title = ordnerName ? `âœ… Todos â€“ ${ordnerName}` : "âœ… Alle Todos";
+  const title = ordnerName ? `✅ Todos – ${ordnerName}` : "✅ Alle Todos";
   printArea(items || "<p>Keine Todos vorhanden.</p>", title);
 }
 
-// â”€â”€ TOAST â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── TOAST ────────────────────────────────────────────────────
 function showToast(msg, type = "") {
   const c = $("toast-container");
   const t = document.createElement("div");
@@ -2723,8 +2723,8 @@ function fsError(err) {
   showToast("Speichern fehlgeschlagen", "error");
 }
 
-// â”€â”€ SAFE DIALOGS (iOS Safari PWA: confirm/alert/prompt blockiert) â”€â”€
-function safeConfirm(msg, okLabel = "LÃ¶schen") {
+// ── SAFE DIALOGS (iOS Safari PWA: confirm/alert/prompt blockiert) ──
+function safeConfirm(msg, okLabel = "Löschen") {
   return new Promise(resolve => {
     $("safe-confirm-msg").textContent = msg;
     $("safe-confirm-ok").textContent = okLabel;
@@ -2768,7 +2768,7 @@ function safePrompt(msg, defaultVal = "") {
   });
 }
 
-// â”€â”€ DARK MODE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── DARK MODE ────────────────────────────────────────────────
 function applyTheme(dark) {
   document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
   $("icon-sun").style.display  = dark ? "none"  : "";
@@ -2783,11 +2783,11 @@ $("btn-darkmode").addEventListener("click", () => {
   applyTheme(darkMode);
 });
 $("btn-refresh-app").addEventListener("click", () => {
-  showToast("Aktualisiere â€¦");
+  showToast("Aktualisiere …");
   setTimeout(() => window.location.reload(), 120);
 });
 
-// â”€â”€ AUTH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── AUTH ─────────────────────────────────────────────────────
 const provider = new firebase.auth.GoogleAuthProvider();
 
 function showAuthError(err) {
@@ -2798,7 +2798,7 @@ function showAuthError(err) {
   const isFileProtocol = window.location.protocol === "file:";
   const unsupportedEnv = err.code === "auth/operation-not-supported-in-this-environment";
   text.textContent = (isFileProtocol || unsupportedEnv)
-    ? "Google-Login funktioniert nicht, wenn organizer.html direkt als Datei geÃ¶ffnet wird. Bitte Ã¶ffne den Organizer Ã¼ber /."
+    ? "Google-Login funktioniert nicht, wenn organizer.html direkt als Datei geöffnet wird. Bitte öffne den Organizer über /."
     : (err.message || String(err));
   code.textContent = "Code: " + (err.code || "unbekannt") + " | URL: " + window.location.href;
   box.style.display = "block";
@@ -2831,9 +2831,9 @@ function scorePasswordStrength(pw) {
   if (/\d/.test(pw)) score++;
   if (/[^A-Za-z0-9]/.test(pw)) score++;
 
-  if (score <= 1) return { label: "PasswortstÃ¤rke: schwach", cls: "weak" };
-  if (score <= 3) return { label: "PasswortstÃ¤rke: mittel", cls: "medium" };
-  return { label: "PasswortstÃ¤rke: stark", cls: "strong" };
+  if (score <= 1) return { label: "Passwortstärke: schwach", cls: "weak" };
+  if (score <= 3) return { label: "Passwortstärke: mittel", cls: "medium" };
+  return { label: "Passwortstärke: stark", cls: "strong" };
 }
 
 function updatePasswordHint() {
@@ -2853,7 +2853,7 @@ function setupPasswordUi() {
   toggle.addEventListener("click", () => {
     const show = pw.type === "password";
     pw.type = show ? "text" : "password";
-    toggle.textContent = show ? "ðŸ™ˆ" : "ðŸ‘";
+    toggle.textContent = show ? "🙈" : "👁";
     toggle.title = show ? "Passwort verbergen" : "Passwort anzeigen";
     pw.focus();
   });
@@ -2910,7 +2910,7 @@ async function doPasswordReset() {
   setEmailAuthBusy(true);
   try {
     await auth.sendPasswordResetEmail(email);
-    showToast("Reset-Mail gesendet. Bitte Postfach prÃ¼fen.");
+    showToast("Reset-Mail gesendet. Bitte Postfach prüfen.");
   } catch (err) {
     showAuthError(err);
   } finally {
@@ -2929,7 +2929,7 @@ function clearAuthCache() {
   window.location.reload();
 }
 
-// PWA-Erkennung (Homescreen-App / Chrome-Desktop-App â†’ Popups blockiert)
+// PWA-Erkennung (Homescreen-App / Chrome-Desktop-App → Popups blockiert)
 const _isPWA = window.matchMedia("(display-mode: standalone)").matches
             || window.navigator.standalone === true;
 const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -2948,12 +2948,12 @@ function openInSafariFallback() {
   const w = window.open(u, "_blank");
   if (!w) {
     navigator.clipboard?.writeText(u).then(
-      () => safePrompt("Safari konnte nicht automatisch geÃ¶ffnet werden. URL ist kopiert. In Safari einfÃ¼gen und dort anmelden:", u),
-      () => safePrompt("Bitte diese URL in Safari Ã¶ffnen und dort anmelden:", u)
+      () => safePrompt("Safari konnte nicht automatisch geöffnet werden. URL ist kopiert. In Safari einfügen und dort anmelden:", u),
+      () => safePrompt("Bitte diese URL in Safari öffnen und dort anmelden:", u)
     );
   } else {
     navigator.clipboard?.writeText(u).catch(() => {});
-    safePrompt("Falls der neue Tab nicht in Safari erscheint: URL kopieren, Safari Ã¶ffnen, einfÃ¼gen, anmelden.", u);
+    safePrompt("Falls der neue Tab nicht in Safari erscheint: URL kopieren, Safari öffnen, einfügen, anmelden.", u);
   }
 }
 if ($("auth-open-safari")) {
@@ -2988,7 +2988,7 @@ $("btn-google-signin").addEventListener("click", () => {
   } else {
     auth.signInWithPopup(provider).catch(err => {
       if (err.code === "auth/popup-blocked" || err.code === "auth/popup-closed-by-user") {
-        // Popup blockiert â†’ Weiterleitung benutzen
+        // Popup blockiert → Weiterleitung benutzen
         doRedirectLogin();
       } else {
         showAuthError(err);
@@ -3006,16 +3006,16 @@ setupPasswordUi();
 
 $("btn-signout").addEventListener("click", () => auth.signOut());
 
-// Redirect-Ergebnis explizit auswerten (wichtig fÃ¼r iOS PWA-Debug)
+// Redirect-Ergebnis explizit auswerten (wichtig für iOS PWA-Debug)
 auth.getRedirectResult().catch(err => {
   showAuthError(err);
   if (_isIOSPWA) showSafariFallback();
 });
 
-let appUiInitialized = false; // verhindert doppelte DOM-Listener bei Logoutâ†’Login
+let appUiInitialized = false; // verhindert doppelte DOM-Listener bei Logout→Login
 auth.onAuthStateChanged(user => {
   if (user) {
-    // Zweiter Login in derselben Sitzung: init*-Funktionen wÃ¼rden alle
+    // Zweiter Login in derselben Sitzung: init*-Funktionen würden alle
     // Button-Listener erneut binden (doppelte Todos, doppelte Toasts).
     // Frischer Seiten-Load ist der sauberste Zustand.
     if (appUiInitialized) { location.reload(); return; }
@@ -3055,7 +3055,7 @@ auth.onAuthStateChanged(user => {
   }
 });
 
-// â”€â”€ MAIN TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── MAIN TABS ────────────────────────────────────────────────
 function switchTab(tabName) {
   document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
   document.querySelectorAll(".bottom-nav-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
@@ -3069,14 +3069,14 @@ document.addEventListener("click", e => {
   if (btn && btn.dataset.tab) switchTab(btn.dataset.tab);
 });
 
-// Farb-Popups global schlieÃŸen â€” EIN delegierter Listener statt einem pro Todo-Render
-// (vorher: Memory-Leak, da jeder renderTodos-Durchlauf neue document-Listener anhÃ¤ngte)
+// Farb-Popups global schließen — EIN delegierter Listener statt einem pro Todo-Render
+// (vorher: Memory-Leak, da jeder renderTodos-Durchlauf neue document-Listener anhängte)
 document.addEventListener("click", () => {
   document.querySelectorAll(".color-popup").forEach(p => { p.style.display = "none"; });
 });
 
-// â”€â”€ A11Y: Icon-Buttons bekommen aria-label aus ihrem title â”€â”€
-// Screenreader lesen sonst nur "Ã—" oder gar nichts vor. Der Observer deckt
+// ── A11Y: Icon-Buttons bekommen aria-label aus ihrem title ──
+// Screenreader lesen sonst nur "×" oder gar nichts vor. Der Observer deckt
 // auch alle dynamisch gerenderten Buttons ab (Todo-Liste, Notizen, Einkauf).
 function syncAriaLabel(btn) {
   if (btn.title && !btn.hasAttribute("aria-label")) btn.setAttribute("aria-label", btn.title);
@@ -3090,7 +3090,7 @@ new MutationObserver(muts => {
   }));
 }).observe(document.body, { childList: true, subtree: true });
 
-// â”€â”€ A11Y: Escape schlieÃŸt das offene Modal â”€â”€
+// ── A11Y: Escape schließt das offene Modal ──
 document.addEventListener("keydown", e => {
   if (e.key !== "Escape") return;
   const notiz = $("notiz-modal");
@@ -3102,7 +3102,7 @@ document.addEventListener("keydown", e => {
   });
 });
 
-// â”€â”€ Desktop-Shortcut: Strg+K / Cmd+K Ã¶ffnet die globale Suche â”€â”€
+// ── Desktop-Shortcut: Strg+K / Cmd+K öffnet die globale Suche ──
 document.addEventListener("keydown", e => {
   if (e.key.toLowerCase() !== "k" || !(e.ctrlKey || e.metaKey)) return;
   if (!auth.currentUser) return;
@@ -3112,15 +3112,15 @@ document.addEventListener("keydown", e => {
   if (inp) { inp.focus(); inp.select(); }
 });
 
-// â”€â”€ PWA SERVICE WORKER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── PWA SERVICE WORKER ───────────────────────────────────────
 if ("serviceWorker" in navigator) {
   pushState.swRegPromise = navigator.serviceWorker.register("organizer-sw.js").catch(() => null);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 // DASHBOARD + KALENDER
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-const MONATE = ["Januar","Februar","MÃ¤rz","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+// ════════════════════════════════════════════════════════════
+const MONATE = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
 const WOCHENTAGE = ["Mo","Di","Mi","Do","Fr","Sa","So"];
 let calYear, calMonth;
 
@@ -3217,15 +3217,15 @@ function normalizeReminderDateTimeInput(dateRaw, timeRaw) {
   const hasTime = !!(timeRaw || "").trim();
   if (!hasDate && !hasTime) return { value: "", error: "" };
   if (!hasDate || !hasTime) {
-    return { value: null, error: "FÃ¼r die Erinnerung bitte Datum und Uhrzeit zusammen angeben." };
+    return { value: null, error: "Für die Erinnerung bitte Datum und Uhrzeit zusammen angeben." };
   }
   const dateVal = normalizeDueDateInput(dateRaw);
   if (dateVal === null) {
-    return { value: null, error: "UngÃ¼ltiges Erinnerungsdatum. Bitte TT.MM.JJJJ oder JJJJ-MM-TT nutzen." };
+    return { value: null, error: "Ungültiges Erinnerungsdatum. Bitte TT.MM.JJJJ oder JJJJ-MM-TT nutzen." };
   }
   const timeVal = normalizeDueTimeInput(timeRaw);
   if (timeVal === null) {
-    return { value: null, error: "UngÃ¼ltige Erinnerungszeit. Bitte HH:MM nutzen (z. B. 12:00)." };
+    return { value: null, error: "Ungültige Erinnerungszeit. Bitte HH:MM nutzen (z. B. 12:00)." };
   }
   return { value: `${dateVal}T${timeVal}`, error: "" };
 }
@@ -3314,7 +3314,7 @@ function renderDashTodoCollection(targetId, items, emptyText, today) {
         <div class="dash-todo-row-text">${escapeHtml(t.text)}</div>
         <div class="dash-row-meta">${escapeHtml(t._ordnerName || "Ohne Ordner")}</div>
       </div>
-      <div class="dash-due ${isOverdue ? "overdue" : isToday ? "today" : ""}">${isOverdue ? "âš ï¸ " : ""}${escapeHtml(dateLabel)}</div>`;
+      <div class="dash-due ${isOverdue ? "overdue" : isToday ? "today" : ""}">${isOverdue ? "⚠️ " : ""}${escapeHtml(dateLabel)}</div>`;
     el.appendChild(row);
   });
 }
@@ -3332,7 +3332,7 @@ function getDashboardSearchGroups(query) {
     .map(t => ({
       type: "todo",
       label: t.text,
-      meta: `${t._ordnerName || "Ohne Ordner"}${t.faellig ? ` Â· ${formatDueDate(t.faellig)}` : ""}`,
+      meta: `${t._ordnerName || "Ohne Ordner"}${t.faellig ? ` · ${formatDueDate(t.faellig)}` : ""}`,
       ordnerId: t._ordnerId,
       itemId: t.id
     }));
@@ -3358,7 +3358,7 @@ function getDashboardSearchGroups(query) {
       .map(i => ({
         type: "shopping-active",
         label: i.name,
-        meta: i.checked ? "Aktuelle Einkaufsliste Â· erledigt" : "Aktuelle Einkaufsliste",
+        meta: i.checked ? "Aktuelle Einkaufsliste · erledigt" : "Aktuelle Einkaufsliste",
         itemId: i.id
       })),
     ...einkaufKatalog
@@ -3367,7 +3367,7 @@ function getDashboardSearchGroups(query) {
       .map(k => ({
         type: "shopping-remembered",
         label: k.name,
-        meta: "FÃ¼r den nÃ¤chsten Einkauf gemerkt",
+        meta: "Für den nächsten Einkauf gemerkt",
         itemId: k.id
       }))
   ];
@@ -3491,9 +3491,9 @@ function renderDashboard() {
     upcoming.push(...noDate);
   }
 
-  renderDashTodoCollection("dash-today", todayItems, "Heute ist nichts fÃ¤llig", today);
-  renderDashTodoCollection("dash-overdue-list", overdueItems, "Nichts Ã¼berfÃ¤llig", today);
-  renderDashTodoCollection("dash-upcoming", upcoming, "Keine nÃ¤chsten Schritte geplant", today);
+  renderDashTodoCollection("dash-today", todayItems, "Heute ist nichts fällig", today);
+  renderDashTodoCollection("dash-overdue-list", overdueItems, "Nichts überfällig", today);
+  renderDashTodoCollection("dash-upcoming", upcoming, "Keine nächsten Schritte geplant", today);
 
   // Letzte Notizen
   let notes = getAllNotesFlat();
@@ -3513,7 +3513,7 @@ function renderDashboard() {
       const d = n.updatedAt ? (n.updatedAt.toDate ? n.updatedAt.toDate() : new Date(n.updatedAt)) : null;
       row.innerHTML = `
         <div class="dash-note-title">${n.titel || "Ohne Titel"}</div>
-        <div class="dash-note-meta">${n._ordnerName} Â· ${d ? d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"}) : ""}</div>`;
+        <div class="dash-note-meta">${n._ordnerName} · ${d ? d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"}) : ""}</div>`;
       notesEl.appendChild(row);
     });
   }
@@ -3546,7 +3546,7 @@ function renderCalendar() {
   let startDow = firstDay.getDay() - 1; // Mo=0
   if (startDow < 0) startDow = 6;
 
-  // Vormonat-FÃ¼ller
+  // Vormonat-Füller
   for (let i = 0; i < startDow; i++) {
     const prev = new Date(calYear, calMonth, i - startDow + 1);
     const d = document.createElement("div");
@@ -3579,7 +3579,7 @@ function renderCalendar() {
     grid.appendChild(d);
   }
 
-  // Nachmonat-FÃ¼ller
+  // Nachmonat-Füller
   const total = startDow + lastDay.getDate();
   const rest  = (7 - (total % 7)) % 7;
   for (let i = 1; i <= rest; i++) {
@@ -3590,9 +3590,9 @@ function renderCalendar() {
   }
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 // NOTIFICATIONS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 let notifCheckInterval = null;
 let unsubscribeNotifSettingsFunc = null;
 const notifSettings = { enabled: true, daysBefore: 0, hour: 9 };
@@ -3608,7 +3608,7 @@ function parseDueDateLocal(dateStr) {
 
 function formatReminderTiming(daysBefore) {
   if (daysBefore < 0) return "aus";
-  if (daysBefore === 0) return "am FÃ¤lligkeitstag";
+  if (daysBefore === 0) return "am Fälligkeitstag";
   if (daysBefore === 1) return "1 Tag vorher";
   return `${daysBefore} Tage vorher`;
 }
@@ -3773,7 +3773,7 @@ function checkNotifications() {
       if (notifiedMap[token]) return;
 
       const reminderLabel = formatReminderDateTime(t.reminderAt);
-      new Notification("Erinnerung fÃ¼r To-do", {
+      new Notification("Erinnerung für To-do", {
         body: `${t.text} (${name}) - Erinnerung: ${reminderLabel}`,
         requireInteraction: true,
         tag: `todo-reminder-${t.id}`,
@@ -3787,7 +3787,7 @@ function checkNotifications() {
 }
 
 // TAB 1: DICHTE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 let dichteDebounce = null;
 let unsubscribeErgebnisseFunc = null;
 let unsubscribeTabellenFunc   = null;
@@ -3810,7 +3810,7 @@ function initDichte(userId) {
   ["d-laenge","d-breite","d-dicke","d-masse"].forEach(id => {
     $(id).addEventListener("input", () => {
       clearTimeout(dichteDebounce);
-      $("dichte-save-hint").textContent = "Wird gespeichert â€¦";
+      $("dichte-save-hint").textContent = "Wird gespeichert …";
       dichteDebounce = setTimeout(() => {
         settingsRef.set({
           laenge: parseFloat($("d-laenge").value)||null,
@@ -3818,27 +3818,27 @@ function initDichte(userId) {
           dicke:  parseFloat($("d-dicke").value) ||null,
           masse:  parseFloat($("d-masse").value) ||null,
         }, { merge: true })
-          .then(() => { $("dichte-save-hint").textContent = "Gespeichert âœ“"; })
+          .then(() => { $("dichte-save-hint").textContent = "Gespeichert ✓"; })
           .catch(()=> { $("dichte-save-hint").textContent = "Fehler"; });
       }, 1000);
     });
   });
 
   $("btn-berechnen").addEventListener("click", () => {
-    if (!currentTabelleId) { showToast("Bitte zuerst eine Tabelle auswÃ¤hlen.", "error"); return; }
+    if (!currentTabelleId) { showToast("Bitte zuerst eine Tabelle auswählen.", "error"); return; }
     const L = parseFloat($("d-laenge").value);
     const B = parseFloat($("d-breite").value);
     const D = parseFloat($("d-dicke").value);
     const M = parseFloat($("d-masse").value);
     const N = $("d-notiz").value.trim();
-    if ([L,B,D,M].some(v => isNaN(v)||v<=0)) { showToast("Bitte alle Felder mit positiven Zahlen ausfÃ¼llen.", "error"); return; }
+    if ([L,B,D,M].some(v => isNaN(v)||v<=0)) { showToast("Bitte alle Felder mit positiven Zahlen ausfüllen.", "error"); return; }
     const dichte = (M / ((L*B*D)/1000)) * 1000;
     zeigeDichte(dichte);
-    $("dichte-save-hint").textContent = "Wird gespeichert â€¦";
+    $("dichte-save-hint").textContent = "Wird gespeichert …";
     db.collection(`users/${userId}/dichteTabellen/${currentTabelleId}/ergebnisse`).add({
       laenge:L, breite:B, dicke:D, masse:M, dichte, notiz: N||"",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(()=>{ $("dichte-save-hint").textContent = "Gespeichert âœ“"; $("d-notiz").value=""; })
+    }).then(()=>{ $("dichte-save-hint").textContent = "Gespeichert ✓"; $("d-notiz").value=""; })
       .catch(()=>{ $("dichte-save-hint").textContent = "Fehler"; });
   });
 
@@ -3885,7 +3885,7 @@ function renderTabellenBar(tabellen, userId) {
       // rename
       () => { safePrompt("Neuer Name:", t.name).then(n => { if (n&&n.trim()) db.collection(`users/${userId}/dichteTabellen`).doc(t.id).update({name:n.trim()}).then(()=>{ if(currentTabelleId===t.id) $("ergebnis-tabelle-name").textContent=n.trim(); }).catch(fsError); }); },
       // delete
-      () => { safeConfirm(`Tabelle "${t.name}" lÃ¶schen?`).then(ok => { if (!ok) return;
+      () => { safeConfirm(`Tabelle "${t.name}" löschen?`).then(ok => { if (!ok) return;
         db.collection(`users/${userId}/dichteTabellen/${t.id}/ergebnisse`).get().then(snap => {
           const b = db.batch(); snap.forEach(d => b.delete(d.ref));
           b.delete(db.doc(`users/${userId}/dichteTabellen/${t.id}`)); return b.commit(); }).catch(fsError); }); },
@@ -3907,17 +3907,17 @@ function zeigeDichte(wert) {
 
 function fmt(n) {
   return typeof n === "number"
-    ? n.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:2}) : "â€”";
+    ? n.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:2}) : "—";
 }
 
-// Zahl aus Nutzereingabe lesen â€“ akzeptiert Komma oder Punkt als Dezimaltrenner
+// Zahl aus Nutzereingabe lesen – akzeptiert Komma oder Punkt als Dezimaltrenner
 function parseGermanNumber(str) {
   str = (str || "").trim();
   if (!str) return NaN;
   const hasComma = str.includes(",");
   const hasDot = str.includes(".");
   if (hasComma && hasDot) {
-    // z. B. "1.050,45" â†’ Punkt = Tausender, Komma = Dezimal
+    // z. B. "1.050,45" → Punkt = Tausender, Komma = Dezimal
     str = str.replace(/\./g, "").replace(",", ".");
   } else if (hasComma) {
     str = str.replace(",", ".");
@@ -3925,7 +3925,7 @@ function parseGermanNumber(str) {
   return parseFloat(str);
 }
 
-// Berechnet Dichte (kg/mÂ³) aus L, B, D (mm) und Masse (g)
+// Berechnet Dichte (kg/m³) aus L, B, D (mm) und Masse (g)
 function computeDichte(L, B, D, M) {
   return (M / ((L * B * D) / 1000)) * 1000;
 }
@@ -3935,7 +3935,7 @@ function updateDichteAvg(rows) {
   const valid = rows.map(r => r.dichte).filter(n => typeof n === "number" && !isNaN(n));
   const avgEl = $("avg-wert");
   if (!avgEl) return;
-  if (valid.length === 0) { avgEl.textContent = "â€”"; return; }
+  if (valid.length === 0) { avgEl.textContent = "—"; return; }
   avgEl.textContent = fmt(valid.reduce((s, n) => s + n, 0) / valid.length);
 }
 
@@ -3976,12 +3976,12 @@ function startDichteEdit(td, field, row, rows, userId, tabelleId) {
     }
     if (val === current) { td.textContent = fmt(current); return; }
 
-    // Neue Dichte mit dem geÃ¤nderten Wert berechnen
+    // Neue Dichte mit dem geänderten Wert berechnen
     const vals = { laenge: row.laenge, breite: row.breite, dicke: row.dicke, masse: row.masse };
     vals[field] = val;
     const dichte = computeDichte(vals.laenge, vals.breite, vals.dicke, vals.masse);
 
-    // Optimistisch anzeigen (Snapshot-Listener rendert gleich endgÃ¼ltig)
+    // Optimistisch anzeigen (Snapshot-Listener rendert gleich endgültig)
     td.textContent = fmt(val);
     const dichteCell = td.parentElement?.querySelector(".dichte-val");
     if (dichteCell) dichteCell.textContent = fmt(dichte);
@@ -4021,7 +4021,7 @@ function renderErgebnisse(rows, userId, tabelleId, tabelleName) {
   emptyRow.style.display = "none";
   rows.forEach((row, idx) => {
     const d = row.createdAt ? (row.createdAt.toDate ? row.createdAt.toDate() : new Date(row.createdAt)) : null;
-    const datum = d ? d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"}) : "â€”";
+    const datum = d ? d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"}) : "—";
     const tr = document.createElement("tr");
 
     const nrTd = document.createElement("td");
@@ -4051,14 +4051,14 @@ function renderErgebnisse(rows, userId, tabelleId, tabelleName) {
 
     const actionTd = document.createElement("td");
     const delBtn = document.createElement("button");
-    delBtn.className = "btn-delete"; delBtn.title = "LÃ¶schen";
+    delBtn.className = "btn-delete"; delBtn.title = "Löschen";
     delBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
     delBtn.addEventListener("click", async () => {
-      const ok = await safeConfirm("Dieses Ergebnis lÃ¶schen?");
+      const ok = await safeConfirm("Dieses Ergebnis löschen?");
       if (!ok) return;
       db.collection(`users/${userId}/dichteTabellen/${tabelleId}/ergebnisse`).doc(row.id).delete()
-        .then(() => showToast("Ergebnis gelÃ¶scht", "success"))
-        .catch(err => { console.error(err); showToast("LÃ¶schen fehlgeschlagen: " + (err.message || err.code || "unbekannt"), "error"); });
+        .then(() => showToast("Ergebnis gelöscht", "success"))
+        .catch(err => { console.error(err); showToast("Löschen fehlgeschlagen: " + (err.message || err.code || "unbekannt"), "error"); });
     });
     actionTd.appendChild(delBtn);
     tr.appendChild(actionTd);
@@ -4079,9 +4079,9 @@ function renderErgebnisse(rows, userId, tabelleId, tabelleName) {
 function buildDichteExcel(rows, avg, tabelleName) {
   const data = rows.map((r,i) => {
     const d = r.createdAt ? (r.createdAt.toDate ? r.createdAt.toDate() : new Date(r.createdAt)) : null;
-    return {"Nr.":i+1,"Datum":d?d.toLocaleDateString("de-DE"):"","LÃ¤nge (mm)":r.laenge,"Breite (mm)":r.breite,"Dicke (mm)":r.dicke,"Masse (g)":r.masse,"Dichte (kg/mÂ³)":parseFloat(r.dichte.toFixed(2)),"Notiz":r.notiz||""};
+    return {"Nr.":i+1,"Datum":d?d.toLocaleDateString("de-DE"):"","Länge (mm)":r.laenge,"Breite (mm)":r.breite,"Dicke (mm)":r.dicke,"Masse (g)":r.masse,"Dichte (kg/m³)":parseFloat(r.dichte.toFixed(2)),"Notiz":r.notiz||""};
   });
-  data.push({}); data.push({"Nr.":"","Datum":"Durchschnitt","LÃ¤nge (mm)":"","Breite (mm)":"","Dicke (mm)":"","Masse (g)":"","Dichte (kg/mÂ³)":parseFloat(avg.toFixed(2)),"Notiz":""});
+  data.push({}); data.push({"Nr.":"","Datum":"Durchschnitt","Länge (mm)":"","Breite (mm)":"","Dicke (mm)":"","Masse (g)":"","Dichte (kg/m³)":parseFloat(avg.toFixed(2)),"Notiz":""});
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, (tabelleName||"Dichte").slice(0,31));
@@ -4120,14 +4120,14 @@ function downloadDichteExcel(rows, avg, tabelleName) {
 async function shareDichteExcel(rows, avg, tabelleName) {
   const { file } = buildDichteExcel(rows, avg, tabelleName);
   if (!file || typeof navigator.share !== "function") {
-    showToast("Teilen nicht unterstÃ¼tzt. Datei wird heruntergeladen.");
+    showToast("Teilen nicht unterstützt. Datei wird heruntergeladen.");
     downloadDichteExcel(rows, avg, tabelleName);
     return;
   }
   try {
     const shareData = { files: [file], title: "Dichte-Ergebnisse", text: `Tabelle: ${tabelleName || "Dichte"}` };
     if (typeof navigator.canShare === "function" && !navigator.canShare({ files: [file] })) {
-      showToast("Datei-Teilen nicht unterstÃ¼tzt. Datei wird heruntergeladen.");
+      showToast("Datei-Teilen nicht unterstützt. Datei wird heruntergeladen.");
       downloadDichteExcel(rows, avg, tabelleName);
       return;
     }
@@ -4147,7 +4147,7 @@ async function sendDichteExcelByMail(rows, avg, tabelleName) {
     ``,
     `anbei die Dichte-Excel-Datei "${filename}".`,
     ``,
-    `Viele GrÃ¼ÃŸe`
+    `Viele Grüße`
   ].join("\n");
 
   if (file && typeof navigator.share === "function") {
@@ -4162,15 +4162,15 @@ async function sendDichteExcelByMail(rows, avg, tabelleName) {
     }
   }
 
-  // Browser kann keine Datei direkt an mailto anhÃ¤ngen: Datei herunterladen und Mail-Entwurf Ã¶ffnen.
+  // Browser kann keine Datei direkt an mailto anhängen: Datei herunterladen und Mail-Entwurf öffnen.
   downloadBlob(filename, blob);
-  window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + "\n\nBitte die heruntergeladene Datei anhÃ¤ngen.")}`;
-  showToast("Mail-Entwurf geÃ¶ffnet. Bitte die Excel-Datei als Anhang hinzufÃ¼gen.");
+  window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + "\n\nBitte die heruntergeladene Datei anhängen.")}`;
+  showToast("Mail-Entwurf geöffnet. Bitte die Excel-Datei als Anhang hinzufügen.");
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 // TAB 2: TODOS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 let unsubscribeOrdnerFunc = null;
 let currentOrdnerId       = "alle";
 let hideDone              = false;
@@ -4184,7 +4184,7 @@ const FARBEN = [
   {id:"blau",hex:"#3b82f6"},{id:"lila",hex:"#a855f7"},
 ];
 
-// Farb-Labels: Standard-Namen, werden aus Firestore Ã¼berschrieben
+// Farb-Labels: Standard-Namen, werden aus Firestore überschrieben
 let colorLabels = {
   rot:"Dringend", orange:"Wichtig", gelb:"Hinweis",
   gruen:"OK", blau:"Info", lila:"Idee"
@@ -4219,7 +4219,7 @@ function saveColorLabels(userId) {
     data[f.id] = inp ? (inp.value.trim() || f.id) : f.id;
   });
   const saveBtn = $("btn-color-labels-save");
-  saveBtn.textContent = "Speichert â€¦";
+  saveBtn.textContent = "Speichert …";
   saveBtn.disabled = true;
   db.doc(`users/${userId}/settings/colorLabels`).set(data)
     .then(() => {
@@ -4251,12 +4251,12 @@ function updateTodoReminderUi() {
   const hint = $("todo-reminder-hint");
   const hasValues = !!(($("todo-reminder-date-input")?.value || "").trim() || ($("todo-reminder-time-input")?.value || "").trim());
   const isOpen = !$("todo-reminder-panel")?.classList.contains("hidden");
-  updateTodoDateToggle("todo-reminder-toggle", "todo-reminder-panel", "todo-reminder-date-input", "todo-reminder-time-input", "â° Erinnerung setzen", "â° Erinnerung aktiv");
+  updateTodoDateToggle("todo-reminder-toggle", "todo-reminder-panel", "todo-reminder-date-input", "todo-reminder-time-input", "⏰ Erinnerung setzen", "⏰ Erinnerung aktiv");
   if (hint) hint.style.display = isOpen || hasValues ? "" : "none";
 }
 
 function updateTodoDateUi() {
-  updateTodoDateToggle("todo-date-toggle", "todo-date-panel", "todo-faellig-input", "todo-uhrzeit-input", "ðŸ“… FÃ¤lligkeit setzen", "ðŸ“… FÃ¤lligkeit aktiv");
+  updateTodoDateToggle("todo-date-toggle", "todo-date-panel", "todo-faellig-input", "todo-uhrzeit-input", "📅 Fälligkeit setzen", "📅 Fälligkeit aktiv");
 }
 
 function setTodoPanel(panelId, open, updateFn) {
@@ -4282,14 +4282,14 @@ function createInlineEditActions(onSave, onCancel) {
   saveBtn.type = "button";
   saveBtn.className = "todo-inline-edit-btn ok";
   saveBtn.title = "Speichern";
-  saveBtn.textContent = "âœ“";
+  saveBtn.textContent = "✓";
   saveBtn.addEventListener("click", onSave);
 
   const cancelBtn = document.createElement("button");
   cancelBtn.type = "button";
   cancelBtn.className = "todo-inline-edit-btn cancel";
   cancelBtn.title = "Abbrechen";
-  cancelBtn.textContent = "âœ•";
+  cancelBtn.textContent = "✕";
   cancelBtn.addEventListener("click", onCancel);
 
   actions.appendChild(saveBtn);
@@ -4367,17 +4367,17 @@ function initTodos(userId) {
   function addTodo() {
     const text = $("todo-input").value.trim(); if (!text) return;
     const zielId = currentOrdnerId === "alle" ? $("todo-ordner-select").value : currentOrdnerId;
-    if (!zielId) { showToast("Bitte einen Ordner auswÃ¤hlen.", "error"); return; }
+    if (!zielId) { showToast("Bitte einen Ordner auswählen.", "error"); return; }
     const faelligRaw = $("todo-faellig-input").value;
     const faellig = normalizeDueDateInput(faelligRaw);
     if (faelligRaw && faellig === null) {
-      showToast("UngÃ¼ltiges Datum. Bitte TT.MM.JJJJ oder JJJJ-MM-TT nutzen.", "error");
+      showToast("Ungültiges Datum. Bitte TT.MM.JJJJ oder JJJJ-MM-TT nutzen.", "error");
       return;
     }
     const faelligZeitRaw = $("todo-uhrzeit-input").value;
     const faelligZeit = normalizeDueTimeInput(faelligZeitRaw);
     if (faelligZeitRaw && faelligZeit === null) {
-      showToast("UngÃ¼ltige Uhrzeit. Bitte HH:MM nutzen (z. B. 08:30).", "error");
+      showToast("Ungültige Uhrzeit. Bitte HH:MM nutzen (z. B. 08:30).", "error");
       return;
     }
     const reminderDateRaw = $("todo-reminder-date-input").value;
@@ -4395,7 +4395,7 @@ function initTodos(userId) {
       reminderAt: reminderResult.value || "",
       farbe: "",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => showToast("Aufgabe hinzugefÃ¼gt", "success")).catch(fsError);
+    }).then(() => showToast("Aufgabe hinzugefügt", "success")).catch(fsError);
     saveAutocomplete(text);
     $("todo-input").value=""; $("todo-faellig-input").value=""; $("todo-uhrzeit-input").value="";
     $("todo-reminder-date-input").value=""; $("todo-reminder-time-input").value="";
@@ -4461,7 +4461,7 @@ function selectOrdner(id, userId) {
 }
 
 // Koalesziert mehrere Render-Anforderungen im selben Frame zu EINEM Durchlauf.
-// Beim App-Start feuert jeder Ordner-Listener einzeln â†’ ohne Koaleszierung
+// Beim App-Start feuert jeder Ordner-Listener einzeln → ohne Koaleszierung
 // N komplette Neuaufbauten von Liste + Dashboard + Kalender.
 let todoRenderScheduled = false;
 function renderCurrentTodoView(userId) {
@@ -4485,7 +4485,7 @@ function renderCurrentTodoViewNow(userId) {
     allTodos = cached ? cached.todos.map(t => ({ ...t, _ordnerName: cached.name })) : [];
   }
 
-  // Sortieren (berÃ¼cksichtigt drag&drop order-Feld)
+  // Sortieren (berücksichtigt drag&drop order-Feld)
   allTodos = sortTodos(allTodos);
 
   // Filter
@@ -4537,19 +4537,19 @@ function renderOrdnerBar(ordner, userId) {
   ordner.filter(o => !o.id.startsWith("shared::")).forEach(o => {
     const tab = makeFolderTab(o.id, o.name, o.id === currentOrdnerId,
       () => { safePrompt("Neuer Name:",o.name).then(n => { if(n&&n.trim()) db.collection(`users/${userId}/todoOrdner`).doc(o.id).update({name:n.trim()}).catch(fsError); }); },
-      () => { safeConfirm(`Ordner "${o.name}" lÃ¶schen?`).then(ok => { if(!ok) return;
+      () => { safeConfirm(`Ordner "${o.name}" löschen?`).then(ok => { if(!ok) return;
         db.collection(`users/${userId}/todoOrdner/${o.id}/todos`).get().then(snap => {
           const b=db.batch(); snap.forEach(d=>b.delete(d.ref));
           b.delete(db.doc(`users/${userId}/todoOrdner/${o.id}`)); return b.commit(); }).catch(fsError); }); },
       () => selectOrdner(o.id, userId));
-    // Share-Button anhÃ¤ngen
+    // Share-Button anhängen
     const shareBtn = document.createElement("button");
     shareBtn.className = "tabelle-tab-btn"; shareBtn.title = "Teilen";
     shareBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
     shareBtn.addEventListener("click", e => { e.stopPropagation(); openShareModal(o.id, o.name, userId, "todo"); });
     tab.querySelector(".tabelle-tab-actions").appendChild(shareBtn);
 
-    // Join-Code direkt kopieren (z. B. fÃ¼r WhatsApp)
+    // Join-Code direkt kopieren (z. B. für WhatsApp)
     const copyBtn = document.createElement("button");
     copyBtn.className = "tabelle-tab-btn";
     copyBtn.title = "Code kopieren";
@@ -4566,7 +4566,7 @@ function renderOrdnerBar(ordner, userId) {
     });
     tab.querySelector(".tabelle-tab-actions").appendChild(copyBtn);
 
-    // Direkt Ã¼ber WhatsApp teilen
+    // Direkt über WhatsApp teilen
     const waBtn = document.createElement("button");
     waBtn.className = "tabelle-tab-btn";
     waBtn.title = "Per WhatsApp teilen";
@@ -4574,13 +4574,13 @@ function renderOrdnerBar(ordner, userId) {
     waBtn.addEventListener("click", e => {
       e.stopPropagation();
       const code = `${userId}::${o.id}`;
-      const msg = `Hier ist mein Join-Code fÃ¼r "${o.name}": ${code}`;
+      const msg = `Hier ist mein Join-Code für "${o.name}": ${code}`;
       const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
       const win = window.open(url, "_blank", "noopener,noreferrer");
       if (!win) {
         // Popup blockiert: zumindest Code in die Zwischenablage legen
         navigator.clipboard?.writeText(code).then(
-          () => showToast("Popup blockiert. Code wurde kopiert, bitte WhatsApp manuell Ã¶ffnen."),
+          () => showToast("Popup blockiert. Code wurde kopiert, bitte WhatsApp manuell öffnen."),
           () => safePrompt("Popup blockiert. Hier ist der Code:", code)
         );
       }
@@ -4627,14 +4627,14 @@ function saveTodoOrder(ordnerId, userId, todos) {
 
 function renderTodos(todos, userId, ordnerId, zeigeBadge) {
   const list = $("todo-list"), empty = $("todo-empty");
-  // Sicherung: hÃ¤ngengebliebene Drag-Ghosts entfernen (z. B. wenn die Liste
+  // Sicherung: hängengebliebene Drag-Ghosts entfernen (z. B. wenn die Liste
   // mitten in einem Touch-Drag durch ein Firestore-Update neu gerendert wird)
   document.querySelectorAll(".touch-drag-ghost").forEach(el => el.remove());
   Array.from(list.children).forEach(c => { if (c !== empty) list.removeChild(c); });
   if (todos.length === 0) { empty.style.display="block"; return; }
   empty.style.display = "none";
 
-  // Alle Items erst im Fragment bauen, dann in EINEM Schritt einfÃ¼gen (weniger Reflows)
+  // Alle Items erst im Fragment bauen, dann in EINEM Schritt einfügen (weniger Reflows)
   const frag = document.createDocumentFragment();
   todos.forEach(todo => {
     const todoOrdnerId = ordnerId || todo._ordnerId || findOrdnerIdForTodo(todo.id);
@@ -4658,7 +4658,7 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
       handle.addEventListener("mousedown", () => { item.draggable = true; });
       item.appendChild(handle);
 
-      // â”€â”€ Mouse Drag â”€â”€
+      // ── Mouse Drag ──
       item.addEventListener("dragstart", e => {
         dragSrcId = todo.id;
         dragSrcOrdnerId = todoOrdnerId;
@@ -4694,7 +4694,7 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
         dragSrcId = null;
       });
 
-      // â”€â”€ Touch Drag (Mobile) â”€â”€
+      // ── Touch Drag (Mobile) ──
       let touchDragActive = false;
       let touchClone = null;
       let touchOffsetY = 0;
@@ -4712,15 +4712,15 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
 
         clearTimeout(touchStartTimer);
         touchStartTimer = setTimeout(() => {
-          // Finger schon wieder weg (kurzer Tap)? Dann keinen Drag starten â€“
-          // sonst bleibt der Ghost-Clone fÃ¼r immer eingefroren stehen.
+          // Finger schon wieder weg (kurzer Tap)? Dann keinen Drag starten –
+          // sonst bleibt der Ghost-Clone für immer eingefroren stehen.
           if (!touchDown) return;
           touchDragActive = true;
           dragSrcId = todo.id;
           dragSrcOrdnerId = todoOrdnerId;
           item.classList.add("is-dragging");
 
-          // Eventuelle Alt-Clones entfernen (duplizierte IDs stÃ¶ren sonst die App)
+          // Eventuelle Alt-Clones entfernen (duplizierte IDs stören sonst die App)
           document.querySelectorAll(".touch-drag-ghost").forEach(el => el.remove());
 
           // Ghost-Clone erstellen
@@ -4802,7 +4802,7 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
       handle.addEventListener("touchend", endTouchDrag);
       handle.addEventListener("touchcancel", endTouchDrag);
 
-      // data-todoId fÃ¼r Touch-Drop-Target
+      // data-todoId für Touch-Drop-Target
       item.dataset.todoId = todo.id;
     }
 
@@ -4823,7 +4823,7 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
       controls.appendChild(badge);
     }
 
-    // â”€â”€ FÃ¤lligkeits-Badge (klickbar zum Bearbeiten) â”€â”€
+    // ── Fälligkeits-Badge (klickbar zum Bearbeiten) ──
     const dateWrap = document.createElement("span");
     function renderDateBadge() {
       dateWrap.innerHTML = "";
@@ -4832,16 +4832,16 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
       if (todo.faellig) {
         const badge = document.createElement("span");
         badge.className = "due-badge";
-        badge.title = "Klicken zum Ã„ndern";
+        badge.title = "Klicken zum Ändern";
         const dateLabel = formatDueDate(todo.faellig);
-        badge.textContent = "ðŸ“… " + dateLabel + (todo.faelligZeit ? ` ${formatDueTime(todo.faelligZeit)}` : "");
+        badge.textContent = "📅 " + dateLabel + (todo.faelligZeit ? ` ${formatDueTime(todo.faelligZeit)}` : "");
         if (todo.faellig < today)       badge.classList.add("overdue");
         else if (todo.faellig === today) badge.classList.add("today");
         badge.addEventListener("click", openDateEdit);
         dateWrap.appendChild(badge);
       } else {
         const add = document.createElement("span");
-        add.className = "todo-add-meta"; add.textContent = "ðŸ“… Datum";
+        add.className = "todo-add-meta"; add.textContent = "📅 Datum";
         add.addEventListener("click", openDateEdit);
         dateWrap.appendChild(add);
       }
@@ -4878,13 +4878,13 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
         const dateRaw = inpDate.value || "";
         const dateVal = normalizeDueDateInput(dateRaw);
         if (dateRaw && dateVal === null) {
-          showToast("UngÃ¼ltiges Datum. Bitte TT.MM.JJJJ oder JJJJ-MM-TT nutzen.", "error");
+          showToast("Ungültiges Datum. Bitte TT.MM.JJJJ oder JJJJ-MM-TT nutzen.", "error");
           return;
         }
         const timeRaw = inpTime.value || "";
         const normalizedTime = normalizeDueTimeInput(timeRaw);
         if (timeRaw && normalizedTime === null) {
-          showToast("UngÃ¼ltige Uhrzeit. Bitte HH:MM nutzen (z. B. 08:30).", "error");
+          showToast("Ungültige Uhrzeit. Bitte HH:MM nutzen (z. B. 08:30).", "error");
           return;
         }
         const timeVal = dateVal ? (normalizedTime || "") : "";
@@ -4928,14 +4928,14 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
       if (todo.reminderAt) {
         const badge = document.createElement("span");
         badge.className = "due-badge";
-        badge.title = "Klicken zum Ã„ndern";
-        badge.textContent = "â° " + formatReminderDateTime(todo.reminderAt);
+        badge.title = "Klicken zum Ändern";
+        badge.textContent = "⏰ " + formatReminderDateTime(todo.reminderAt);
         badge.addEventListener("click", openReminderEdit);
         reminderWrap.appendChild(badge);
       } else {
         const add = document.createElement("span");
         add.className = "todo-add-meta";
-        add.textContent = "â° Erinnerung";
+        add.textContent = "⏰ Erinnerung";
         add.addEventListener("click", openReminderEdit);
         reminderWrap.appendChild(add);
       }
@@ -5122,7 +5122,7 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
     colorDot.addEventListener("click", e => {
       e.stopPropagation();
       const isOpen = popup.style.display !== "none";
-      // Erst alle anderen Popups schlieÃŸen, dann dieses togglen
+      // Erst alle anderen Popups schließen, dann dieses togglen
       document.querySelectorAll(".color-popup").forEach(p => { p.style.display = "none"; });
       popup.style.display = isOpen ? "none" : "flex";
     });
@@ -5149,15 +5149,15 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
     });
     controls.appendChild(editBtn);
 
-    // LÃ¶schen
+    // Löschen
     const delBtn = document.createElement("button");
-    delBtn.className = "btn-delete"; delBtn.title = "LÃ¶schen";
+    delBtn.className = "btn-delete"; delBtn.title = "Löschen";
     delBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
     delBtn.addEventListener("click", () => {
       if (!todoOrdnerId) return;
-      safeConfirm("Aufgabe lÃ¶schen?").then(ok => {
+      safeConfirm("Aufgabe löschen?").then(ok => {
         if (ok) db.collection(`users/${auth.currentUser.uid}/todoOrdner/${todoOrdnerId}/todos`).doc(todo.id).delete()
-          .then(() => showToast("Aufgabe gelÃ¶scht", "success")).catch(fsError);
+          .then(() => showToast("Aufgabe gelöscht", "success")).catch(fsError);
       });
     });
     controls.appendChild(delBtn);
@@ -5167,24 +5167,24 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
     notizBtn.type = "button";
     notizBtn.className = "todo-notiz-btn" + (todo.todoNotiz ? " has-notiz" : "");
     notizBtn.title = "Notiz";
-    notizBtn.innerHTML = `<span>ðŸ“</span><span>${todo.todoNotiz ? "Notiz" : "Notiz"}</span>`;
+    notizBtn.innerHTML = `<span>📝</span><span>${todo.todoNotiz ? "Notiz" : "Notiz"}</span>`;
     controls.appendChild(notizBtn);
 
     item.appendChild(controls);
 
-    /* â”€â”€ Todo-Notiz â”€â”€ */
+    /* ── Todo-Notiz ── */
     const notizSection = document.createElement("div");
     notizSection.className = "todo-notiz-section";
     notizSection.style.display = todo.todoNotiz ? "block" : "none";
 
     const notizTextarea = document.createElement("textarea");
     notizTextarea.className = "todo-notiz-textarea";
-    notizTextarea.placeholder = "Notiz zu dieser Aufgabeâ€¦";
+    notizTextarea.placeholder = "Notiz zu dieser Aufgabe…";
     notizTextarea.value = todo.todoNotiz || "";
 
     const notizSaved = document.createElement("div");
     notizSaved.className = "todo-notiz-saved";
-    notizSaved.textContent = "âœ“ gespeichert";
+    notizSaved.textContent = "✓ gespeichert";
 
     let notizTimer = null;
     function saveNotiz() {
@@ -5217,7 +5217,7 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
     notizSection.appendChild(notizSaved);
     item.appendChild(notizSection);
 
-    /* â”€â”€ Subtasks â”€â”€ */
+    /* ── Subtasks ── */
     const subtasks = Array.isArray(todo.subtasks) ? todo.subtasks : [];
     const subtaskSection = document.createElement("div");
     subtaskSection.className = "subtask-section";
@@ -5228,7 +5228,7 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
 
     const chevron = document.createElement("span");
     chevron.className = "subtask-toggle-chevron";
-    chevron.textContent = "â–¶";
+    chevron.textContent = "▶";
 
     const toggleLabel = document.createElement("span");
     toggleLabel.textContent = "Unteraufgaben";
@@ -5240,7 +5240,7 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
       const total = list.length;
       const done = list.filter(s => s.done).length;
       if (total === 0) { progressBadge.textContent = "0"; progressBadge.classList.remove("all-done"); }
-      else if (done === total) { progressBadge.textContent = "âœ“ alle"; progressBadge.classList.add("all-done"); }
+      else if (done === total) { progressBadge.textContent = "✓ alle"; progressBadge.classList.add("all-done"); }
       else { progressBadge.textContent = `${done}/${total}`; progressBadge.classList.remove("all-done"); }
     }
     updateProgressBadge(subtasks);
@@ -5301,13 +5301,13 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
           okBtn.type = "button";
           okBtn.className = "subtask-action-btn ok";
           okBtn.title = "Speichern";
-          okBtn.textContent = "âœ“";
+          okBtn.textContent = "✓";
 
           const cancelBtn = document.createElement("button");
           cancelBtn.type = "button";
           cancelBtn.className = "subtask-action-btn cancel";
           cancelBtn.title = "Abbrechen";
-          cancelBtn.textContent = "Ã—";
+          cancelBtn.textContent = "×";
 
           function cancelEdit() {
             renderSubtaskItems(getSubtasksFromCache());
@@ -5355,14 +5355,14 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
         editBtn.type = "button";
         editBtn.className = "subtask-action-btn";
         editBtn.title = "Bearbeiten";
-        editBtn.textContent = "âœŽ";
+        editBtn.textContent = "✎";
         editBtn.addEventListener("click", openSubtaskEditor);
 
         const del = document.createElement("button");
         del.type = "button";
         del.className = "subtask-action-btn del";
-        del.title = "LÃ¶schen";
-        del.textContent = "Ã—";
+        del.title = "Löschen";
+        del.textContent = "×";
         del.addEventListener("click", () => {
           const list = getSubtasksFromCache().filter(s => s.id !== sub.id);
           saveSubtasks(list);
@@ -5383,7 +5383,7 @@ function renderTodos(todos, userId, ordnerId, zeigeBadge) {
       const addInput = document.createElement("input");
       addInput.type = "text";
       addInput.className = "subtask-add-input";
-      addInput.placeholder = "Neue Unteraufgabeâ€¦";
+      addInput.placeholder = "Neue Unteraufgabe…";
       addInput.maxLength = 200;
 
       const addBtn = document.createElement("button");
@@ -5451,7 +5451,7 @@ function exportTodosExcel(userId) {
 
   const data = allTodos.map((t,i) => {
     const d = t.createdAt ? (t.createdAt.toDate ? t.createdAt.toDate() : new Date(t.createdAt)) : null;
-    return {"Nr.":i+1,"Aufgabe":t.text,"Status":t.status==="offen"?"Offen":t.status==="progress"?"In Bearbeitung":"Erledigt","FÃ¤lligkeit":t.faellig||"","Uhrzeit":t.faelligZeit||"","Erinnerung":t.reminderAt||"","Ordner":t._ordnerName||"","Erstellt":d?d.toLocaleDateString("de-DE"):""};
+    return {"Nr.":i+1,"Aufgabe":t.text,"Status":t.status==="offen"?"Offen":t.status==="progress"?"In Bearbeitung":"Erledigt","Fälligkeit":t.faellig||"","Uhrzeit":t.faelligZeit||"","Erinnerung":t.reminderAt||"","Ordner":t._ordnerName||"","Erstellt":d?d.toLocaleDateString("de-DE"):""};
   });
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
@@ -5459,13 +5459,13 @@ function exportTodosExcel(userId) {
   XLSX.writeFile(wb, `Aufgaben_${new Date().toISOString().slice(0,10)}.xlsx`);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 // TAB 3: NOTIZEN
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 let unsubscribeNotizenOrdnerFunc = null;
 let currentNotizenOrdnerId       = "alle";
 let lastRealNotizenOrdnerId      = null;
-let notizenOrdnerCache           = new Map(); // id â†’ {name, notizen[]}
+let notizenOrdnerCache           = new Map(); // id → {name, notizen[]}
 let notizenListeners             = new Map();
 let currentNotizId               = null;
 let currentNotizOrdnerId         = null;
@@ -5486,10 +5486,10 @@ function initNotizen(userId) {
   $("notiz-modal").addEventListener("click", e => { if (e.target===$("notiz-modal")) closeNotizModal(); });
   $("notiz-modal-delete").addEventListener("click", () => {
     if (!currentNotizId||!currentNotizOrdnerId) return;
-    safeConfirm("Notiz lÃ¶schen?").then(ok => {
+    safeConfirm("Notiz löschen?").then(ok => {
       if (!ok) return;
       db.collection(`users/${userId}/notizenOrdner/${currentNotizOrdnerId}/notizen`).doc(currentNotizId).delete()
-        .then(() => showToast("Notiz gelÃ¶scht", "success")).catch(fsError);
+        .then(() => showToast("Notiz gelöscht", "success")).catch(fsError);
       closeNotizModal();
     });
   });
@@ -5497,13 +5497,13 @@ function initNotizen(userId) {
   function autoSaveNotiz() {
     if (!currentNotizId||!currentNotizOrdnerId) return;
     clearTimeout(notizDebounce);
-    $("notiz-save-hint").textContent = "Speichert â€¦";
+    $("notiz-save-hint").textContent = "Speichert …";
     notizDebounce = setTimeout(() => {
       db.collection(`users/${userId}/notizenOrdner/${currentNotizOrdnerId}/notizen`).doc(currentNotizId).update({
         titel: $("notiz-modal-title").value.trim() || "Ohne Titel",
         text:  $("notiz-modal-text").value,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(()=>{ $("notiz-save-hint").textContent="Gespeichert âœ“"; })
+      }).then(()=>{ $("notiz-save-hint").textContent="Gespeichert ✓"; })
         .catch(()=>{ $("notiz-save-hint").textContent="Fehler"; });
     }, 800);
   }
@@ -5574,7 +5574,7 @@ function renderNotizenOrdnerBar(ordner, userId) {
   ordner.forEach(o => {
     const tab = makeFolderTab(o.id, o.name, o.id===currentNotizenOrdnerId,
       () => { safePrompt("Neuer Name:",o.name).then(n => { if(n&&n.trim()) db.collection(`users/${userId}/notizenOrdner`).doc(o.id).update({name:n.trim()}).catch(fsError); }); },
-      () => { safeConfirm(`Ordner "${o.name}" lÃ¶schen?`).then(ok => { if(!ok) return;
+      () => { safeConfirm(`Ordner "${o.name}" löschen?`).then(ok => { if(!ok) return;
         db.collection(`users/${userId}/notizenOrdner/${o.id}/notizen`).get().then(snap=>{
           const b=db.batch(); snap.forEach(d=>b.delete(d.ref));
           b.delete(db.doc(`users/${userId}/notizenOrdner/${o.id}`)); return b.commit(); }).catch(fsError); }); },
@@ -5637,7 +5637,7 @@ function renderNotizenList(userId) {
     const pinBtn = document.createElement("button");
     pinBtn.className = "btn-pin" + (n.pinned ? " active" : "");
     pinBtn.title = n.pinned ? "Fixierung aufheben" : "Notiz anpinnen";
-    pinBtn.textContent = "ðŸ“Œ";
+    pinBtn.textContent = "📌";
     pinBtn.addEventListener("click", e => {
       e.stopPropagation();
       if (!n._ordnerId || !n.id) return;
@@ -5668,7 +5668,7 @@ function renderNotizenList(userId) {
   list.appendChild(frag);
 }
 
-// â”€â”€ Markdown helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Markdown helpers ──────────────────────────────────────────
 function mdInline(text) {
   return text
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
@@ -5696,7 +5696,7 @@ function mdToHtml(raw) {
   return out.join("");
 }
 
-// â”€â”€ Toolbar + keyboard shortcuts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Toolbar + keyboard shortcuts ─────────────────────────────
 function insertFmt(wrap, prefix) {
   const ta = $("notiz-modal-text");
   const start = ta.selectionStart, end = ta.selectionEnd;
@@ -5743,10 +5743,10 @@ function insertFmt(wrap, prefix) {
     if (previewing) {
       prev.innerHTML = mdToHtml($("notiz-modal-text").value) || "<em style='color:var(--text-muted)'>Leer</em>";
       prev.classList.remove("hidden");
-      $("nfmt-preview").textContent = "âœï¸ Bearbeiten";
+      $("nfmt-preview").textContent = "✏️ Bearbeiten";
     } else {
       prev.classList.add("hidden");
-      $("nfmt-preview").textContent = "ðŸ‘ Vorschau";
+      $("nfmt-preview").textContent = "👁 Vorschau";
       $("notiz-modal-text").focus();
     }
   });
@@ -5770,7 +5770,7 @@ function openNotizModal(id, titel, text, ordnerId = currentNotizenOrdnerId) {
   // reset preview mode
   $("notiz-modal-text").classList.remove("hidden");
   $("notiz-md-preview").classList.add("hidden");
-  $("nfmt-preview").textContent = "ðŸ‘ Vorschau";
+  $("nfmt-preview").textContent = "👁 Vorschau";
   $("notiz-modal").classList.remove("hidden");
   $("notiz-modal-text").focus();
 }
@@ -5781,9 +5781,9 @@ function closeNotizModal() {
   currentNotizOrdnerId = null;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 // AUTOCOMPLETE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 const AC_KEY = "todo_autocomplete";
 const AC_MAX = 25;
 
@@ -5806,9 +5806,9 @@ function saveAutocomplete(text) {
   loadAutocomplete();
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 // SHARING
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 let shareCurrentResourceId = null;
 let shareCurrentUserId     = null;
 let shareCurrentType       = "todo";
@@ -5827,7 +5827,7 @@ function initSharing(userId) {
 
   $("btn-copy-code").addEventListener("click", () => {
     navigator.clipboard.writeText($("share-code-box").textContent).then(() => {
-      $("btn-copy-code").textContent = "âœ“ Kopiert!";
+      $("btn-copy-code").textContent = "✓ Kopiert!";
       setTimeout(() => { $("btn-copy-code").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Code kopieren`; }, 2000);
     });
   });
@@ -5840,7 +5840,7 @@ function initSharing(userId) {
       .then(() => {
         $("share-email-input").value = "";
         loadSharedEmails(userId);
-      }).catch(() => showToast("Fehler beim Speichern â€“ bitte Firestore-Regeln aktualisieren.", "error"));
+      }).catch(() => showToast("Fehler beim Speichern – bitte Firestore-Regeln aktualisieren.", "error"));
   });
 
   $("btn-join-confirm").addEventListener("click", () => joinFolder($("join-code-input").value.trim(), userId));
@@ -5863,11 +5863,11 @@ function updateShareModalText(type) {
   const isDichte = type === "dichte";
   $("share-modal-title").textContent = isDichte ? "Dichte-Tabelle teilen" : "Ordner teilen";
   $("share-code-label").textContent = isDichte
-    ? "Dein Share-Code fÃ¼r diese Dichte-Tabelle:"
-    : "Dein Join-Code fÃ¼r diesen Ordner:";
+    ? "Dein Share-Code für diese Dichte-Tabelle:"
+    : "Dein Join-Code für diesen Ordner:";
   $("share-email-sep").textContent = isDichte
-    ? "E-Mail fÃ¼r Tabellen-Zugriff hinzufÃ¼gen"
-    : "E-Mail des EmpfÃ¤ngers hinzufÃ¼gen";
+    ? "E-Mail für Tabellen-Zugriff hinzufügen"
+    : "E-Mail des Empfängers hinzufügen";
 }
 
 function openShareModal(resourceId, resourceName, userId, type = "todo") {
@@ -5893,14 +5893,14 @@ function loadSharedEmails(userId) {
 
 function joinFolder(code, userId) {
   $("join-error").textContent = "";
-  if (!code.includes("::")) { $("join-error").textContent = "UngÃ¼ltiger Code."; return; }
+  if (!code.includes("::")) { $("join-error").textContent = "Ungültiger Code."; return; }
   const [ownerUid, folderId] = code.split("::");
-  if (!ownerUid || !folderId) { $("join-error").textContent = "UngÃ¼ltiger Code."; return; }
+  if (!ownerUid || !folderId) { $("join-error").textContent = "Ungültiger Code."; return; }
 
   db.collection(`users/${ownerUid}/todoOrdner`).doc(folderId).get()
     .then(snap => {
       if (!snap.exists) { $("join-error").textContent = "Ordner nicht gefunden."; return; }
-      const folderName = snap.data().name + " ðŸ‘¥";
+      const folderName = snap.data().name + " 👥";
 
       // Referenz in eigenen joinedFolders speichern
       db.collection(`users/${userId}/joinedFolders`).doc(folderId).set({
@@ -5912,7 +5912,7 @@ function joinFolder(code, userId) {
       });
     })
     .catch(() => {
-      $("join-error").textContent = "Zugriff verweigert â€“ bitte Firestore-Regeln aktualisieren (Share-Modal â†’ âš™ï¸).";
+      $("join-error").textContent = "Zugriff verweigert – bitte Firestore-Regeln aktualisieren (Share-Modal → ⚙️).";
     });
 }
 
@@ -5943,9 +5943,9 @@ function loadJoinedFolders(userId) {
   }).catch(() => {});
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 // SHARED HELPERS
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 function makeFolderTab(id, name, isActive, onRename, onDelete, onClick) {
   const tab = document.createElement("div");
   tab.className = "tabelle-tab" + (isActive ? " active" : "");
@@ -5959,7 +5959,7 @@ function makeFolderTab(id, name, isActive, onRename, onDelete, onClick) {
   renameBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
   renameBtn.addEventListener("click", e => { e.stopPropagation(); onRename(); });
   const delBtn = document.createElement("button");
-  delBtn.className = "tabelle-tab-btn del"; delBtn.title = "LÃ¶schen";
+  delBtn.className = "tabelle-tab-btn del"; delBtn.title = "Löschen";
   delBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
   delBtn.addEventListener("click", e => { e.stopPropagation(); onDelete(); });
   actions.appendChild(renameBtn); actions.appendChild(delBtn);
@@ -5968,17 +5968,17 @@ function makeFolderTab(id, name, isActive, onRename, onDelete, onClick) {
   return tab;
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 // EINKAUFSLISTE
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 let unsubscribeEinkaufFunc   = null;
 let unsubscribeKatalogFunc   = null;
 let einkaufItems             = [];   // aktuelle Liste
-let einkaufKatalog           = [];   // alle je hinzugefÃ¼gten Artikel
+let einkaufKatalog           = [];   // alle je hinzugefügten Artikel
 let einkaufDragSrcId         = null;
 
 function getKatalogIdFromName(name) {
-  return (name || "").toLowerCase().replace(/[^a-z0-9Ã¤Ã¶Ã¼ÃŸ]/g, "_");
+  return (name || "").toLowerCase().replace(/[^a-z0-9äöüß]/g, "_");
 }
 
 function addShoppingItem(userId, name, countAsUsage = true) {
@@ -6035,8 +6035,8 @@ function renderRememberedChips(userId) {
     const removeBtn = document.createElement("button");
     removeBtn.type = "button";
     removeBtn.className = "remember-chip-remove";
-    removeBtn.title = "Nicht mehr fÃ¼r den nÃ¤chsten Einkauf merken";
-    removeBtn.textContent = "Ã—";
+    removeBtn.title = "Nicht mehr für den nächsten Einkauf merken";
+    removeBtn.textContent = "×";
     removeBtn.addEventListener("click", e => {
       e.stopPropagation();
       toggleRememberedShoppingItem(userId, item.name, false);
@@ -6083,7 +6083,7 @@ function moveEinkaufItem(userId, itemId, direction) {
 }
 
 function initEinkauf(userId) {
-  // Kein orderBy â†’ kein Firestore-Index nÃ¶tig, sort client-seitig
+  // Kein orderBy → kein Firestore-Index nötig, sort client-seitig
   // (vermeidet Mixed-Type-Fehler zwischen alten Timestamps und neuen Date.now()-Zahlen)
   const listRef    = db.collection(`users/${userId}/einkaufsliste`);
   const katalogRef = db.collection(`users/${userId}/einkaufsKatalog`);
@@ -6093,7 +6093,7 @@ function initEinkauf(userId) {
   unsubscribeEinkaufFunc = listRef.onSnapshot(snap => {
     einkaufItems = [];
     snap.forEach(d => einkaufItems.push({ id: d.id, ...d.data() }));
-    // Client-seitig sortieren (unterstÃ¼tzt Timestamp und Zahl)
+    // Client-seitig sortieren (unterstützt Timestamp und Zahl)
     einkaufItems = sortEinkaufItems(einkaufItems);
     /*
     einkaufItems.sort((a,b) => {
@@ -6120,7 +6120,7 @@ function initEinkauf(userId) {
     renderDashboardSearch();
   }, err => console.error("Katalog-Fehler:", err));
 
-  // Artikel hinzufÃ¼gen
+  // Artikel hinzufügen
   function addArtikel() {
     const name = $("einkauf-input").value.trim();
     if (!name) return;
@@ -6137,7 +6137,7 @@ function initEinkauf(userId) {
     shareEinkaufPdf().catch(err => showToast("Teilen fehlgeschlagen: " + err.message, "error"));
   });
 
-  // FrÃ¼here Artikel Toggle
+  // Frühere Artikel Toggle
   $("katalog-toggle").addEventListener("click", () => {
     const btn = $("katalog-toggle");
     const chips = $("katalog-chips");
@@ -6275,8 +6275,8 @@ function renderEinkaufList(userId) {
     const rememberBtn = document.createElement("button");
     rememberBtn.type = "button";
     rememberBtn.className = "einkauf-remember-btn";
-    rememberBtn.title = "FÃ¼r den nÃ¤chsten Einkauf merken";
-    rememberBtn.textContent = "â˜…";
+    rememberBtn.title = "Für den nächsten Einkauf merken";
+    rememberBtn.textContent = "★";
     const remembered = einkaufKatalog.some(k => (k.name || "").toLowerCase() === (item.name || "").toLowerCase() && k.rememberNext);
     rememberBtn.classList.toggle("active", remembered);
     rememberBtn.addEventListener("click", e => {
@@ -6288,7 +6288,7 @@ function renderEinkaufList(userId) {
     upBtn.type = "button";
     upBtn.className = "einkauf-move-btn";
     upBtn.title = "Nach oben verschieben";
-    upBtn.textContent = "â†‘";
+    upBtn.textContent = "↑";
     upBtn.disabled = itemIndex === 0;
     upBtn.addEventListener("click", e => {
       e.stopPropagation();
@@ -6299,7 +6299,7 @@ function renderEinkaufList(userId) {
     downBtn.type = "button";
     downBtn.className = "einkauf-move-btn";
     downBtn.title = "Nach unten verschieben";
-    downBtn.textContent = "â†“";
+    downBtn.textContent = "↓";
     downBtn.disabled = itemIndex === sorted.length - 1;
     downBtn.addEventListener("click", e => {
       e.stopPropagation();
@@ -6357,7 +6357,7 @@ function renderKatalogChips(userId) {
     const chip = document.createElement("span");
     const already = aktiveNamen.has(k.name.toLowerCase());
     chip.className = "katalog-chip" + (already ? " already-in-list" : "");
-    chip.title = already ? "Bereits auf der Liste" : "Zur Liste hinzufÃ¼gen";
+    chip.title = already ? "Bereits auf der Liste" : "Zur Liste hinzufügen";
 
     // Name-Text
     const nameSpan = document.createElement("span");
@@ -6367,22 +6367,22 @@ function renderKatalogChips(userId) {
     const rememberBtn = document.createElement("button");
     rememberBtn.type = "button";
     rememberBtn.className = "katalog-chip-remember" + (k.rememberNext ? " active" : "");
-    rememberBtn.title = k.rememberNext ? "Nicht mehr fÃ¼r den nÃ¤chsten Einkauf merken" : "FÃ¼r den nÃ¤chsten Einkauf merken";
-    rememberBtn.textContent = "â˜…";
+    rememberBtn.title = k.rememberNext ? "Nicht mehr für den nächsten Einkauf merken" : "Für den nächsten Einkauf merken";
+    rememberBtn.textContent = "★";
     rememberBtn.addEventListener("click", e => {
       e.stopPropagation();
       toggleRememberedShoppingItem(userId, k.name, !k.rememberNext);
     });
     chip.appendChild(rememberBtn);
 
-    // Ã— LÃ¶schen-Button
+    // × Löschen-Button
     const delBtn = document.createElement("button");
     delBtn.className = "katalog-chip-del";
-    delBtn.title = "Aus frÃ¼heren Artikeln entfernen";
-    delBtn.textContent = "Ã—";
+    delBtn.title = "Aus früheren Artikeln entfernen";
+    delBtn.textContent = "×";
     delBtn.addEventListener("click", e => {
       e.stopPropagation();
-      safeConfirm(`Artikel "${k.name}" wirklich aus "FrÃ¼here Artikel" lÃ¶schen?`).then(ok => {
+      safeConfirm(`Artikel "${k.name}" wirklich aus "Frühere Artikel" löschen?`).then(ok => {
         if (!ok) return;
         db.collection(`users/${userId}/einkaufsKatalog`).doc(k.id).delete().catch(fsError);
       });
@@ -6482,7 +6482,7 @@ function initFab(userId) {
     fabTodoText.value = "";
     fabModal.classList.add("hidden");
     switchTab("todos");
-    showToast("Todo hinzugefÃ¼gt âœ“");
+    showToast("Todo hinzugefügt ✓");
   });
 
   fabTodoText.addEventListener("keydown", e => {
@@ -6506,27 +6506,27 @@ async function openFabNotizQuick(userId) {
   openNotizModal(ref.id, "Neue Notiz", "", ordnerId);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 // WETTER & REGENRADAR
 // Daten: Open-Meteo (wetter + ortssuche, ohne API-Key),
 //        RainViewer (Regenradar-Kacheln), Leaflet (Karte)
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ════════════════════════════════════════════════════════════
 const WETTER_CODES = {
-  0:["Klar","â˜€ï¸"],1:["Ãœberwiegend klar","ðŸŒ¤ï¸"],2:["Teils bewÃ¶lkt","â›…"],3:["Bedeckt","â˜ï¸"],
-  45:["Nebel","ðŸŒ«ï¸"],48:["Reifnebel","ðŸŒ«ï¸"],
-  51:["Leichter Nieselregen","ðŸŒ¦ï¸"],53:["Nieselregen","ðŸŒ¦ï¸"],55:["Starker Nieselregen","ðŸŒ§ï¸"],
-  56:["Gefrierender Nieselregen","ðŸŒ§ï¸"],57:["Starker gefrierender Nieselregen","ðŸŒ§ï¸"],
-  61:["Leichter Regen","ðŸŒ¦ï¸"],63:["Regen","ðŸŒ§ï¸"],65:["Starker Regen","ðŸŒ§ï¸"],
-  66:["Gefrierender Regen","ðŸŒ§ï¸"],67:["Starker gefrierender Regen","ðŸŒ§ï¸"],
-  71:["Leichter Schneefall","ðŸŒ¨ï¸"],73:["Schneefall","ðŸŒ¨ï¸"],75:["Starker Schneefall","â„ï¸"],
-  77:["Schneegriesel","ðŸŒ¨ï¸"],
-  80:["Leichte Regenschauer","ðŸŒ¦ï¸"],81:["Regenschauer","ðŸŒ§ï¸"],82:["Heftige Regenschauer","â›ˆï¸"],
-  85:["Leichte Schneeschauer","ðŸŒ¨ï¸"],86:["Starke Schneeschauer","â„ï¸"],
-  95:["Gewitter","â›ˆï¸"],96:["Gewitter mit Hagel","â›ˆï¸"],99:["Schweres Gewitter mit Hagel","â›ˆï¸"]
+  0:["Klar","☀️"],1:["Überwiegend klar","🌤️"],2:["Teils bewölkt","⛅"],3:["Bedeckt","☁️"],
+  45:["Nebel","🌫️"],48:["Reifnebel","🌫️"],
+  51:["Leichter Nieselregen","🌦️"],53:["Nieselregen","🌦️"],55:["Starker Nieselregen","🌧️"],
+  56:["Gefrierender Nieselregen","🌧️"],57:["Starker gefrierender Nieselregen","🌧️"],
+  61:["Leichter Regen","🌦️"],63:["Regen","🌧️"],65:["Starker Regen","🌧️"],
+  66:["Gefrierender Regen","🌧️"],67:["Starker gefrierender Regen","🌧️"],
+  71:["Leichter Schneefall","🌨️"],73:["Schneefall","🌨️"],75:["Starker Schneefall","❄️"],
+  77:["Schneegriesel","🌨️"],
+  80:["Leichte Regenschauer","🌦️"],81:["Regenschauer","🌧️"],82:["Heftige Regenschauer","⛈️"],
+  85:["Leichte Schneeschauer","🌨️"],86:["Starke Schneeschauer","❄️"],
+  95:["Gewitter","⛈️"],96:["Gewitter mit Hagel","⛈️"],99:["Schweres Gewitter mit Hagel","⛈️"]
 };
 function wmoInfo(code, isDay) {
-  const e = WETTER_CODES[code] || ["Unbekannt","ðŸŒ¡ï¸"];
-  if (!isDay && code <= 2) return [e[0], "ðŸŒ™"];
+  const e = WETTER_CODES[code] || ["Unbekannt","🌡️"];
+  if (!isDay && code <= 2) return [e[0], "🌙"];
   return e;
 }
 const WETTER_TAGE = ["So","Mo","Di","Mi","Do","Fr","Sa"]; // Index = getDay()
@@ -6624,7 +6624,7 @@ async function ladeAktivesWetter() {
   const wrap = $("wetter-content");
   const ort = aktiverOrt();
   if (!ort) {
-    wrap.innerHTML = `<div class="dash-empty">ðŸ“ Standort nicht verfÃ¼gbar â€“ bitte unten eine Stadt hinzufÃ¼gen.</div>`;
+    wrap.innerHTML = `<div class="dash-empty">📍 Standort nicht verfügbar – bitte unten eine Stadt hinzufügen.</div>`;
     return;
   }
   try {
@@ -6639,7 +6639,7 @@ async function ladeAktivesWetter() {
     const data = await r.json();
     renderWetter(ort, data);
   } catch (e) {
-    wrap.innerHTML = `<div class="dash-empty">âš ï¸ Wetter konnte nicht geladen werden. <button type="button" class="btn-toggle active" id="wetter-retry">Erneut versuchen</button></div>`;
+    wrap.innerHTML = `<div class="dash-empty">⚠️ Wetter konnte nicht geladen werden. <button type="button" class="btn-toggle active" id="wetter-retry">Erneut versuchen</button></div>`;
     const btn = $("wetter-retry");
     if (btn) btn.addEventListener("click", ladeAktivesWetter);
   }
@@ -6655,7 +6655,7 @@ function renderWetter(ort, data) {
   const regenHeute = daily.precipitation_probability_max && daily.precipitation_probability_max.length
     ? daily.precipitation_probability_max[0] : null;
   const minMax = daily.temperature_2m_max && daily.temperature_2m_max.length
-    ? `${Math.round(daily.temperature_2m_max[0])}Â° / ${Math.round(daily.temperature_2m_min[0])}Â°` : "";
+    ? `${Math.round(daily.temperature_2m_max[0])}° / ${Math.round(daily.temperature_2m_min[0])}°` : "";
 
   const hourly = data.hourly || {};
   const times  = hourly.time || [];
@@ -6675,8 +6675,8 @@ function renderWetter(ort, data) {
 
   const ersteRegen = stunden.find(s => s.regen !== null && s.regen !== undefined && s.regen >= 50);
   const regenText = ersteRegen
-    ? `<span class="wetter-rain-soon">ðŸŒ§ï¸ Regen ab ca. ${ersteRegen.zeit} Uhr (${ersteRegen.regen}%)</span>`
-    : `<span>ðŸ˜Œ Geringes Regenrisiko in den nÃ¤chsten Stunden</span>`;
+    ? `<span class="wetter-rain-soon">🌧️ Regen ab ca. ${ersteRegen.zeit} Uhr (${ersteRegen.regen}%)</span>`
+    : `<span>😌 Geringes Regenrisiko in den nächsten Stunden</span>`;
 
   const stundenHtml = stunden.map(s => {
     const [, si] = wmoInfo(s.code, 1);
@@ -6685,12 +6685,12 @@ function renderWetter(ort, data) {
     return `<div class="wetter-stunde${s.istJetzt ? " jetzt" : ""}">
       <div class="ws-zeit">${s.istJetzt ? "Jetzt" : s.zeit}</div>
       <div class="ws-icon">${si}</div>
-      <div class="ws-temp">${s.temp}Â°</div>
-      <div class="ws-regen${regenKlasse}">ðŸ’§ ${hatRegen ? s.regen : "â€“"}%</div>
+      <div class="ws-temp">${s.temp}°</div>
+      <div class="ws-regen${regenKlasse}">💧 ${hatRegen ? s.regen : "–"}%</div>
     </div>`;
   }).join("");
 
-  // â”€â”€ 14-Tage-Trend mit Min/Max-Balken â”€â”€
+  // ── 14-Tage-Trend mit Min/Max-Balken ──
   const dCodes = daily.weather_code || [];
   const dMaxT  = daily.temperature_2m_max || [];
   const dMinT  = daily.temperature_2m_min || [];
@@ -6716,9 +6716,9 @@ function renderWetter(ort, data) {
     tageRows += `<div class="wetter-tag-row">
       <span class="wt-tag">${i === 0 ? "Heute" : escapeHtml(wd)}<small>${datum}</small></span>
       <span class="wt-icon">${di}</span>
-      <span class="wt-regen${hatRegen && regen > 0 ? " regen" : ""}">ðŸ’§ ${hatRegen ? regen : "â€“"}%</span>
+      <span class="wt-regen${hatRegen && regen > 0 ? " regen" : ""}">💧 ${hatRegen ? regen : "–"}%</span>
       <span class="wt-bar"><span class="wt-bar-fill" style="left:${links.toFixed(1)}%;width:${breite.toFixed(1)}%"></span></span>
-      <span class="wt-temp">${Math.round(dMinT[i])}Â° â€¦ <b>${Math.round(dMaxT[i])}Â°</b></span>
+      <span class="wt-temp">${Math.round(dMinT[i])}° … <b>${Math.round(dMaxT[i])}°</b></span>
     </div>`;
   }
 
@@ -6726,8 +6726,8 @@ function renderWetter(ort, data) {
     <div class="wetter-aktiv">
       <div class="wetter-icon">${icon}</div>
       <div class="wetter-temp-block">
-        <div class="wetter-temp">${temp}Â°</div>
-        <div class="wetter-feels">GefÃ¼hlt ${feels}Â°</div>
+        <div class="wetter-temp">${temp}°</div>
+        <div class="wetter-feels">Gefühlt ${feels}°</div>
       </div>
       <div class="wetter-desc-block">
         <div class="wetter-desc">${escapeHtml(desc)}</div>
@@ -6735,14 +6735,14 @@ function renderWetter(ort, data) {
       </div>
     </div>
     <div class="wetter-details">
-      ${regenHeute !== null ? `<span>â˜” Regenrisiko heute: <b>${regenHeute}%</b></span>` : ""}
-      ${minMax ? `<span>â†•ï¸ Heute: <b>${minMax}</b></span>` : ""}
-      <span>ðŸ’¨ Wind: <b>${wind} km/h</b></span>
+      ${regenHeute !== null ? `<span>☔ Regenrisiko heute: <b>${regenHeute}%</b></span>` : ""}
+      ${minMax ? `<span>↕️ Heute: <b>${minMax}</b></span>` : ""}
+      <span>💨 Wind: <b>${wind} km/h</b></span>
       ${regenText}
     </div>
     <div class="wetter-stunden">${stundenHtml}</div>
     <div class="wetter-trend-toggle">
-      <button type="button" class="wetter-chip active" id="btn-wetter-trend">ðŸ“… 14-Tage-Vorhersage <span class="wetter-trend-chevron">â–¾</span></button>
+      <button type="button" class="wetter-chip active" id="btn-wetter-trend">📅 14-Tage-Vorhersage <span class="wetter-trend-chevron">▾</span></button>
     </div>
     <div class="wetter-tage open" id="wetter-tage">${tageRows}</div>
   `;
@@ -6755,7 +6755,7 @@ function renderWetter(ort, data) {
       box.classList.toggle("open", offnen);
       trendBtn.classList.toggle("active", offnen);
       const chev = trendBtn.querySelector(".wetter-trend-chevron");
-      if (chev) chev.textContent = offnen ? "â–¾" : "â–¸";
+      if (chev) chev.textContent = offnen ? "▾" : "▸";
     });
   }
 }
@@ -6764,7 +6764,7 @@ function baueWetterChip(label, idx, deletable) {
   const chip = document.createElement("button");
   chip.type = "button";
   chip.className = "wetter-chip" + (wetterAktivIdx === idx ? " active" : "");
-  chip.title = "Als aktiven Ort wÃ¤hlen";
+  chip.title = "Als aktiven Ort wählen";
   chip.innerHTML = escapeHtml(label) +
     (deletable ? ` <span class="wetter-chip-del" title="Ort entfernen" role="button">&#10005;</span>` : "");
   chip.addEventListener("click", e => {
@@ -6799,11 +6799,11 @@ function renderWetterChips() {
   const bar = $("wetter-cities-bar");
   bar.innerHTML = "";
   if (gpsOrt) {
-    bar.appendChild(baueWetterChip("ðŸ“ " + gpsOrt.name, -1, false));
+    bar.appendChild(baueWetterChip("📍 " + gpsOrt.name, -1, false));
   } else {
     const hint = document.createElement("span");
     hint.className = "wetter-hint";
-    hint.textContent = "ðŸ“ Standort nicht freigegeben";
+    hint.textContent = "📍 Standort nicht freigegeben";
     bar.appendChild(hint);
   }
   for (let i = 0; i < wetterCities.length; i++) {
@@ -6843,7 +6843,7 @@ function zeigeWetterSuchErgebnisse(results) {
       .filter(Boolean).join(", ");
     b.innerHTML = `${escapeHtml(res.name)}<small>${escapeHtml(region)}</small>`;
     b.addEventListener("click", () => {
-      if (wetterCities.length >= 10) { showToast("Maximal 10 StÃ¤dte mÃ¶glich.", "error"); return; }
+      if (wetterCities.length >= 10) { showToast("Maximal 10 Städte möglich.", "error"); return; }
       const doppelt = wetterCities.some(c =>
         Math.abs(c.lat - res.latitude) < 0.06 && Math.abs(c.lon - res.longitude) < 0.06);
       if (doppelt) { showToast("Diese Stadt ist schon dabei.", "error"); return; }
@@ -6854,7 +6854,7 @@ function zeigeWetterSuchErgebnisse(results) {
       });
       wetterAktivIdx = wetterCities.length - 1;
       speicherWetterEinstellungen();
-      showToast(`${res.name} hinzugefÃ¼gt`, "success");
+      showToast(`${res.name} hinzugefügt`, "success");
       const inp = $("wetter-add-input");
       if (inp) inp.value = "";
       entferneWetterSuchErgebnisse();
@@ -6866,7 +6866,7 @@ function zeigeWetterSuchErgebnisse(results) {
   row.appendChild(box);
 }
 
-// â”€â”€ REGENRADAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── REGENRADAR ───────────────────────────────────────────────
 // Transparente 1x1-Fallback-Kachel: falls eine Kachel je fehlschlaegt,
 // erscheint garantiert kein graues "Zoom Level Not Supported"-Feld.
 const RADAR_KACHEL_FALLBACK = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
@@ -6930,7 +6930,7 @@ async function ladeRadarFrames() {
     radarFramesMeta.forEach(f => {
       radarFrameLayers.push(L.tileLayer(
         `https://tilecache.rainviewer.com${f.path}/256/{z}/{x}/{y}/2/1_1.png?cb=${RADAR_CACHE_BUST}`,
-        // RainViewer liefert Radar-Kacheln nativ nur bis Zoomstufe 7 (API-Doku) â€“
+        // RainViewer liefert Radar-Kacheln nativ nur bis Zoomstufe 7 (API-Doku) –
         // darueber skaliert Leaflet die z7-Kacheln hoch. Ohne das Cap gibt es
         // stattdessen "Zoom Level Not Supported"-Fehlerbilder!
         { opacity: 0, maxZoom: 20, maxNativeZoom: 7, zIndex: 400, errorTileUrl: RADAR_KACHEL_FALLBACK }
@@ -6957,7 +6957,7 @@ function zeigeRadarFrame(idx, setSlider) {
       .toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
     const istPrognose = radarIdx >= radarErsterForecast;
     const label = $("radar-time");
-    label.textContent = uhr + " Uhr" + (istPrognose ? " Â· Vorhersage" : "");
+    label.textContent = uhr + " Uhr" + (istPrognose ? " · Vorhersage" : "");
     label.classList.toggle("forecast", istPrognose);
   }
   if (setSlider) $("radar-slider").value = radarIdx;
@@ -6973,7 +6973,7 @@ async function ladeRadarRegenPrognose() {
   const ort = aktiverOrt();
   if (!box) return;
   if (!ort) { box.innerHTML = ""; return; }
-  box.innerHTML = `<div class="dash-empty" style="padding:2px 0;">Regenprognose wird geladen â€¦</div>`;
+  box.innerHTML = `<div class="dash-empty" style="padding:2px 0;">Regenprognose wird geladen …</div>`;
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${ort.lat}&longitude=${ort.lon}` +
       `&hourly=precipitation,precipitation_probability&current=precipitation` +
@@ -6995,7 +6995,7 @@ async function ladeRadarRegenPrognose() {
                        (p !== null && p !== undefined && p >= 40);
       html += `<div class="radar-regen-stunde${hatRegen ? " regen" : ""}" title="Regenprognose Open-Meteo">
         <div class="rr-zeit">${i === start ? "Jetzt" : String(times[i]).slice(11, 13) + " Uhr"}</div>
-        <div class="rr-wert">ðŸ’§ ${p !== null && p !== undefined ? p : "â€“"}%</div>
+        <div class="rr-wert">💧 ${p !== null && p !== undefined ? p : "–"}%</div>
         <div class="rr-mm">${m !== null && m !== undefined && m > 0 ? String(m).replace(".", ",") + " mm" : "&ndash;"}</div>
       </div>`;
     }
@@ -7073,12 +7073,12 @@ document.addEventListener("keydown", e => {
   <div class="modal" style="max-width:400px">
     <h3 style="margin:0;font-size:1.05rem">Neues Todo</h3>
     <div style="display:flex;flex-direction:column;gap:10px">
-      <input type="text" id="fab-todo-text" placeholder="Aufgabeâ€¦" style="padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:0.95rem;outline:none">
+      <input type="text" id="fab-todo-text" placeholder="Aufgabe…" style="padding:9px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:0.95rem;outline:none">
       <select id="fab-todo-ordner" style="padding:8px 10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:0.9rem"></select>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button onclick="document.getElementById('fab-todo-modal').classList.add('hidden')" style="padding:8px 16px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--text);cursor:pointer">Abbrechen</button>
-      <button id="fab-todo-save" style="padding:8px 18px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-weight:600">HinzufÃ¼gen</button>
+      <button id="fab-todo-save" style="padding:8px 18px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-weight:600">Hinzufügen</button>
     </div>
   </div>
 </div>
@@ -7086,7 +7086,7 @@ document.addEventListener("keydown", e => {
 <!-- Toast -->
 <div id="toast-container"></div>
 
-<!-- Print-Bereich (fÃ¼r PDF-Export) -->
+<!-- Print-Bereich (für PDF-Export) -->
 <div id="print-area" style="display:none;"></div>
 
 <!-- Custom Confirm (iOS PWA compat) -->
@@ -7095,7 +7095,7 @@ document.addEventListener("keydown", e => {
     <p id="safe-confirm-msg"></p>
     <div class="safe-dialog-btns">
       <button class="btn-secondary" id="safe-confirm-cancel">Abbrechen</button>
-      <button class="btn-danger" id="safe-confirm-ok">LÃ¶schen</button>
+      <button class="btn-danger" id="safe-confirm-ok">Löschen</button>
     </div>
   </div>
 </div>
@@ -7113,4 +7113,3 @@ document.addEventListener("keydown", e => {
 </div>
 </body>
 </html>
-
