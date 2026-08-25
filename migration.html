@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Organizer · Daten übertragen</title>
+<style>
+  :root {
+    --bg: #f1f5f9; --surface: #ffffff; --border: #e2e8f0; --text: #0f172a;
+    --muted: #64748b; --primary: #2563eb; --primary-d: #1d4ed8;
+    --ok: #16a34a; --okbg: #f0fdf4; --err: #dc2626; --errbg: #fef2f2;
+    --warnbg: #fffbeb; --warnbd: #fde68a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5; padding: 20px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; margin: 6px 0 2px; }
+  .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 18px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .card h2 { font-size: 1.05rem; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; background: var(--primary);
+    color: #fff; font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+  }
+  label { font-size: 0.82rem; font-weight: 600; color: var(--muted); display: block; margin: 8px 0 4px; }
+  input[type=email], input[type=password] {
+    width: 100%; padding: 11px 12px; border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 0.95rem; background: var(--surface); color: var(--text);
+  }
+  input:focus { outline: none; border-color: var(--primary); }
+  button {
+    font: inherit; cursor: pointer; border: none; border-radius: 10px;
+    padding: 11px 16px; font-weight: 650; font-size: 0.92rem; transition: background .15s, opacity .15s;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-d); }
+  .btn-ghost { background: #eef2ff; color: var(--primary); }
+  .btn-danger-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .hidden { display: none !important; }
+  .who {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    background: var(--okbg); border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px;
+  }
+  .who b { font-size: 0.95rem; }
+  .who .uid { font-family: ui-monospace, Consolas, monospace; font-size: 0.72rem; color: var(--muted); word-break: break-all; }
+  .note {
+    background: var(--warnbg); border: 1px solid var(--warnbd); border-radius: 10px;
+    padding: 10px 12px; font-size: 0.84rem; margin-top: 10px;
+  }
+  .log {
+    background: #0f172a; color: #cbd5e1; border-radius: 10px; padding: 12px;
+    font-family: ui-monospace, Consolas, monospace; font-size: 0.78rem; line-height: 1.6;
+    max-height: 260px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; margin-top: 12px;
+  }
+  .log .ok { color: #4ade80; } .log .err { color: #f87171; } .log .info { color: #93c5fd; } .log .warn { color: #fbbf24; }
+  .msg { font-size: 0.85rem; margin-top: 8px; min-height: 18px; }
+  .msg.ok { color: var(--ok); } .msg.err { color: var(--err); }
+  .big-steps { counter-reset: none; }
+  .disabled-card { opacity: 0.5; pointer-events: none; }
+  code { background: #eef2ff; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📦 Organizer · Daten übertragen</h1>
+  <div class="sub">Kopiert alle Daten von einem Konto in ein anderes. Es wird <b>nichts gelöscht</b> und nichts überschrieben — nur hinzugefügt.</div>
+
+  <!-- LOGIN -->
+  <div class="card" id="login-card">
+    <h2>Anmelden</h2>
+    <div id="who" class="who hidden">
+      <div>
+        <b id="who-email"></b>
+        <div class="uid" id="who-uid"></div>
+      </div>
+      <button class="btn-danger-ghost" id="btn-logout">Abmelden</button>
+    </div>
+    <div id="login-form">
+      <label for="email">E-Mail</label>
+      <input type="email" id="email" autocomplete="username" placeholder="z. B. jorgepnt@googlemail.com" />
+      <label for="password">Passwort</label>
+      <input type="password" id="password" autocomplete="current-password" placeholder="Passwort" />
+      <div class="row" style="margin-top:12px">
+        <button class="btn-primary" id="btn-login">Anmelden</button>
+      </div>
+      <div class="msg" id="login-msg"></div>
+    </div>
+  </div>
+
+  <!-- STEP 1: EXPORT -->
+  <div class="card" id="export-card">
+    <h2><span class="step-num">1</span> Aus <u>altem</u> Konto exportieren</h2>
+    <div class="sub" style="margin:0 0 10px">
+      Melde dich mit dem <b>alten</b> Konto an (<code>…@googlemail.com</code>) und lade die Sicherung als Datei herunter.
+    </div>
+    <button class="btn-primary" id="btn-export" disabled>⬇︎ Alle Daten exportieren</button>
+    <div class="msg" id="export-msg"></div>
+  </div>
+
+  <!-- STEP 2: IMPORT -->
+  <div class="card" id="import-card">
+    <h2><span class="step-num">2</span> In <u>neues</u> Konto importieren</h2>
+    <div class="sub" style="margin:0 0 10px">
+      Danach oben <b>abmelden</b>, mit dem <b>neuen</b> Konto anmelden (<code>…@gmail.com</code>), die eben
+      gespeicherte Datei auswählen und importieren.
+    </div>
+    <div class="row">
+      <input type="file" id="import-file" accept="application/json,.json" />
+    </div>
+    <button class="btn-primary" id="btn-import" disabled style="margin-top:12px">⬆︎ Daten importieren</button>
+    <div class="note">
+      Sicher: bestehende Notizen/Todos im Zielkonto bleiben unangetastet. Der Import kann gefahrlos
+      wiederholt werden (es entstehen keine Doppel). Persönliche Einstellungen im Zielkonto werden
+      <b>nicht</b> überschrieben. Gerätespezifische Push-Anmeldungen werden bewusst nicht übertragen.
+    </div>
+    <div class="msg" id="import-msg"></div>
+  </div>
+
+  <div class="log hidden" id="log"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// ── Firebase (gleiches Projekt wie die App) ──
+const firebaseConfig = {
+  apiKey:            "AIzaSyBBMU-KPmSzu0F9iFGV_AF049Aivtnx0S4",
+  authDomain:        "arbeitsapp-3364c.firebaseapp.com",
+  projectId:         "arbeitsapp-3364c",
+  storageBucket:     "arbeitsapp-3364c.firebasestorage.app",
+  messagingSenderId: "202291981896",
+  appId:             "1:202291981896:web:0294b473eaff98a454b27d"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── Datenschema: Top-Sammlung -> [Unter-Sammlungen] ──
+// pushTokens absichtlich NICHT enthalten (geräte-/browserspezifisch)
+const SCHEMA = {
+  notizenOrdner:  ["notizen"],
+  todoOrdner:     ["todos"],
+  dichteTabellen: ["ergebnisse"],
+  einkaufsKatalog: [],
+  einkaufsliste:  [],
+  joinedFolders:  [],
+  settings:       []
+};
+// Sammlungen mit festen Dokument-IDs -> beim Import nur anlegen, wenn nicht vorhanden
+const FIXED_ID_COLLECTIONS = new Set(["settings"]);
+
+const $ = id => document.getElementById(id);
+function log(msg, cls) {
+  const el = $("log"); el.classList.remove("hidden");
+  const span = document.createElement("div");
+  if (cls) span.className = cls;
+  span.textContent = msg;
+  el.appendChild(span); el.scrollTop = el.scrollHeight;
+}
+
+// ── Timestamp-sichere (De-)Serialisierung ──
+function serialize(v) {
+  if (v === null || v === undefined) return v;
+  if (v instanceof firebase.firestore.Timestamp) return { __ts__: v.toMillis() };
+  if (v instanceof firebase.firestore.GeoPoint) return { __geo__: [v.latitude, v.longitude] };
+  if (Array.isArray(v)) return v.map(serialize);
+  if (typeof v === "object") {
+    const o = {}; for (const k in v) o[k] = serialize(v[k]); return o;
+  }
+  return v;
+}
+function deserialize(v) {
+  if (v === null || typeof v !== "object") return v;
+  const keys = Object.keys(v);
+  if (keys.length === 1 && keys[0] === "__ts__") return firebase.firestore.Timestamp.fromMillis(v.__ts__);
+  if (keys.length === 1 && keys[0] === "__geo__") return new firebase.firestore.GeoPoint(v.__geo__[0], v.__geo__[1]);
+  if (Array.isArray(v)) return v.map(deserialize);
+  const o = {}; for (const k in v) o[k] = deserialize(v[k]); return o;
+}
+
+// ── EXPORT ──
+async function exportAll(uid) {
+  const result = {};
+  for (const [coll, subs] of Object.entries(SCHEMA)) {
+    const snap = await db.collection(`users/${uid}/${coll}`).get();
+    const docs = [];
+    for (const doc of snap.docs) {
+      const entry = { id: doc.id, data: serialize(doc.data()) };
+      for (const sub of subs) {
+        const subSnap = await db.collection(`users/${uid}/${coll}/${doc.id}/${sub}`).get();
+        if (!subSnap.empty) {
+          entry.sub = entry.sub || {};
+          entry.sub[sub] = subSnap.docs.map(d => ({ id: d.id, data: serialize(d.data()) }));
+        }
+      }
+      docs.push(entry);
+    }
+    result[coll] = docs;
+    log(`  • ${coll}: ${docs.length} Einträge`, "info");
+  }
+  return result;
+}
+
+// ── IMPORT (additiv, ID-erhaltend, idempotent) ──
+async function importAll(uid, payload) {
+  const coll = payload.collections || {};
+  let written = 0, skipped = 0;
+  // Ops einsammeln und in 400er-Batches schreiben
+  const ops = []; // {ref, data}
+  for (const [name, docs] of Object.entries(coll)) {
+    if (!(name in SCHEMA)) { log(`  • ${name}: unbekannt, übersprungen`, "warn"); continue; }
+    const isFixed = FIXED_ID_COLLECTIONS.has(name);
+    for (const entry of docs) {
+      const ref = db.collection(`users/${uid}/${name}`).doc(entry.id);
+      if (isFixed) {
+        const exists = (await ref.get()).exists;
+        if (exists) { skipped++; continue; }
+      }
+      ops.push({ ref, data: deserialize(entry.data) });
+      if (entry.sub) {
+        for (const [sub, subDocs] of Object.entries(entry.sub)) {
+          for (const s of subDocs) {
+            ops.push({ ref: ref.collection(sub).doc(s.id), data: deserialize(s.data) });
+          }
+        }
+      }
+    }
+    log(`  • ${name}: ${docs.length} Einträge vorbereitet`, "info");
+  }
+  // in Batches committen
+  for (let i = 0; i < ops.length; i += 400) {
+    const batch = db.batch();
+    ops.slice(i, i + 400).forEach(o => batch.set(o.ref, o.data, { merge: true }));
+    await batch.commit();
+    written += Math.min(400, ops.length - i);
+    log(`  … geschrieben: ${written}/${ops.length}`, "info");
+  }
+  return { written, skipped };
+}
+
+// ── UI-Verdrahtung ──
+auth.onAuthStateChanged(user => {
+  if (user) {
+    $("who").classList.remove("hidden");
+    $("login-form").classList.add("hidden");
+    $("who-email").textContent = user.email || "(ohne E-Mail)";
+    $("who-uid").textContent = "UID: " + user.uid;
+    $("btn-export").disabled = false;
+    $("btn-import").disabled = !$("import-file").files.length;
+  } else {
+    $("who").classList.add("hidden");
+    $("login-form").classList.remove("hidden");
+    $("btn-export").disabled = true;
+    $("btn-import").disabled = true;
+  }
+});
+
+$("btn-login").addEventListener("click", async () => {
+  const email = $("email").value.trim(), pw = $("password").value;
+  $("login-msg").textContent = ""; $("login-msg").className = "msg";
+  if (!email || !pw) { $("login-msg").textContent = "Bitte E-Mail und Passwort eingeben."; $("login-msg").className = "msg err"; return; }
+  $("btn-login").disabled = true;
+  try {
+    await auth.signInWithEmailAndPassword(email, pw);
+    $("password").value = "";
+  } catch (e) {
+    $("login-msg").textContent = "Anmeldung fehlgeschlagen: " + (e.code || e.message);
+    $("login-msg").className = "msg err";
+  } finally { $("btn-login").disabled = false; }
+});
+$("password").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-login").click(); });
+$("btn-logout").addEventListener("click", () => auth.signOut());
+
+$("import-file").addEventListener("change", () => {
+  $("btn-import").disabled = !($("import-file").files.length && auth.currentUser);
+});
+
+$("btn-export").addEventListener("click", async () => {
+  const user = auth.currentUser; if (!user) return;
+  $("btn-export").disabled = true;
+  $("export-msg").className = "msg"; $("export-msg").textContent = "Exportiere …";
+  log(`▶ Export aus ${user.email} (${user.uid})`, "info");
+  try {
+    const collections = await exportAll(user.uid);
+    const total = Object.values(collections).reduce((n, a) => n + a.length, 0);
+    const payload = {
+      meta: { app: "organizer", projectId: firebaseConfig.projectId, exportedFrom: user.email,
+              uid: user.uid, date: new Date().toISOString(), version: 1 },
+      collections
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    const safe = (user.email || "konto").replace(/[^a-z0-9]+/gi, "-");
+    a.href = URL.createObjectURL(blob);
+    a.download = `organizer-backup-${safe}-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    log(`✔ Export fertig: ${total} Einträge (Datei heruntergeladen)`, "ok");
+    $("export-msg").className = "msg ok"; $("export-msg").textContent = `Fertig — ${total} Einträge als Datei gespeichert. Datei sicher aufbewahren.`;
+  } catch (e) {
+    log("✘ Fehler: " + (e.code || e.message), "err");
+    $("export-msg").className = "msg err"; $("export-msg").textContent = "Fehler beim Export: " + (e.code || e.message);
+  } finally { $("btn-export").disabled = false; }
+});
+
+$("btn-import").addEventListener("click", async () => {
+  const user = auth.currentUser; if (!user) return;
+  const file = $("import-file").files[0]; if (!file) return;
+  let payload;
+  try { payload = JSON.parse(await file.text()); }
+  catch { $("import-msg").className = "msg err"; $("import-msg").textContent = "Datei ist keine gültige JSON-Sicherung."; return; }
+  if (!payload || !payload.collections) {
+    $("import-msg").className = "msg err"; $("import-msg").textContent = "Unerwartetes Dateiformat."; return;
+  }
+  if (payload.meta && payload.meta.uid === user.uid) {
+    const ok = confirm("Achtung: Die Sicherung stammt vom SELBEN Konto, in das du gerade importierst. Trotzdem fortfahren?");
+    if (!ok) return;
+  }
+  const from = (payload.meta && payload.meta.exportedFrom) || "unbekannt";
+  if (!confirm(`Daten aus „${from}" jetzt in „${user.email}" kopieren?\n\nBestehende Daten bleiben erhalten.`)) return;
+  $("btn-import").disabled = true;
+  $("import-msg").className = "msg"; $("import-msg").textContent = "Importiere …";
+  log(`▶ Import in ${user.email} (${user.uid}) aus Sicherung von ${from}`, "info");
+  try {
+    const { written, skipped } = await importAll(user.uid, payload);
+    log(`✔ Import fertig: ${written} Dokumente geschrieben, ${skipped} vorhandene Einstellungen unberührt`, "ok");
+    $("import-msg").className = "msg ok";
+    $("import-msg").textContent = `Fertig — ${written} Dokumente übertragen. Öffne die App und prüfe deine Daten.`;
+  } catch (e) {
+    log("✘ Fehler: " + (e.code || e.message), "err");
+    $("import-msg").className = "msg err"; $("import-msg").textContent = "Fehler beim Import: " + (e.code || e.message);
+  } finally { $("btn-import").disabled = false; }
+});
+</script>
+</body>
+</html>
