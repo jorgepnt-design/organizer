@@ -785,25 +785,29 @@
     }
     .notiz-count b { color: var(--text); }
 
-    .notiz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
-    .notiz-grid.list-mode { grid-template-columns: 1fr; gap: 8px; }
+    /* Masonry-Wand: variable Kartenhöhen wie in Google Keep */
+    .notiz-grid { columns: 240px; column-gap: 12px; }
+    .notiz-grid > * { break-inside: avoid; margin-bottom: 12px; }
+    .notiz-grid.list-mode { columns: unset; display: flex; flex-direction: column; gap: 8px; }
+    .notiz-grid.list-mode > * { margin-bottom: 0; }
     /* Angepinnt-Trenner */
     .notiz-pin-divider {
-      grid-column: 1 / -1; display: flex; align-items: center; gap: 8px;
+      column-span: all; display: flex; align-items: center; gap: 8px;
       font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
-      color: #b45309; margin-top: 4px;
+      color: #b45309; margin-top: 2px;
     }
     [data-theme="dark"] .notiz-pin-divider { color: #fbbf24; }
     .notiz-pin-divider::after { content: ""; flex: 1; border-top: 1px solid var(--border); }
     .notiz-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 14px 16px 10px; cursor: pointer;
+      --nc-bg: var(--surface); --nc-border: var(--border);
+      background: var(--nc-bg); border: 1px solid var(--nc-border);
+      border-radius: var(--radius-lg); padding: 12px 14px 9px; cursor: pointer;
       box-shadow: var(--shadow);
-      display: flex; flex-direction: column; min-height: 132px;
+      display: flex; flex-direction: column; min-height: 100px;
       position: relative; overflow: hidden;
-      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
     }
-    .notiz-card:hover { border-color: var(--primary-border); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .notiz-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
     /* Akzentstreifen oben: unsichtbar, erscheint bei Hover / dauerhaft bei angepinnt */
     .notiz-card::before {
       content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
@@ -812,22 +816,39 @@
     .notiz-card.is-pinned::before { background: #f59e0b; opacity: 1; }
     .notiz-card.is-pinned { border-color: #f59e0b; }
     [data-theme="dark"] .notiz-card.is-pinned { border-color: #92400e; }
+    /* Notiz-Farben (hell) */
+    .notiz-card.c-rot    { --nc-bg: #fef2f2; --nc-border: #fecaca; }
+    .notiz-card.c-orange { --nc-bg: #fff7ed; --nc-border: #fed7aa; }
+    .notiz-card.c-gelb   { --nc-bg: #fefce8; --nc-border: #fde68a; }
+    .notiz-card.c-gruen  { --nc-bg: #f0fdf4; --nc-border: #bbf7d0; }
+    .notiz-card.c-blau   { --nc-bg: #eff6ff; --nc-border: #bfdbfe; }
+    .notiz-card.c-lila   { --nc-bg: #faf5ff; --nc-border: #e9d5ff; }
+    .notiz-card.c-rosa   { --nc-bg: #fdf2f8; --nc-border: #fbcfe8; }
+    /* Notiz-Farben (dunkel) */
+    [data-theme="dark"] .notiz-card.c-rot    { --nc-bg: #3b1a1a; --nc-border: #7f1d1d; }
+    [data-theme="dark"] .notiz-card.c-orange { --nc-bg: #3b2413; --nc-border: #92400e; }
+    [data-theme="dark"] .notiz-card.c-gelb   { --nc-bg: #372b10; --nc-border: #854d0e; }
+    [data-theme="dark"] .notiz-card.c-gruen  { --nc-bg: #12301d; --nc-border: #166534; }
+    [data-theme="dark"] .notiz-card.c-blau   { --nc-bg: #16273d; --nc-border: #1e40af; }
+    [data-theme="dark"] .notiz-card.c-lila   { --nc-bg: #291d3f; --nc-border: #5b21b6; }
+    [data-theme="dark"] .notiz-card.c-rosa   { --nc-bg: #391a2c; --nc-border: #9d174d; }
     .notiz-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
     .notiz-card-title {
-      flex: 1; font-size: 0.98rem; font-weight: 650; line-height: 1.3;
+      flex: 1; font-size: 0.95rem; font-weight: 650; line-height: 1.3;
       color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .notiz-card-actions { display: inline-flex; gap: 2px; flex-shrink: 0; margin: -4px -6px 0 0; }
     .notiz-card-preview {
       flex: 1; font-size: 0.82rem; color: var(--text-muted); line-height: 1.55;
-      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+      display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;
+      margin-top: 4px;
     }
     .notiz-card-preview ul { margin: 2px 0 2px 14px; padding: 0; }
     .notiz-card-preview li { list-style: disc; }
     .notiz-card-preview s { text-decoration: line-through; }
     .notiz-card-preview .md-h1, .notiz-card-preview .md-h2, .notiz-card-preview .md-h3 { color: var(--text); }
     .notiz-card-preview code {
-      background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+      background: rgba(127,127,127,0.16); border-radius: 4px;
       padding: 0 4px; font-family: ui-monospace, Consolas, monospace; font-size: 0.78rem;
     }
     .notiz-card-preview .md-checklist { margin: 2px 0; }
@@ -835,29 +856,55 @@
     .notiz-grid.list-mode .notiz-card {
       flex-direction: row; align-items: center; min-height: 0; padding: 10px 14px; gap: 12px;
     }
-    .notiz-grid.list-mode .notiz-card::before { width: 3px; height: auto; right: auto; opacity: 0; }
+    .notiz-grid.list-mode .notiz-card::before { width: 3px; height: auto; right: auto; }
     .notiz-grid.list-mode .notiz-card.is-pinned::before { opacity: 1; }
     .notiz-grid.list-mode .notiz-card-top { flex: 0 0 auto; min-width: 160px; max-width: 240px; }
     .notiz-grid.list-mode .notiz-card-preview {
-      -webkit-line-clamp: 1; flex: 1; min-width: 0; white-space: nowrap; display: block;
-      overflow: hidden; text-overflow: ellipsis;
+      -webkit-line-clamp: 1; flex: 1; min-width: 0; margin-top: 0;
+      white-space: nowrap; display: block; overflow: hidden; text-overflow: ellipsis;
     }
     .notiz-grid.list-mode .notiz-card-meta { margin: 0; padding: 0; border: none; flex-shrink: 0; }
     .notiz-card-meta {
-      margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border);
+      margin-top: 8px; padding-top: 6px;
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
       font-size: 0.7rem; color: var(--text-muted);
     }
     .notiz-card-folder {
-      background: var(--primary-light); color: var(--primary);
-      border: 1px solid var(--primary-border);
+      background: rgba(127,127,127,0.14); color: var(--text-muted);
       padding: 2px 9px; border-radius: 10px; font-weight: 600; font-size: 0.68rem;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;
     }
+    /* Editor-Modal: größer, feste Höhe, interne Scrolls */
+    .modal.notiz-modal {
+      max-width: 780px; height: min(660px, 88vh); overflow: hidden;
+      padding: 18px 20px 14px; gap: 10px;
+    }
+    @media (max-width: 600px) {
+      .modal.notiz-modal { height: auto; min-height: 0; }
+      .notiz-editor { min-height: 260px; }
+    }
+    /* Farbwahl */
+    .notiz-colorbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .notiz-colorbar-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.06em; }
+    .notiz-dot {
+      width: 21px; height: 21px; border-radius: 50%; padding: 0; cursor: pointer;
+      border: 2px solid var(--border); background: var(--surface);
+      transition: transform 0.12s, box-shadow 0.12s; line-height: 0;
+    }
+    .notiz-dot:hover { transform: scale(1.18); }
+    .notiz-dot.active { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .notiz-dot.f-standard { background: conic-gradient(#f87171,#fbbf24,#4ade80,#60a5fa,#c084fc,#f472b6,#f87171); }
+    .notiz-dot.f-rot    { background: #ef4444; }
+    .notiz-dot.f-orange { background: #f97316; }
+    .notiz-dot.f-gelb   { background: #eab308; }
+    .notiz-dot.f-gruen  { background: #22c55e; }
+    .notiz-dot.f-blau   { background: #3b82f6; }
+    .notiz-dot.f-lila   { background: #a855f7; }
+    .notiz-dot.f-rosa   { background: #ec4899; }
     /* Markdown toolbar */
     .notiz-toolbar {
-      display: flex; gap: 4px; padding: 6px 0 4px; flex-wrap: wrap; align-items: center;
-      border-bottom: 1px solid var(--border); margin-bottom: 6px;
+      display: flex; gap: 4px; padding: 2px 0 8px; flex-wrap: wrap; align-items: center;
+      border-bottom: 1px solid var(--border);
     }
     .notiz-toolbar-sep { width: 1px; height: 18px; background: var(--border); margin: 0 3px; }
     .notiz-fmt-btn {
@@ -866,26 +913,42 @@
       cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.4;
     }
     .notiz-fmt-btn:hover { border-color: var(--primary); background: var(--surface); }
-    .notiz-preview-btn { margin-left: auto; }
-    /* Editor: Textarea + Vorschau (Split auf Desktop) */
-    .notiz-editor { display: flex; flex-direction: column; min-height: 0; flex: 1; }
-    #notiz-modal-text { font-family: inherit; font-size: 0.9rem; }
-    .notiz-modal.show-preview .notiz-editor { flex-direction: row; gap: 12px; }
-    .notiz-modal.show-preview #notiz-modal-text { flex: 1; min-width: 0; }
+    /* Modus-Schalter: Schreiben / Geteilt / Lesen */
+    .notiz-modus-switch {
+      margin-left: auto; display: inline-flex;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      overflow: hidden; background: var(--surface2);
+    }
+    .notiz-modus-switch button {
+      border: none; background: transparent; cursor: pointer;
+      padding: 4px 11px; font-size: 0.76rem; font-weight: 600; line-height: 1.5;
+      color: var(--text-muted); white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+    .notiz-modus-switch button + button { border-left: 1.5px solid var(--border); }
+    .notiz-modus-switch button.active { background: var(--primary-light); color: var(--primary); }
+    /* Editor: Schreiben / Geteilt / Lesen */
+    .notiz-editor { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    #notiz-modal-text {
+      font-family: inherit; font-size: 0.92rem; line-height: 1.55;
+      flex: 1; min-height: 0; height: auto; resize: none;
+    }
     .notiz-md-preview {
-      flex: 1; overflow-y: auto; padding: 10px 4px; display: none;
-      font-size: 0.9rem; line-height: 1.6; color: var(--text);
-      white-space: pre-wrap; word-break: break-word;
+      display: none; flex: 1; min-width: 0; overflow-y: auto; padding: 4px 8px 4px 2px;
+      font-size: 0.92rem; line-height: 1.65; color: var(--text); word-break: break-word;
     }
-    .notiz-modal.show-preview .notiz-md-preview {
-      display: block; flex: 1; min-width: 0;
-      border-left: 1px dashed var(--border); padding-left: 12px;
+    .notiz-modal.modus-geteilt .notiz-editor { flex-direction: row; gap: 14px; }
+    .notiz-modal.modus-geteilt #notiz-modal-text { flex: 1; min-width: 0; }
+    .notiz-modal.modus-geteilt .notiz-md-preview {
+      display: block; border-left: 1px dashed var(--border); padding-left: 14px;
     }
+    .notiz-modal.modus-lesen #notiz-modal-text { display: none; }
+    .notiz-modal.modus-lesen .notiz-md-preview { display: block; }
     @media (max-width: 700px) {
-      .notiz-modal.show-preview .notiz-editor { flex-direction: column; }
-      .notiz-modal.show-preview #notiz-modal-text { flex: 0 0 auto; max-height: 180px; }
-      .notiz-modal.show-preview .notiz-md-preview {
-        border-left: none; padding-left: 4px; border-top: 1px dashed var(--border); padding-top: 8px;
+      .notiz-modal.modus-geteilt .notiz-editor { flex-direction: column; gap: 8px; }
+      .notiz-modal.modus-geteilt #notiz-modal-text { flex: 0 0 auto; max-height: 170px; }
+      .notiz-modal.modus-geteilt .notiz-md-preview {
+        border-left: none; padding-left: 2px; border-top: 1px dashed var(--border); padding-top: 8px;
       }
     }
     .notiz-md-preview strong { font-weight: 700; }
@@ -1074,7 +1137,7 @@
       .todo-status select { font-size: 0.76rem; padding: 4px 6px; min-width: 90px; }
       .ordner-badge { font-size: 0.68rem; padding: 2px 5px; }
       .drag-handle { padding: 1px 2px; }
-      .notiz-grid { grid-template-columns: 1fr; }
+      .notiz-grid { column-count: 1; }
       .add-todo-extra {
         grid-template-columns: 1fr;
       }
@@ -1890,7 +1953,7 @@
     /* ── Feinschliff: dezente Hover-Effekte (nur Geräte mit Maus) ── */
     @media (hover: hover) {
       .todo-item:hover   { box-shadow: var(--shadow); }
-      .notiz-card:hover  { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--primary-border); }
+      .notiz-card:hover  { box-shadow: var(--shadow-md); transform: translateY(-2px); }
       .notiz-card:hover::before { opacity: 1; }
     }
 
@@ -2374,6 +2437,17 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
+    <div class="notiz-colorbar" id="notiz-colorbar">
+      <span class="notiz-colorbar-label">FARBE</span>
+      <button type="button" class="notiz-dot f-standard active" data-farbe="" title="Standard"></button>
+      <button type="button" class="notiz-dot f-rot" data-farbe="rot" title="Rot"></button>
+      <button type="button" class="notiz-dot f-orange" data-farbe="orange" title="Orange"></button>
+      <button type="button" class="notiz-dot f-gelb" data-farbe="gelb" title="Gelb"></button>
+      <button type="button" class="notiz-dot f-gruen" data-farbe="gruen" title="Grün"></button>
+      <button type="button" class="notiz-dot f-blau" data-farbe="blau" title="Blau"></button>
+      <button type="button" class="notiz-dot f-lila" data-farbe="lila" title="Lila"></button>
+      <button type="button" class="notiz-dot f-rosa" data-farbe="rosa" title="Rosa"></button>
+    </div>
     <div class="notiz-toolbar">
       <button type="button" class="notiz-fmt-btn" id="nfmt-bold" title="Fett (Ctrl+B)"><strong>B</strong></button>
       <button type="button" class="notiz-fmt-btn" id="nfmt-italic" title="Kursiv (Ctrl+I)"><em>I</em></button>
@@ -2387,7 +2461,11 @@
       <button type="button" class="notiz-fmt-btn" id="nfmt-hr" title="Trennlinie">—</button>
       <span class="notiz-toolbar-sep"></span>
       <button type="button" class="notiz-fmt-btn" id="nfmt-code" title="Code">&lt;/&gt;</button>
-      <button type="button" class="notiz-fmt-btn notiz-preview-btn" id="nfmt-preview" title="Vorschau ein-/ausblenden">👁 Vorschau</button>
+      <div class="notiz-modus-switch" role="group" aria-label="Anzeige-Modus">
+        <button type="button" id="nmod-bearbeiten" class="active" title="Text bearbeiten">✏️ Schreiben</button>
+        <button type="button" id="nmod-geteilt" title="Editor und Vorschau nebeneinander">🪟 Geteilt</button>
+        <button type="button" id="nmod-lesen" title="Formatierte Lesansicht">👁 Lesen</button>
+      </div>
     </div>
     <div class="notiz-editor" id="notiz-editor">
       <textarea id="notiz-modal-text" placeholder="Notiz schreiben …
@@ -2396,7 +2474,7 @@
 - Liste
 - [ ] Checkliste
 **fett**, *kursiv*, ~~durchgestrichen~~, `Code`"></textarea>
-      <div class="notiz-md-preview hidden" id="notiz-md-preview"></div>
+      <div class="notiz-md-preview" id="notiz-md-preview"></div>
     </div>
     <div class="modal-footer">
       <span class="modal-save-hint" id="notiz-save-hint"></span>
@@ -5623,6 +5701,9 @@ let notizDebounce                = null;
 let notizSuche                   = "";
 let notizSortierung              = localStorage.getItem("notiz_sortierung") || "updated";
 let notizAnsicht                 = localStorage.getItem("notiz_ansicht") || "grid";
+// Notizen 3.0: Farbe pro Notiz (optional, rueckwaertskompatibel)
+const NOTIZ_FARBEN               = ["rot","orange","gelb","gruen","blau","lila","rosa"];
+let currentNotizFarbe            = "";
 
 function initNotizen(userId) {
   const ordnerRef = db.collection(`users/${userId}/notizenOrdner`).orderBy("createdAt","asc");
@@ -5651,6 +5732,16 @@ function initNotizen(userId) {
     notizSortierung = $("notiz-sort").value;
     localStorage.setItem("notiz_sortierung", notizSortierung);
     renderNotizenList(userId);
+  });
+
+  // Farbwahl im Editor (speichert sofort per AutoSave)
+  document.querySelectorAll("#notiz-colorbar .notiz-dot").forEach(dot => {
+    dot.addEventListener("click", () => {
+      currentNotizFarbe = dot.dataset.farbe || "";
+      document.querySelectorAll("#notiz-colorbar .notiz-dot").forEach(d =>
+        d.classList.toggle("active", d === dot));
+      autoSaveNotiz();
+    });
   });
 
   // Ansicht Kacheln/Liste (persistiert)
@@ -5693,6 +5784,7 @@ function initNotizen(userId) {
       db.collection(`users/${userId}/notizenOrdner/${currentNotizOrdnerId}/notizen`).doc(currentNotizId).update({
         titel: $("notiz-modal-title").value.trim() || "Ohne Titel",
         text:  $("notiz-modal-text").value,
+        farbe: currentNotizFarbe || "",
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }).then(()=>{ $("notiz-save-hint").textContent="Gespeichert ✓"; })
         .catch(()=>{ $("notiz-save-hint").textContent="Fehler"; });
@@ -5842,7 +5934,7 @@ function renderNotizenList(userId) {
       empty.querySelector(".empty-hint").textContent = `Keine Notiz enthält „${notizSuche}“. Suche zurücksetzen oder anderen Begriff versuchen.`;
     } else {
       empty.querySelector(".empty-title").textContent = "Noch keine Notizen";
-      empty.querySelector(".empty-hint").textContent = "Tippe unten rechts auf „+“, um deine erste Notiz anzulegen. Formatierungen wie **fett**, Überschriften und Checklisten werden unterstützt.";
+      empty.querySelector(".empty-hint").textContent = "Tippe unten rechts auf „+“, um deine erste Notiz anzulegen. Formatierungen, Checklisten und Farben werden unterstützt.";
     }
     return;
   }
@@ -5872,7 +5964,9 @@ function renderNotizenList(userId) {
     }
 
     const card = document.createElement("div");
-    card.className = "notiz-card" + (n.pinned ? " is-pinned" : "");
+    card.className = "notiz-card"
+      + (n.pinned ? " is-pinned" : "")
+      + (NOTIZ_FARBEN.indexOf(n.farbe) > -1 ? " c-" + n.farbe : "");
     const d = n.updatedAt ? (n.updatedAt.toDate ? n.updatedAt.toDate() : new Date(n.updatedAt)) : null;
 
     const top = document.createElement("div");
@@ -5921,7 +6015,7 @@ function renderNotizenList(userId) {
         <span>${notizRelativDatum(d)}</span>
       </div>
     `);
-    card.addEventListener("click", () => openNotizModal(n.id, n.titel, n.text, n._ordnerId));
+    card.addEventListener("click", () => openNotizModal(n.id, n.titel, n.text, n._ordnerId, n.farbe));
     frag.appendChild(card);
   });
   list.appendChild(frag);
@@ -6055,34 +6149,34 @@ function insertHeading(level) {
   $("notiz-modal-text").addEventListener("input", notizZaehler);
   window._notizZaehlerAktualisieren = notizZaehler;
 
-  // Live-Vorschau bei Eingabe aktualisieren
+  // ── Anzeige-Modus: Schreiben / Geteilt / Lesen (Live-Vorschau) ──
   function aktualisierePreview() {
     $("notiz-md-preview").innerHTML = mdToHtml($("notiz-modal-text").value) || "<em style='color:var(--text-muted)'>Leer</em>";
   }
-  $("notiz-modal-text").addEventListener("input", () => {
-    if ($("notiz-modal").classList.contains("show-preview")) aktualisierePreview();
-  });
-
-  let previewing = false;
-  $("nfmt-preview").addEventListener("mousedown", e => e.preventDefault());
-  $("nfmt-preview").addEventListener("click", () => {
-    previewing = !previewing;
-    $("notiz-modal").classList.toggle("show-preview", previewing);
-    const prev = $("notiz-md-preview");
-    if (previewing) {
-      aktualisierePreview();
-      $("nfmt-preview").textContent = "✏️ Bearbeiten";
-    } else {
-      $("nfmt-preview").textContent = "👁 Vorschau";
+  let notizModus = localStorage.getItem("notiz_modus") || "bearbeiten";
+  function setzeNotizModus(modus, merken = true) {
+    notizModus = modus;
+    if (merken) localStorage.setItem("notiz_modus", modus);
+    const modal = $("notiz-modal");
+    modal.classList.remove("modus-bearbeiten", "modus-geteilt", "modus-lesen");
+    modal.classList.add("modus-" + modus);
+    ["bearbeiten", "geteilt", "lesen"].forEach(m =>
+      $("nmod-" + m).classList.toggle("active", m === modus));
+    if (modus === "bearbeiten") {
       $("notiz-modal-text").focus();
+    } else {
+      aktualisierePreview();
     }
+  }
+  ["bearbeiten", "geteilt", "lesen"].forEach(m => {
+    $("nmod-" + m).addEventListener("click", () => setzeNotizModus(m));
   });
-  // Reset von außen (openNotizModal)
-  window._notizPreviewZuruecksetzen = () => {
-    previewing = false;
-    $("notiz-modal").classList.remove("show-preview");
-    $("nfmt-preview").textContent = "👁 Vorschau";
-  };
+  // Live-Vorschau bei Eingabe aktualisieren
+  $("notiz-modal-text").addEventListener("input", () => {
+    if (notizModus !== "bearbeiten") aktualisierePreview();
+  });
+  // Reset von außen (openNotizModal): letzten Modus wiederherstellen, ohne ihn neu zu speichern
+  window._notizModusZuruecksetzen = () => setzeNotizModus(notizModus, false);
 
   // Klickbare Checklisten in der Vorschau: Häkchen toggelt den Markdown-Text
   $("notiz-md-preview").addEventListener("click", e => {
@@ -6107,17 +6201,20 @@ function insertHeading(level) {
   });
 })();
 
-function openNotizModal(id, titel, text, ordnerId = currentNotizenOrdnerId) {
+function openNotizModal(id, titel, text, ordnerId = currentNotizenOrdnerId, farbe = "") {
   currentNotizId = id;
   currentNotizOrdnerId = ordnerId;
   if (ordnerId && ordnerId !== "alle") {
     lastRealNotizenOrdnerId = ordnerId;
   }
+  currentNotizFarbe = NOTIZ_FARBEN.indexOf(farbe) > -1 ? farbe : "";
+  document.querySelectorAll("#notiz-colorbar .notiz-dot").forEach(d =>
+    d.classList.toggle("active", (d.dataset.farbe || "") === currentNotizFarbe));
   $("notiz-modal-title").value = titel||"";
   $("notiz-modal-text").value  = text||"";
   $("notiz-save-hint").textContent = "";
-  // reset preview mode
-  if (window._notizPreviewZuruecksetzen) window._notizPreviewZuruecksetzen();
+  // Anzeige-Modus auf letzten gewählten Stand bringen
+  if (window._notizModusZuruecksetzen) window._notizModusZuruecksetzen();
   if (window._notizZaehlerAktualisieren) window._notizZaehlerAktualisieren();
   $("notiz-modal").classList.remove("hidden");
   $("notiz-modal-text").focus();
