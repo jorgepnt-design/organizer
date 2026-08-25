@@ -83,8 +83,20 @@
       <div>
         <b id="who-email"></b>
         <div class="uid" id="who-uid"></div>
+        <div class="uid" id="who-provider"></div>
       </div>
       <button class="btn-danger-ghost" id="btn-logout">Abmelden</button>
+    </div>
+    <div id="stand" class="hidden">
+      <div class="row" style="align-items:center;justify-content:space-between">
+        <b style="font-size:0.9rem">📊 Daten in diesem Konto</b>
+        <button class="btn-ghost" id="btn-count" style="padding:7px 12px">Neu zählen</button>
+      </div>
+      <div id="stand-body" style="font-size:0.86rem;margin-top:8px;font-family:ui-monospace,Consolas,monospace">…</div>
+    </div>
+    <div class="note" style="margin-top:12px">
+      Melde dich <b>nacheinander mit jedem Konto und jedem Anmelde-Weg</b> an, um zu sehen, wo deine Daten
+      liegen. Ist die Google-Anmeldung nötig, nutze die App selbst — dieses Werkzeug meldet per E-Mail/Passwort an.
     </div>
     <div id="login-form">
       <label for="email">E-Mail</label>
@@ -251,21 +263,53 @@ async function importAll(uid, payload) {
 }
 
 // ── UI-Verdrahtung ──
+async function countAll(uid) {
+  const body = $("stand-body");
+  body.textContent = "zähle …";
+  const lines = []; let total = 0;
+  for (const [coll, subs] of Object.entries(SCHEMA)) {
+    try {
+      const snap = await db.collection(`users/${uid}/${coll}`).get();
+      let subCount = 0;
+      for (const sub of subs) {
+        for (const doc of snap.docs) {
+          const s = await db.collection(`users/${uid}/${coll}/${doc.id}/${sub}`).get();
+          subCount += s.size;
+        }
+      }
+      total += snap.size + subCount;
+      const extra = subs.length ? `  (+${subCount} ${subs.join("/")})` : "";
+      lines.push(`${snap.size === 0 && subCount === 0 ? "  " : "✔ "}${coll}: ${snap.size}${extra}`);
+    } catch (e) {
+      lines.push(`✘ ${coll}: FEHLER ${e.code || e.message}`);
+    }
+  }
+  body.innerHTML = lines.map(l => l.startsWith("✘") ? `<span style="color:#dc2626">${l}</span>` : l).join("<br>")
+    + `<br><b>Summe: ${total} Einträge</b>`;
+  return total;
+}
+
 auth.onAuthStateChanged(user => {
   if (user) {
     $("who").classList.remove("hidden");
+    $("stand").classList.remove("hidden");
     $("login-form").classList.add("hidden");
     $("who-email").textContent = user.email || "(ohne E-Mail)";
     $("who-uid").textContent = "UID: " + user.uid;
+    const provs = (user.providerData || []).map(p => p.providerId).join(", ") || "unbekannt";
+    $("who-provider").textContent = "Anmelde-Weg: " + provs;
     $("btn-export").disabled = false;
     $("btn-import").disabled = !$("import-file").files.length;
+    countAll(user.uid).catch(() => {});
   } else {
     $("who").classList.add("hidden");
+    $("stand").classList.add("hidden");
     $("login-form").classList.remove("hidden");
     $("btn-export").disabled = true;
     $("btn-import").disabled = true;
   }
 });
+$("btn-count").addEventListener("click", () => { if (auth.currentUser) countAll(auth.currentUser.uid); });
 
 $("btn-login").addEventListener("click", async () => {
   const email = $("email").value.trim(), pw = $("password").value;
