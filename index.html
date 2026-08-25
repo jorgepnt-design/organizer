@@ -808,6 +808,7 @@
       transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
     }
     .notiz-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .notiz-card.aktiv { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
     /* Akzentstreifen oben: unsichtbar, erscheint bei Hover / dauerhaft bei angepinnt */
     .notiz-card::before {
       content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
@@ -874,15 +875,45 @@
       padding: 2px 9px; border-radius: 10px; font-weight: 600; font-size: 0.68rem;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;
     }
-    /* Editor-Modal: größer, feste Höhe, interne Scrolls */
-    .modal.notiz-modal {
-      max-width: 780px; height: min(660px, 88vh); overflow: hidden;
-      padding: 18px 20px 14px; gap: 10px;
+    /* Zwei-Spalten-Layout: Notizliste links, Editor rechts (kein Modal mehr) */
+    .notiz-split {
+      display: grid; grid-template-columns: minmax(270px, 340px) minmax(0, 1fr);
+      gap: 14px; align-items: start;
     }
-    @media (max-width: 600px) {
-      .modal.notiz-modal { height: auto; min-height: 0; }
-      .notiz-editor { min-height: 260px; }
+    .notiz-listen-spalte { min-width: 0; }
+    .notiz-pane {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow);
+      padding: 14px 16px 12px;
+      display: flex; flex-direction: column; gap: 10px;
+      min-height: 420px; max-height: calc(100vh - 170px);
+      overflow: hidden;
     }
+    .notiz-pane-inhalt { display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0; }
+    .notiz-pane-platzhalter { display: none; flex: 1; align-items: center; justify-content: center; }
+    .notiz-pane.leer .notiz-pane-platzhalter { display: flex; }
+    .notiz-pane.leer .notiz-pane-inhalt { display: none; }
+    .notiz-pane-kopf { display: flex; align-items: center; gap: 10px; }
+    .notiz-pane-kopf .btn-icon { flex-shrink: 0; }
+    #notiz-modal-title {
+      flex: 1; min-width: 0; font-size: 1.05rem; font-weight: 650;
+      border: none; border-bottom: 2px solid var(--border); border-radius: 0;
+      padding: 4px 0; background: transparent; color: var(--text);
+    }
+    #notiz-modal-title:focus { border-bottom-color: var(--primary); }
+    /* Mobile: Editor als Vollbild-Ansicht mit Zurück-Pfeil */
+    @media (max-width: 899px) {
+      .notiz-split { display: block; }
+      .notiz-pane {
+        position: fixed; inset: 0; z-index: 80;
+        border-radius: 0; border: none; box-shadow: none;
+        min-height: 0; max-height: none;
+        padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+        display: none;
+      }
+      .notiz-split.editor-offen .notiz-pane { display: flex; animation: notiz-pane-in 0.2s ease-out; }
+    }
+    @keyframes notiz-pane-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
     /* Farbwahl */
     .notiz-colorbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .notiz-colorbar-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.06em; }
@@ -937,17 +968,17 @@
       display: none; flex: 1; min-width: 0; overflow-y: auto; padding: 4px 8px 4px 2px;
       font-size: 0.92rem; line-height: 1.65; color: var(--text); word-break: break-word;
     }
-    .notiz-modal.modus-geteilt .notiz-editor { flex-direction: row; gap: 14px; }
-    .notiz-modal.modus-geteilt #notiz-modal-text { flex: 1; min-width: 0; }
-    .notiz-modal.modus-geteilt .notiz-md-preview {
+    .notiz-pane.modus-geteilt .notiz-editor { flex-direction: row; gap: 14px; }
+    .notiz-pane.modus-geteilt #notiz-modal-text { flex: 1; min-width: 0; }
+    .notiz-pane.modus-geteilt .notiz-md-preview {
       display: block; border-left: 1px dashed var(--border); padding-left: 14px;
     }
-    .notiz-modal.modus-lesen #notiz-modal-text { display: none; }
-    .notiz-modal.modus-lesen .notiz-md-preview { display: block; }
+    .notiz-pane.modus-lesen #notiz-modal-text { display: none; }
+    .notiz-pane.modus-lesen .notiz-md-preview { display: block; }
     @media (max-width: 700px) {
-      .notiz-modal.modus-geteilt .notiz-editor { flex-direction: column; gap: 8px; }
-      .notiz-modal.modus-geteilt #notiz-modal-text { flex: 0 0 auto; max-height: 170px; }
-      .notiz-modal.modus-geteilt .notiz-md-preview {
+      .notiz-pane.modus-geteilt .notiz-editor { flex-direction: column; gap: 8px; }
+      .notiz-pane.modus-geteilt #notiz-modal-text { flex: 0 0 auto; max-height: 170px; }
+      .notiz-pane.modus-geteilt .notiz-md-preview {
         border-left: none; padding-left: 2px; border-top: 1px dashed var(--border); padding-top: 8px;
       }
     }
@@ -2360,12 +2391,79 @@
         Neuer Ordner
       </button>
     </div>
-    <div class="notiz-count" id="notiz-count"></div>
-    <div id="notiz-list" class="notiz-grid">
-      <div class="empty-state" id="notiz-empty">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <div class="empty-title">Noch keine Notizen</div>
-        <div class="empty-hint">Tippe unten rechts auf „+“, um deine erste Notiz anzulegen. Formatierungen wie **fett**, Überschriften und Checklisten werden unterstützt.</div>
+    <div class="notiz-split" id="notiz-split">
+      <div class="notiz-listen-spalte">
+        <div class="notiz-count" id="notiz-count"></div>
+        <div id="notiz-list" class="notiz-grid">
+          <div class="empty-state" id="notiz-empty">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <div class="empty-title">Noch keine Notizen</div>
+            <div class="empty-hint">Tippe unten rechts auf „+“, um deine erste Notiz anzulegen. Formatierungen wie **fett**, Überschriften und Checklisten werden unterstützt.</div>
+          </div>
+        </div>
+      </div>
+      <div class="notiz-pane leer" id="notiz-editor-pane">
+        <div class="notiz-pane-platzhalter">
+          <div class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <div class="empty-title">Keine Notiz ausgewählt</div>
+            <div class="empty-hint">Wähle eine Notiz aus oder lege über „+“ eine neue an.</div>
+          </div>
+        </div>
+        <div class="notiz-pane-inhalt">
+          <div class="notiz-pane-kopf">
+            <button class="btn-icon" id="notiz-modal-close" title="Zurück zur Übersicht">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            </button>
+            <input type="text" id="notiz-modal-title" placeholder="Titel …" />
+          </div>
+          <div class="notiz-colorbar" id="notiz-colorbar">
+            <span class="notiz-colorbar-label">FARBE</span>
+            <button type="button" class="notiz-dot f-standard active" data-farbe="" title="Standard"></button>
+            <button type="button" class="notiz-dot f-rot" data-farbe="rot" title="Rot"></button>
+            <button type="button" class="notiz-dot f-orange" data-farbe="orange" title="Orange"></button>
+            <button type="button" class="notiz-dot f-gelb" data-farbe="gelb" title="Gelb"></button>
+            <button type="button" class="notiz-dot f-gruen" data-farbe="gruen" title="Grün"></button>
+            <button type="button" class="notiz-dot f-blau" data-farbe="blau" title="Blau"></button>
+            <button type="button" class="notiz-dot f-lila" data-farbe="lila" title="Lila"></button>
+            <button type="button" class="notiz-dot f-rosa" data-farbe="rosa" title="Rosa"></button>
+          </div>
+          <div class="notiz-toolbar">
+            <button type="button" class="notiz-fmt-btn" id="nfmt-bold" title="Fett (Ctrl+B)"><strong>B</strong></button>
+            <button type="button" class="notiz-fmt-btn" id="nfmt-italic" title="Kursiv (Ctrl+I)"><em>I</em></button>
+            <button type="button" class="notiz-fmt-btn" id="nfmt-strike" title="Durchstreichen (Ctrl+Shift+X)"><s>S</s></button>
+            <span class="notiz-toolbar-sep"></span>
+            <button type="button" class="notiz-fmt-btn" id="nfmt-h1" title="Überschrift 1">H1</button>
+            <button type="button" class="notiz-fmt-btn" id="nfmt-h2" title="Überschrift 2">H2</button>
+            <span class="notiz-toolbar-sep"></span>
+            <button type="button" class="notiz-fmt-btn" id="nfmt-bullet" title="Aufzählung">• Liste</button>
+            <button type="button" class="notiz-fmt-btn" id="nfmt-check" title="Checkliste">☑ Check</button>
+            <button type="button" class="notiz-fmt-btn" id="nfmt-hr" title="Trennlinie">—</button>
+            <span class="notiz-toolbar-sep"></span>
+            <button type="button" class="notiz-fmt-btn" id="nfmt-code" title="Code">&lt;/&gt;</button>
+            <div class="notiz-modus-switch" role="group" aria-label="Anzeige-Modus">
+              <button type="button" id="nmod-bearbeiten" class="active" title="Text bearbeiten">✏️ Schreiben</button>
+              <button type="button" id="nmod-geteilt" title="Editor und Vorschau nebeneinander">🪟 Geteilt</button>
+              <button type="button" id="nmod-lesen" title="Formatierte Lesansicht">👁 Lesen</button>
+            </div>
+          </div>
+          <div class="notiz-editor" id="notiz-editor">
+            <textarea id="notiz-modal-text" placeholder="Notiz schreiben …
+
+# Überschrift
+- Liste
+- [ ] Checkliste
+**fett**, *kursiv*, ~~durchgestrichen~~, `Code`"></textarea>
+            <div class="notiz-md-preview" id="notiz-md-preview"></div>
+          </div>
+          <div class="modal-footer">
+            <span class="modal-save-hint" id="notiz-save-hint"></span>
+            <span class="notiz-zaehler" id="notiz-zaehler"></span>
+            <button class="btn-delete" id="notiz-modal-delete" title="Notiz löschen">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2426,64 +2524,6 @@
 
   </div>
 
-</div>
-
-<!-- Notizen-Modal -->
-<div class="modal-overlay hidden" id="notiz-modal" role="dialog" aria-modal="true" aria-label="Notiz bearbeiten">
-  <div class="modal notiz-modal">
-    <div class="modal-header">
-      <input type="text" id="notiz-modal-title" placeholder="Titel …" style="flex:1; font-size:1rem; font-weight:600; border:none; border-bottom:2px solid var(--border); border-radius:0; padding:4px 0; background:transparent; color:var(--text);" />
-      <button class="btn-icon" id="notiz-modal-close" style="margin-left:10px;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="notiz-colorbar" id="notiz-colorbar">
-      <span class="notiz-colorbar-label">FARBE</span>
-      <button type="button" class="notiz-dot f-standard active" data-farbe="" title="Standard"></button>
-      <button type="button" class="notiz-dot f-rot" data-farbe="rot" title="Rot"></button>
-      <button type="button" class="notiz-dot f-orange" data-farbe="orange" title="Orange"></button>
-      <button type="button" class="notiz-dot f-gelb" data-farbe="gelb" title="Gelb"></button>
-      <button type="button" class="notiz-dot f-gruen" data-farbe="gruen" title="Grün"></button>
-      <button type="button" class="notiz-dot f-blau" data-farbe="blau" title="Blau"></button>
-      <button type="button" class="notiz-dot f-lila" data-farbe="lila" title="Lila"></button>
-      <button type="button" class="notiz-dot f-rosa" data-farbe="rosa" title="Rosa"></button>
-    </div>
-    <div class="notiz-toolbar">
-      <button type="button" class="notiz-fmt-btn" id="nfmt-bold" title="Fett (Ctrl+B)"><strong>B</strong></button>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-italic" title="Kursiv (Ctrl+I)"><em>I</em></button>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-strike" title="Durchstreichen (Ctrl+Shift+X)"><s>S</s></button>
-      <span class="notiz-toolbar-sep"></span>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-h1" title="Überschrift 1">H1</button>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-h2" title="Überschrift 2">H2</button>
-      <span class="notiz-toolbar-sep"></span>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-bullet" title="Aufzählung">• Liste</button>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-check" title="Checkliste">☑ Check</button>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-hr" title="Trennlinie">—</button>
-      <span class="notiz-toolbar-sep"></span>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-code" title="Code">&lt;/&gt;</button>
-      <div class="notiz-modus-switch" role="group" aria-label="Anzeige-Modus">
-        <button type="button" id="nmod-bearbeiten" class="active" title="Text bearbeiten">✏️ Schreiben</button>
-        <button type="button" id="nmod-geteilt" title="Editor und Vorschau nebeneinander">🪟 Geteilt</button>
-        <button type="button" id="nmod-lesen" title="Formatierte Lesansicht">👁 Lesen</button>
-      </div>
-    </div>
-    <div class="notiz-editor" id="notiz-editor">
-      <textarea id="notiz-modal-text" placeholder="Notiz schreiben …
-
-# Überschrift
-- Liste
-- [ ] Checkliste
-**fett**, *kursiv*, ~~durchgestrichen~~, `Code`"></textarea>
-      <div class="notiz-md-preview" id="notiz-md-preview"></div>
-    </div>
-    <div class="modal-footer">
-      <span class="modal-save-hint" id="notiz-save-hint"></span>
-      <span class="notiz-zaehler" id="notiz-zaehler"></span>
-      <button class="btn-delete" id="notiz-modal-delete" title="Notiz löschen" style="color:#d1d5db;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-      </button>
-    </div>
-  </div>
 </div>
 
 <!-- Color-Labels-Modal -->
@@ -3317,11 +3357,11 @@ new MutationObserver(muts => {
   }));
 }).observe(document.body, { childList: true, subtree: true });
 
-// ── A11Y: Escape schließt das offene Modal ──
+// ── A11Y: Escape schließt das offene Modal bzw. den Notiz-Editor ──
 document.addEventListener("keydown", e => {
   if (e.key !== "Escape") return;
-  const notiz = $("notiz-modal");
-  if (notiz && !notiz.classList.contains("hidden")) { closeNotizModal(); return; }
+  const notizPane = $("notiz-editor-pane");
+  if (notizPane && !notizPane.classList.contains("leer")) { closeNotizModal(); return; }
   ["fab-todo-modal", "color-labels-modal", "share-modal", "join-modal", "radar-modal"].some(id => {
     const m = $(id);
     if (m && !m.classList.contains("hidden")) { m.classList.add("hidden"); return true; }
@@ -3664,7 +3704,7 @@ function handleDashboardSearchClick(target) {
     if (!note) return;
     switchTab("notizen");
     if (ordnerId) selectNotizenOrdner(ordnerId, currentUserId);
-    openNotizModal(note.id, note.titel, note.text, ordnerId);
+    openNotizModal(note.id, note.titel, note.text, ordnerId, note.farbe);
     return;
   }
   switchTab("einkauf");
@@ -5765,7 +5805,6 @@ function initNotizen(userId) {
   });
 
   $("notiz-modal-close").addEventListener("click", closeNotizModal);
-  $("notiz-modal").addEventListener("click", e => { if (e.target===$("notiz-modal")) closeNotizModal(); });
   $("notiz-modal-delete").addEventListener("click", () => {
     if (!currentNotizId||!currentNotizOrdnerId) return;
     safeConfirm("Notiz löschen?").then(ok => {
@@ -5964,6 +6003,7 @@ function renderNotizenList(userId) {
     }
 
     const card = document.createElement("div");
+    card.dataset.id = n.id;
     card.className = "notiz-card"
       + (n.pinned ? " is-pinned" : "")
       + (NOTIZ_FARBEN.indexOf(n.farbe) > -1 ? " c-" + n.farbe : "");
@@ -6019,6 +6059,11 @@ function renderNotizenList(userId) {
     frag.appendChild(card);
   });
   list.appendChild(frag);
+  // Aktive Notiz markieren (bleibt nach Re-Render durch AutoSave-Snapshot erhalten)
+  if (currentNotizId) {
+    list.querySelectorAll(".notiz-card").forEach(c =>
+      c.classList.toggle("aktiv", c.dataset.id === currentNotizId));
+  }
 }
 
 // ── Markdown helpers ──────────────────────────────────────────
@@ -6157,9 +6202,9 @@ function insertHeading(level) {
   function setzeNotizModus(modus, merken = true) {
     notizModus = modus;
     if (merken) localStorage.setItem("notiz_modus", modus);
-    const modal = $("notiz-modal");
-    modal.classList.remove("modus-bearbeiten", "modus-geteilt", "modus-lesen");
-    modal.classList.add("modus-" + modus);
+    const pane = $("notiz-editor-pane");
+    pane.classList.remove("modus-bearbeiten", "modus-geteilt", "modus-lesen");
+    pane.classList.add("modus-" + modus);
     ["bearbeiten", "geteilt", "lesen"].forEach(m =>
       $("nmod-" + m).classList.toggle("active", m === modus));
     if (modus === "bearbeiten") {
@@ -6213,15 +6258,20 @@ function openNotizModal(id, titel, text, ordnerId = currentNotizenOrdnerId, farb
   $("notiz-modal-title").value = titel||"";
   $("notiz-modal-text").value  = text||"";
   $("notiz-save-hint").textContent = "";
+  // Editor-Bereich zeigen (Desktop: rechte Spalte, Mobile: Vollbild) + Karte markieren
+  $("notiz-editor-pane").classList.remove("leer");
+  $("notiz-split").classList.add("editor-offen");
+  document.querySelectorAll("#notiz-list .notiz-card").forEach(c =>
+    c.classList.toggle("aktiv", c.dataset.id === id));
   // Anzeige-Modus auf letzten gewählten Stand bringen
   if (window._notizModusZuruecksetzen) window._notizModusZuruecksetzen();
   if (window._notizZaehlerAktualisieren) window._notizZaehlerAktualisieren();
-  $("notiz-modal").classList.remove("hidden");
-  $("notiz-modal-text").focus();
 }
 
 function closeNotizModal() {
-  $("notiz-modal").classList.add("hidden");
+  $("notiz-editor-pane").classList.add("leer");
+  $("notiz-split").classList.remove("editor-offen");
+  document.querySelectorAll("#notiz-list .notiz-card.aktiv").forEach(c => c.classList.remove("aktiv"));
   currentNotizId = null;
   currentNotizOrdnerId = null;
 }
