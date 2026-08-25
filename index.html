@@ -745,24 +745,78 @@
     .empty-hint  { font-size: 0.8rem; color: var(--text-muted); max-width: 320px; margin: 0 auto; line-height: 1.5; }
 
     /* ── NOTIZEN ── */
+    .notiz-topbar {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .notiz-search-wrap {
+      flex: 1; min-width: 200px; position: relative; display: flex; align-items: center;
+    }
+    .notiz-search-wrap svg { position: absolute; left: 11px; color: var(--text-muted); pointer-events: none; }
+    #notiz-search {
+      width: 100%; padding: 9px 34px 9px 32px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 0.9rem; background: var(--surface);
+      color: var(--text); transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    #notiz-search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+    .notiz-search-clear {
+      position: absolute; right: 6px; border: none; background: transparent;
+      color: var(--text-muted); cursor: pointer; padding: 6px; line-height: 0;
+      border-radius: 6px; transition: color 0.15s, background 0.15s;
+    }
+    .notiz-search-clear:hover { color: var(--text); background: var(--surface2); }
+    .notiz-sort {
+      padding: 9px 10px; border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--surface); color: var(--text); font-size: 0.85rem; cursor: pointer;
+    }
+    .notiz-sort:focus { outline: none; border-color: var(--primary); }
+    .notiz-view-toggle {
+      display: inline-flex; border: 1.5px solid var(--border); border-radius: 10px;
+      overflow: hidden; background: var(--surface);
+    }
+    .notiz-view-toggle button {
+      border: none; background: transparent; color: var(--text-muted); cursor: pointer;
+      padding: 9px 12px; line-height: 0; transition: background 0.15s, color 0.15s;
+    }
+    .notiz-view-toggle button + button { border-left: 1.5px solid var(--border); }
+    .notiz-view-toggle button.active { background: var(--primary-light); color: var(--primary); }
+    .notiz-count {
+      font-size: 0.75rem; color: var(--text-muted); margin: -2px 2px 8px; min-height: 16px;
+    }
+    .notiz-count b { color: var(--text); }
+
     .notiz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .notiz-grid.list-mode { grid-template-columns: 1fr; gap: 8px; }
+    /* Angepinnt-Trenner */
+    .notiz-pin-divider {
+      grid-column: 1 / -1; display: flex; align-items: center; gap: 8px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      color: #b45309; margin-top: 4px;
+    }
+    [data-theme="dark"] .notiz-pin-divider { color: #fbbf24; }
+    .notiz-pin-divider::after { content: ""; flex: 1; border-top: 1px solid var(--border); }
     .notiz-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 16px 16px 12px; cursor: pointer;
+      border-radius: var(--radius-lg); padding: 14px 16px 10px; cursor: pointer;
       box-shadow: var(--shadow);
       display: flex; flex-direction: column; min-height: 132px;
       position: relative; overflow: hidden;
       transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
     }
+    .notiz-card:hover { border-color: var(--primary-border); box-shadow: var(--shadow-md); transform: translateY(-1px); }
     /* Akzentstreifen oben: unsichtbar, erscheint bei Hover / dauerhaft bei angepinnt */
     .notiz-card::before {
       content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
       background: var(--primary); opacity: 0; transition: opacity 0.15s;
     }
+    .notiz-card.is-pinned::before { background: #f59e0b; opacity: 1; }
+    .notiz-card.is-pinned { border-color: #f59e0b; }
+    [data-theme="dark"] .notiz-card.is-pinned { border-color: #92400e; }
+    .notiz-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
     .notiz-card-title {
-      font-size: 0.98rem; font-weight: 650; margin-bottom: 6px; line-height: 1.3;
+      flex: 1; font-size: 0.98rem; font-weight: 650; line-height: 1.3;
       color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
+    .notiz-card-actions { display: inline-flex; gap: 2px; flex-shrink: 0; margin: -4px -6px 0 0; }
     .notiz-card-preview {
       flex: 1; font-size: 0.82rem; color: var(--text-muted); line-height: 1.55;
       display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
@@ -770,6 +824,24 @@
     .notiz-card-preview ul { margin: 2px 0 2px 14px; padding: 0; }
     .notiz-card-preview li { list-style: disc; }
     .notiz-card-preview s { text-decoration: line-through; }
+    .notiz-card-preview .md-h1, .notiz-card-preview .md-h2, .notiz-card-preview .md-h3 { color: var(--text); }
+    .notiz-card-preview code {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+      padding: 0 4px; font-family: ui-monospace, Consolas, monospace; font-size: 0.78rem;
+    }
+    .notiz-card-preview .md-checklist { margin: 2px 0; }
+    /* Listenansicht: kompakte Zeilen */
+    .notiz-grid.list-mode .notiz-card {
+      flex-direction: row; align-items: center; min-height: 0; padding: 10px 14px; gap: 12px;
+    }
+    .notiz-grid.list-mode .notiz-card::before { width: 3px; height: auto; right: auto; opacity: 0; }
+    .notiz-grid.list-mode .notiz-card.is-pinned::before { opacity: 1; }
+    .notiz-grid.list-mode .notiz-card-top { flex: 0 0 auto; min-width: 160px; max-width: 240px; }
+    .notiz-grid.list-mode .notiz-card-preview {
+      -webkit-line-clamp: 1; flex: 1; min-width: 0; white-space: nowrap; display: block;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .notiz-grid.list-mode .notiz-card-meta { margin: 0; padding: 0; border: none; flex-shrink: 0; }
     .notiz-card-meta {
       margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -783,27 +855,65 @@
     }
     /* Markdown toolbar */
     .notiz-toolbar {
-      display: flex; gap: 4px; padding: 6px 0 4px;
+      display: flex; gap: 4px; padding: 6px 0 4px; flex-wrap: wrap; align-items: center;
       border-bottom: 1px solid var(--border); margin-bottom: 6px;
     }
+    .notiz-toolbar-sep { width: 1px; height: 18px; background: var(--border); margin: 0 3px; }
     .notiz-fmt-btn {
       padding: 3px 9px; border: 1.5px solid var(--border); border-radius: 6px;
       background: var(--surface2); color: var(--text); font-size: 0.82rem;
       cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.4;
     }
     .notiz-fmt-btn:hover { border-color: var(--primary); background: var(--surface); }
-    /* Rendered markdown inside modal textarea area */
+    .notiz-preview-btn { margin-left: auto; }
+    /* Editor: Textarea + Vorschau (Split auf Desktop) */
+    .notiz-editor { display: flex; flex-direction: column; min-height: 0; flex: 1; }
     #notiz-modal-text { font-family: inherit; font-size: 0.9rem; }
+    .notiz-modal.show-preview .notiz-editor { flex-direction: row; gap: 12px; }
+    .notiz-modal.show-preview #notiz-modal-text { flex: 1; min-width: 0; }
     .notiz-md-preview {
-      flex: 1; overflow-y: auto; padding: 10px 4px;
+      flex: 1; overflow-y: auto; padding: 10px 4px; display: none;
       font-size: 0.9rem; line-height: 1.6; color: var(--text);
       white-space: pre-wrap; word-break: break-word;
+    }
+    .notiz-modal.show-preview .notiz-md-preview {
+      display: block; flex: 1; min-width: 0;
+      border-left: 1px dashed var(--border); padding-left: 12px;
+    }
+    @media (max-width: 700px) {
+      .notiz-modal.show-preview .notiz-editor { flex-direction: column; }
+      .notiz-modal.show-preview #notiz-modal-text { flex: 0 0 auto; max-height: 180px; }
+      .notiz-modal.show-preview .notiz-md-preview {
+        border-left: none; padding-left: 4px; border-top: 1px dashed var(--border); padding-top: 8px;
+      }
     }
     .notiz-md-preview strong { font-weight: 700; }
     .notiz-md-preview em { font-style: italic; }
     .notiz-md-preview s { text-decoration: line-through; }
     .notiz-md-preview ul { margin: 4px 0 4px 18px; padding: 0; }
     .notiz-md-preview li { list-style: disc; margin-bottom: 2px; }
+    .notiz-md-preview .md-h1, .notiz-md-preview .md-h2, .notiz-md-preview .md-h3 {
+      font-weight: 700; color: var(--text); margin: 8px 0 2px; line-height: 1.3;
+      white-space: normal;
+    }
+    .notiz-md-preview .md-h1 { font-size: 1.25rem; }
+    .notiz-md-preview .md-h2 { font-size: 1.1rem; }
+    .notiz-md-preview .md-h3 { font-size: 0.98rem; }
+    .notiz-md-preview code {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+      padding: 1px 5px; font-family: ui-monospace, Consolas, monospace; font-size: 0.82rem;
+      white-space: normal;
+    }
+    .notiz-md-preview .md-hr { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+    .notiz-md-preview .md-checklist { margin: 2px 0; }
+    .md-check {
+      display: flex; align-items: flex-start; gap: 8px; cursor: pointer;
+      padding: 2px 0; line-height: 1.5;
+    }
+    .md-check input { accent-color: var(--primary); width: 15px; height: 15px; margin-top: 3px; cursor: pointer; flex-shrink: 0; }
+    .md-check.done span { text-decoration: line-through; color: var(--text-muted); }
+    .notiz-zaehler { font-size: 0.7rem; color: var(--text-muted); margin-left: auto; white-space: nowrap; }
+    .modal-footer .btn-delete { margin-left: 8px; }
     .notiz-add-btn {
       display: flex; align-items: center; justify-content: center; gap: 8px;
       padding: 14px; border: 2px dashed var(--border); border-radius: var(--radius-lg);
@@ -811,6 +921,7 @@
       min-height: 132px;
       cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s;
     }
+    .notiz-grid.list-mode .notiz-add-btn { min-height: 0; padding: 12px; }
     .notiz-add-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
     /* ── TODO-NOTIZ ── */
@@ -2159,17 +2270,38 @@
 
   <!-- ══ TAB: NOTIZEN ══ -->
   <div id="tab-notizen" class="tab-content">
+    <div class="notiz-topbar">
+      <div class="notiz-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="notiz-search" placeholder="Notizen durchsuchen …" autocomplete="off" aria-label="Notizen durchsuchen" />
+        <button type="button" class="notiz-search-clear hidden" id="notiz-search-clear" title="Suche löschen">&#10005;</button>
+      </div>
+      <select id="notiz-sort" class="notiz-sort" aria-label="Sortierung">
+        <option value="updated">Zuletzt geändert</option>
+        <option value="created">Erstellt</option>
+        <option value="title">Titel A–Z</option>
+      </select>
+      <div class="notiz-view-toggle" role="group" aria-label="Ansicht">
+        <button type="button" id="notiz-view-grid" class="active" title="Kachelansicht" aria-label="Kachelansicht">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </button>
+        <button type="button" id="notiz-view-list" title="Listenansicht" aria-label="Listenansicht">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
     <div class="tabellen-bar" id="notiz-ordner-bar">
       <button class="btn-new-tabelle" id="btn-new-notiz-ordner">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Neuer Ordner
       </button>
     </div>
+    <div class="notiz-count" id="notiz-count"></div>
     <div id="notiz-list" class="notiz-grid">
       <div class="empty-state" id="notiz-empty">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <div class="empty-title">Noch keine Notizen</div>
-        <div class="empty-hint">Tippe unten rechts auf „+“, um deine erste Notiz anzulegen. Formatierungen wie **fett** und Listen werden unterstützt.</div>
+        <div class="empty-hint">Tippe unten rechts auf „+“, um deine erste Notiz anzulegen. Formatierungen wie **fett**, Überschriften und Checklisten werden unterstützt.</div>
       </div>
     </div>
   </div>
@@ -2234,7 +2366,7 @@
 
 <!-- Notizen-Modal -->
 <div class="modal-overlay hidden" id="notiz-modal" role="dialog" aria-modal="true" aria-label="Notiz bearbeiten">
-  <div class="modal">
+  <div class="modal notiz-modal">
     <div class="modal-header">
       <input type="text" id="notiz-modal-title" placeholder="Titel …" style="flex:1; font-size:1rem; font-weight:600; border:none; border-bottom:2px solid var(--border); border-radius:0; padding:4px 0; background:transparent; color:var(--text);" />
       <button class="btn-icon" id="notiz-modal-close" style="margin-left:10px;">
@@ -2244,14 +2376,30 @@
     <div class="notiz-toolbar">
       <button type="button" class="notiz-fmt-btn" id="nfmt-bold" title="Fett (Ctrl+B)"><strong>B</strong></button>
       <button type="button" class="notiz-fmt-btn" id="nfmt-italic" title="Kursiv (Ctrl+I)"><em>I</em></button>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-strike" title="Durchstreichen"><s>S</s></button>
+      <button type="button" class="notiz-fmt-btn" id="nfmt-strike" title="Durchstreichen (Ctrl+Shift+X)"><s>S</s></button>
+      <span class="notiz-toolbar-sep"></span>
+      <button type="button" class="notiz-fmt-btn" id="nfmt-h1" title="Überschrift 1">H1</button>
+      <button type="button" class="notiz-fmt-btn" id="nfmt-h2" title="Überschrift 2">H2</button>
+      <span class="notiz-toolbar-sep"></span>
       <button type="button" class="notiz-fmt-btn" id="nfmt-bullet" title="Aufzählung">• Liste</button>
-      <button type="button" class="notiz-fmt-btn" id="nfmt-preview" title="Vorschau" style="margin-left:auto;">👁 Vorschau</button>
+      <button type="button" class="notiz-fmt-btn" id="nfmt-check" title="Checkliste">☑ Check</button>
+      <button type="button" class="notiz-fmt-btn" id="nfmt-hr" title="Trennlinie">—</button>
+      <span class="notiz-toolbar-sep"></span>
+      <button type="button" class="notiz-fmt-btn" id="nfmt-code" title="Code">&lt;/&gt;</button>
+      <button type="button" class="notiz-fmt-btn notiz-preview-btn" id="nfmt-preview" title="Vorschau ein-/ausblenden">👁 Vorschau</button>
     </div>
-    <textarea id="notiz-modal-text" placeholder="Notiz schreiben … (**fett**, *kursiv*, ~~durchgestrichen~~, - Liste)"></textarea>
-    <div class="notiz-md-preview hidden" id="notiz-md-preview"></div>
+    <div class="notiz-editor" id="notiz-editor">
+      <textarea id="notiz-modal-text" placeholder="Notiz schreiben …
+
+# Überschrift
+- Liste
+- [ ] Checkliste
+**fett**, *kursiv*, ~~durchgestrichen~~, `Code`"></textarea>
+      <div class="notiz-md-preview hidden" id="notiz-md-preview"></div>
+    </div>
     <div class="modal-footer">
       <span class="modal-save-hint" id="notiz-save-hint"></span>
+      <span class="notiz-zaehler" id="notiz-zaehler"></span>
       <button class="btn-delete" id="notiz-modal-delete" title="Notiz löschen" style="color:#d1d5db;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
       </button>
@@ -5470,9 +5618,51 @@ let notizenListeners             = new Map();
 let currentNotizId               = null;
 let currentNotizOrdnerId         = null;
 let notizDebounce                = null;
+// Notizen 2.0: Suche / Sortierung / Ansicht (Sortierung + Ansicht bleiben gespeichert)
+let notizSuche                   = "";
+let notizSortierung              = localStorage.getItem("notiz_sortierung") || "updated";
+let notizAnsicht                 = localStorage.getItem("notiz_ansicht") || "grid";
 
 function initNotizen(userId) {
   const ordnerRef = db.collection(`users/${userId}/notizenOrdner`).orderBy("createdAt","asc");
+
+  // Suche (debounced)
+  let suchDebounce = null;
+  $("notiz-search").addEventListener("input", () => {
+    clearTimeout(suchDebounce);
+    suchDebounce = setTimeout(() => {
+      notizSuche = $("notiz-search").value.trim();
+      $("notiz-search-clear").classList.toggle("hidden", !notizSuche);
+      renderNotizenList(userId);
+    }, 180);
+  });
+  $("notiz-search-clear").addEventListener("click", () => {
+    $("notiz-search").value = "";
+    notizSuche = "";
+    $("notiz-search-clear").classList.add("hidden");
+    renderNotizenList(userId);
+    $("notiz-search").focus();
+  });
+
+  // Sortierung (persistiert)
+  $("notiz-sort").value = notizSortierung;
+  $("notiz-sort").addEventListener("change", () => {
+    notizSortierung = $("notiz-sort").value;
+    localStorage.setItem("notiz_sortierung", notizSortierung);
+    renderNotizenList(userId);
+  });
+
+  // Ansicht Kacheln/Liste (persistiert)
+  function setzeAnsicht(modus) {
+    notizAnsicht = modus;
+    localStorage.setItem("notiz_ansicht", modus);
+    $("notiz-view-grid").classList.toggle("active", modus === "grid");
+    $("notiz-view-list").classList.toggle("active", modus === "list");
+    $("notiz-list").classList.toggle("list-mode", modus === "list");
+  }
+  setzeAnsicht(notizAnsicht);
+  $("notiz-view-grid").addEventListener("click", () => setzeAnsicht("grid"));
+  $("notiz-view-list").addEventListener("click", () => setzeAnsicht("list"));
 
   $("btn-new-notiz-ordner").addEventListener("click", async () => {
     const name = await safePrompt("Name des Ordners:", "Ordner");
@@ -5583,8 +5773,22 @@ function renderNotizenOrdnerBar(ordner, userId) {
   });
 }
 
+function notizRelativDatum(d) {
+  if (!d) return "";
+  const now = new Date();
+  const diffMin = Math.floor((now - d) / 60000);
+  if (diffMin < 1) return "gerade eben";
+  if (diffMin < 60) return `vor ${diffMin} Min.`;
+  const hhmm = `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+  if (diffH(d, now) < 24 && d.getDate() === now.getDate()) return `Heute ${hhmm}`;
+  const gestern = new Date(now); gestern.setDate(now.getDate() - 1);
+  if (d.getDate() === gestern.getDate() && d.getMonth() === gestern.getMonth() && d.getFullYear() === gestern.getFullYear()) return `Gestern ${hhmm}`;
+  return d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"});
+}
+function diffH(a, b) { return Math.floor((b - a) / 3600000); }
+
 function renderNotizenList(userId) {
-  const list = $("notiz-list"), empty = $("notiz-empty");
+  const list = $("notiz-list"), empty = $("notiz-empty"), countEl = $("notiz-count");
   Array.from(list.children).forEach(c => { if (c!==empty) list.removeChild(c); });
   const showingAll = currentNotizenOrdnerId === "alle";
   let notizen = [];
@@ -5595,6 +5799,21 @@ function renderNotizenList(userId) {
   } else {
     const cached = notizenOrdnerCache.get(currentNotizenOrdnerId);
     notizen = cached ? cached.notizen.map(n => ({ ...n, _ordnerId: currentNotizenOrdnerId, _ordnerName: cached.name })) : [];
+  }
+
+  // Suche (Titel + Text)
+  const q = notizSuche.toLowerCase();
+  const gesamt = notizen.length;
+  if (q) {
+    notizen = notizen.filter(n =>
+      (n.titel || "").toLowerCase().includes(q) || (n.text || "").toLowerCase().includes(q));
+  }
+
+  // Zähler
+  if (q) {
+    countEl.innerHTML = `<b>${notizen.length}</b> von <b>${gesamt}</b> Notizen gefunden`;
+  } else {
+    countEl.innerHTML = `<b>${gesamt}</b> ${gesamt === 1 ? "Notiz" : "Notizen"}`;
   }
 
   // "+ Neue Notiz" Karte
@@ -5615,25 +5834,56 @@ function renderNotizenList(userId) {
   });
   list.appendChild(addCard);
 
-  if (notizen.length === 0) { empty.style.display="block"; return; }
+  if (notizen.length === 0) {
+    empty.style.display = "block";
+    if (q) {
+      empty.querySelector(".empty-title").textContent = "Keine Treffer";
+      empty.querySelector(".empty-hint").textContent = `Keine Notiz enthält „${notizSuche}“. Suche zurücksetzen oder anderen Begriff versuchen.`;
+    } else {
+      empty.querySelector(".empty-title").textContent = "Noch keine Notizen";
+      empty.querySelector(".empty-hint").textContent = "Tippe unten rechts auf „+“, um deine erste Notiz anzulegen. Formatierungen wie **fett**, Überschriften und Checklisten werden unterstützt.";
+    }
+    return;
+  }
   empty.style.display = "none";
 
-  // Pinnierte zuerst, dann nach updatedAt
-  const sorted = [...notizen].sort((a,b) => {
+  const ms = v => (v && v.toMillis) ? v.toMillis() : (typeof v === "number" ? v : 0);
+  const sorted = [...notizen].sort((a, b) => {
     if (a.pinned && !b.pinned) return -1;
     if (!a.pinned && b.pinned) return  1;
-    const ta = a.updatedAt?.toMillis?.() ?? 0;
-    const tb = b.updatedAt?.toMillis?.() ?? 0;
-    return tb - ta;
+    if (notizSortierung === "title") {
+      return (a.titel || "Ohne Titel").localeCompare(b.titel || "Ohne Titel", "de");
+    }
+    if (notizSortierung === "created") return ms(b.createdAt) - ms(a.createdAt);
+    return ms(b.updatedAt) - ms(a.updatedAt);
   });
 
   const frag = document.createDocumentFragment();
+  let pinTrennerGesetzt = false;
   sorted.forEach(n => {
+    // Trenner "Angepinnt" vor der ersten nicht-angehefteten Karte
+    if (!n.pinned && !pinTrennerGesetzt && sorted.some(s => s.pinned)) {
+      pinTrennerGesetzt = true;
+      const div = document.createElement("div");
+      div.className = "notiz-pin-divider";
+      div.innerHTML = "📌 Angepinnt";
+      frag.appendChild(div);
+    }
+
     const card = document.createElement("div");
     card.className = "notiz-card" + (n.pinned ? " is-pinned" : "");
     const d = n.updatedAt ? (n.updatedAt.toDate ? n.updatedAt.toDate() : new Date(n.updatedAt)) : null;
 
-    // Pin-Button
+    const top = document.createElement("div");
+    top.className = "notiz-card-top";
+    const titleEl = document.createElement("div");
+    titleEl.className = "notiz-card-title";
+    titleEl.textContent = n.titel || "Ohne Titel";
+    top.appendChild(titleEl);
+
+    // Aktionen: Pin + Schnell-Löschen
+    const actions = document.createElement("div");
+    actions.className = "notiz-card-actions";
     const pinBtn = document.createElement("button");
     pinBtn.className = "btn-pin" + (n.pinned ? " active" : "");
     pinBtn.title = n.pinned ? "Fixierung aufheben" : "Notiz anpinnen";
@@ -5644,22 +5894,30 @@ function renderNotizenList(userId) {
       db.collection(`users/${auth.currentUser.uid}/notizenOrdner/${n._ordnerId}/notizen`)
         .doc(n.id).update({ pinned: !n.pinned }).catch(fsError);
     });
-
-    const top = document.createElement("div");
-    top.className = "notiz-card-top";
-    const titleEl = document.createElement("div");
-    titleEl.className = "notiz-card-title";
-    titleEl.textContent = n.titel || "Ohne Titel";
-    top.appendChild(titleEl);
-    top.appendChild(pinBtn);
-
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn-pin notiz-quick-del";
+    delBtn.title = "Notiz löschen";
+    delBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+    delBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      if (!n._ordnerId || !n.id) return;
+      safeConfirm(`Notiz „${n.titel || "Ohne Titel"}" löschen?`).then(ok => {
+        if (!ok) return;
+        db.collection(`users/${auth.currentUser.uid}/notizenOrdner/${n._ordnerId}/notizen`)
+          .doc(n.id).delete()
+          .then(() => showToast("Notiz gelöscht", "success")).catch(fsError);
+      });
+    });
+    actions.appendChild(pinBtn);
+    actions.appendChild(delBtn);
+    top.appendChild(actions);
     card.appendChild(top);
-    const dateLabel = d ? d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit",hour:"2-digit",minute:"2-digit"}) : "";
+
     card.insertAdjacentHTML("beforeend", `
       <div class="notiz-card-preview">${n.text ? mdToHtml(n.text) : "<em style='color:var(--text-muted)'>Leer</em>"}</div>
       <div class="notiz-card-meta">
         ${showingAll && n._ordnerName ? `<span class="notiz-card-folder">${escapeHtml(n._ordnerName)}</span>` : "<span></span>"}
-        <span>${dateLabel}</span>
+        <span>${notizRelativDatum(d)}</span>
       </div>
     `);
     card.addEventListener("click", () => openNotizModal(n.id, n.titel, n.text, n._ordnerId));
@@ -5670,29 +5928,49 @@ function renderNotizenList(userId) {
 
 // ── Markdown helpers ──────────────────────────────────────────
 function mdInline(text) {
-  return text
+  // Inline-Code zuerst herauslösen, damit darin nichts formatiert wird
+  const codes = [];
+  text = text.replace(/`([^`]+)`/g, (m, c) => { codes.push(c); return "\u0000C" + (codes.length - 1) + "\u0000"; });
+  text = text
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/~~(.+?)~~/g,     "<s>$1</s>")
     .replace(/\*(.+?)\*/g,     "<em>$1</em>");
+  text = text.replace(/\u0000C(\d+)\u0000/g, (m, i) => "<code>" + codes[+i] + "</code>");
+  return text;
 }
 function mdToHtml(raw) {
   if (!raw) return "";
   const escaped = raw
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const lines = escaped.split("\n");
-  const out = []; let inList = false;
+  const out = []; let inList = false; let inCheckList = false; let cbIndex = 0;
+  const closeList = () => { if (inList) { out.push("</ul>"); inList = false; } };
+  const closeChecks = () => { if (inCheckList) { out.push("</div>"); inCheckList = false; } };
   for (const line of lines) {
+    const check = line.match(/^[-*] \[( |x|X)\] ?(.*)/);
+    const h = line.match(/^(#{1,3}) +(.+)/);
     const li = line.match(/^[-*] (.+)/);
-    if (li) {
+    if (check) {
+      closeList();
+      if (!inCheckList) { out.push('<div class="md-checklist">'); inCheckList = true; }
+      const done = check[1].toLowerCase() === "x";
+      out.push(`<label class="md-check${done ? " done" : ""}"><input type="checkbox" class="md-cb" data-cb="${cbIndex}"${done ? " checked" : ""}><span>${mdInline(check[2]) || "&nbsp;"}</span></label>`);
+      cbIndex++;
+    } else if (h) {
+      closeList(); closeChecks();
+      out.push(`<div class="md-h${h[1].length}">${mdInline(h[2])}</div>`);
+    } else if (li) {
+      closeChecks();
       if (!inList) { out.push("<ul>"); inList = true; }
       out.push(`<li>${mdInline(li[1])}</li>`);
     } else {
-      if (inList) { out.push("</ul>"); inList = false; }
-      if (line.trim() === "") out.push("<br>");
+      closeList(); closeChecks();
+      if (line.trim() === "---" || line.trim() === "***") out.push('<hr class="md-hr">');
+      else if (line.trim() === "") out.push("<br>");
       else out.push(mdInline(line) + "<br>");
     }
   }
-  if (inList) out.push("</ul>");
+  closeList(); closeChecks();
   return out.join("");
 }
 
@@ -5706,19 +5984,37 @@ function insertFmt(wrap, prefix) {
     insert = sel ? `${wrap}${sel}${wrap}` : `${wrap}Text${wrap}`;
     cursor = sel ? start + insert.length : start + wrap.length;
   } else {
-    // bullet: prepend "- " to each selected line, or insert new line
+    // prefix vor jede ausgewählte (oder neue) Zeile setzen
+    const mark = prefix || "- ";
     if (sel) {
-      insert = sel.split("\n").map(l => (l.startsWith("- ") ? l : "- " + l)).join("\n");
+      insert = sel.split("\n").map(l => (l.startsWith(mark) ? l : mark + l)).join("\n");
       cursor = start + insert.length;
     } else {
       const before = ta.value.slice(0, start);
       const needsNewline = before.length > 0 && !before.endsWith("\n");
-      insert = (needsNewline ? "\n" : "") + "- ";
+      insert = (needsNewline ? "\n" : "") + mark;
       cursor = start + insert.length;
     }
   }
   ta.setRangeText(insert, start, end, "end");
   ta.selectionStart = ta.selectionEnd = cursor;
+  ta.focus();
+  ta.dispatchEvent(new Event("input"));
+}
+// Überschrift: "# " am Zeilenanfang setzen/entfernen/erhöhen
+function insertHeading(level) {
+  const ta = $("notiz-modal-text");
+  const start = ta.selectionStart;
+  const vorText = ta.value.slice(0, start);
+  const zeilenStart = vorText.lastIndexOf("\n") + 1;
+  const zeilenEnde = ta.value.indexOf("\n", start) === -1 ? ta.value.length : ta.value.indexOf("\n", start);
+  const zeile = ta.value.slice(zeilenStart, zeilenEnde);
+  const ohne = zeile.replace(/^#{1,3} /, "");
+  const neu = (zeile.match(/^#{1,3} /) && zeile.match(/^#+/)[0].length === level)
+    ? ohne
+    : "#".repeat(level) + " " + ohne;
+  ta.setRangeText(neu, zeilenStart, zeilenEnde, "end");
+  ta.selectionStart = ta.selectionEnd = zeilenStart + neu.length;
   ta.focus();
   ta.dispatchEvent(new Event("input"));
 }
@@ -5732,23 +6028,75 @@ function insertFmt(wrap, prefix) {
   fmtBtn("nfmt-bold",   () => insertFmt("**", null));
   fmtBtn("nfmt-italic", () => insertFmt("*",  null));
   fmtBtn("nfmt-strike", () => insertFmt("~~", null));
+  fmtBtn("nfmt-h1",     () => insertHeading(1));
+  fmtBtn("nfmt-h2",     () => insertHeading(2));
   fmtBtn("nfmt-bullet", () => insertFmt(null, "-"));
+  fmtBtn("nfmt-check",  () => insertFmt(null, "- [ ]"));
+  fmtBtn("nfmt-code",   () => insertFmt("`",  null));
+  fmtBtn("nfmt-hr",     () => {
+    const ta = $("notiz-modal-text");
+    const start = ta.selectionStart;
+    const before = ta.value.slice(0, start);
+    const needsNewline = before.length > 0 && !before.endsWith("\n\n");
+    const insert = (before.length === 0 ? "" : (needsNewline ? "\n" : "")) + "\n---\n";
+    ta.setRangeText(insert, start, start, "end");
+    ta.selectionStart = ta.selectionEnd = start + insert.length;
+    ta.focus();
+    ta.dispatchEvent(new Event("input"));
+  });
+
+  // Zähler (Wörter / Zeichen)
+  function notizZaehler() {
+    const t = $("notiz-modal-text").value;
+    const woerter = t.trim() ? t.trim().split(/\s+/).length : 0;
+    $("notiz-zaehler").textContent = `${woerter} ${woerter === 1 ? "Wort" : "Wörter"} · ${t.length} Zeichen`;
+  }
+  $("notiz-modal-text").addEventListener("input", notizZaehler);
+  window._notizZaehlerAktualisieren = notizZaehler;
+
+  // Live-Vorschau bei Eingabe aktualisieren
+  function aktualisierePreview() {
+    $("notiz-md-preview").innerHTML = mdToHtml($("notiz-modal-text").value) || "<em style='color:var(--text-muted)'>Leer</em>";
+  }
+  $("notiz-modal-text").addEventListener("input", () => {
+    if ($("notiz-modal").classList.contains("show-preview")) aktualisierePreview();
+  });
 
   let previewing = false;
   $("nfmt-preview").addEventListener("mousedown", e => e.preventDefault());
   $("nfmt-preview").addEventListener("click", () => {
     previewing = !previewing;
-    $("notiz-modal-text").classList.toggle("hidden", previewing);
+    $("notiz-modal").classList.toggle("show-preview", previewing);
     const prev = $("notiz-md-preview");
     if (previewing) {
-      prev.innerHTML = mdToHtml($("notiz-modal-text").value) || "<em style='color:var(--text-muted)'>Leer</em>";
-      prev.classList.remove("hidden");
+      aktualisierePreview();
       $("nfmt-preview").textContent = "✏️ Bearbeiten";
     } else {
-      prev.classList.add("hidden");
       $("nfmt-preview").textContent = "👁 Vorschau";
       $("notiz-modal-text").focus();
     }
+  });
+  // Reset von außen (openNotizModal)
+  window._notizPreviewZuruecksetzen = () => {
+    previewing = false;
+    $("notiz-modal").classList.remove("show-preview");
+    $("nfmt-preview").textContent = "👁 Vorschau";
+  };
+
+  // Klickbare Checklisten in der Vorschau: Häkchen toggelt den Markdown-Text
+  $("notiz-md-preview").addEventListener("click", e => {
+    const cb = e.target.closest(".md-cb");
+    if (!cb) return;
+    const idx = +cb.dataset.cb;
+    const ta = $("notiz-modal-text");
+    let count = -1;
+    ta.value = ta.value.replace(/^([-*]) \[( |x|X)\] ?/gm, (m, dash, mark) => {
+      count++;
+      if (count !== idx) return m;
+      return mark === " " ? `${dash} [x] ` : `${dash} [ ] `;
+    });
+    ta.dispatchEvent(new Event("input"));
+    aktualisierePreview();
   });
 
   $("notiz-modal-text").addEventListener("keydown", e => {
@@ -5768,9 +6116,8 @@ function openNotizModal(id, titel, text, ordnerId = currentNotizenOrdnerId) {
   $("notiz-modal-text").value  = text||"";
   $("notiz-save-hint").textContent = "";
   // reset preview mode
-  $("notiz-modal-text").classList.remove("hidden");
-  $("notiz-md-preview").classList.add("hidden");
-  $("nfmt-preview").textContent = "👁 Vorschau";
+  if (window._notizPreviewZuruecksetzen) window._notizPreviewZuruecksetzen();
+  if (window._notizZaehlerAktualisieren) window._notizZaehlerAktualisieren();
   $("notiz-modal").classList.remove("hidden");
   $("notiz-modal-text").focus();
 }
