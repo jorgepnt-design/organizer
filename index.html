@@ -785,9 +785,9 @@
     }
     .notiz-count b { color: var(--text); }
 
-    /* Masonry-Wand: variable Kartenhöhen wie in Google Keep */
-    .notiz-grid { columns: 240px; column-gap: 12px; }
-    .notiz-grid > * { break-inside: avoid; margin-bottom: 12px; }
+    /* Masonry-Wand: variable Kartenhöhen wie in Google Keep, volle Breite */
+    .notiz-grid { columns: 224px; column-gap: 14px; }
+    .notiz-grid > * { break-inside: avoid; margin-bottom: 14px; }
     .notiz-grid.list-mode { columns: unset; display: flex; flex-direction: column; gap: 8px; }
     .notiz-grid.list-mode > * { margin-bottom: 0; }
     /* Angepinnt-Trenner */
@@ -875,43 +875,47 @@
       padding: 2px 9px; border-radius: 10px; font-weight: 600; font-size: 0.68rem;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%;
     }
-    /* Zwei-Spalten-Layout: Notizliste links, Editor rechts (kein Modal mehr) */
-    .notiz-split {
-      display: grid; grid-template-columns: minmax(270px, 340px) minmax(0, 1fr);
-      gap: 14px; align-items: start;
+    /* Notiz-Wand füllt die volle Breite; Editor öffnet als Overlay darüber */
+    .notiz-board { min-width: 0; }
+    /* Editor-Overlay (Desktop: zentriertes Modal, Mobile: Vollbild-Sheet) */
+    .notiz-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(15,23,42,0.55);
+      display: none; align-items: center; justify-content: center;
+      padding: 24px;
     }
-    .notiz-listen-spalte { min-width: 0; }
+    .notiz-overlay.offen { display: flex; animation: overlay-in 0.18s ease-out; }
+    body.notiz-modal-open { overflow: hidden; }
     .notiz-pane {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); box-shadow: var(--shadow);
-      padding: 14px 16px 12px;
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+      width: 100%; max-width: 760px; max-height: 90vh;
+      padding: 16px 20px 12px;
       display: flex; flex-direction: column; gap: 10px;
-      min-height: 420px; max-height: calc(100vh - 170px);
       overflow: hidden;
+      animation: modal-in 0.22s ease-out;
     }
     .notiz-pane-inhalt { display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0; }
-    .notiz-pane-platzhalter { display: none; flex: 1; align-items: center; justify-content: center; }
-    .notiz-pane.leer .notiz-pane-platzhalter { display: flex; }
-    .notiz-pane.leer .notiz-pane-inhalt { display: none; }
-    .notiz-pane-kopf { display: flex; align-items: center; gap: 10px; }
+    .notiz-pane-kopf { display: flex; align-items: center; gap: 8px; }
     .notiz-pane-kopf .btn-icon { flex-shrink: 0; }
+    .notiz-pin-toggle { font-size: 1rem; }
+    .notiz-pin-toggle.active { color: #f59e0b; background: #fef3c7; }
+    [data-theme="dark"] .notiz-pin-toggle.active { background: #78350f; }
     #notiz-modal-title {
-      flex: 1; min-width: 0; font-size: 1.05rem; font-weight: 650;
+      flex: 1; min-width: 0; font-size: 1.1rem; font-weight: 650;
       border: none; border-bottom: 2px solid var(--border); border-radius: 0;
       padding: 4px 0; background: transparent; color: var(--text);
     }
-    #notiz-modal-title:focus { border-bottom-color: var(--primary); }
-    /* Mobile: Editor als Vollbild-Ansicht mit Zurück-Pfeil */
-    @media (max-width: 899px) {
-      .notiz-split { display: block; }
+    #notiz-modal-title:focus { border-bottom-color: var(--primary); outline: none; }
+    /* Mobile: Editor als Vollbild-Sheet */
+    @media (max-width: 700px) {
+      .notiz-overlay { padding: 0; align-items: stretch; }
       .notiz-pane {
-        position: fixed; inset: 0; z-index: 80;
-        border-radius: 0; border: none; box-shadow: none;
-        min-height: 0; max-height: none;
-        padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
-        display: none;
+        max-width: 100%; max-height: none; height: 100%;
+        border-radius: 0; border: none;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+        animation: notiz-pane-in 0.2s ease-out;
       }
-      .notiz-split.editor-offen .notiz-pane { display: flex; animation: notiz-pane-in 0.2s ease-out; }
     }
     @keyframes notiz-pane-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
     /* Farbwahl */
@@ -2391,31 +2395,27 @@
         Neuer Ordner
       </button>
     </div>
-    <div class="notiz-split" id="notiz-split">
-      <div class="notiz-listen-spalte">
-        <div class="notiz-count" id="notiz-count"></div>
-        <div id="notiz-list" class="notiz-grid">
-          <div class="empty-state" id="notiz-empty">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            <div class="empty-title">Noch keine Notizen</div>
-            <div class="empty-hint">Tippe unten rechts auf „+“, um deine erste Notiz anzulegen. Formatierungen wie **fett**, Überschriften und Checklisten werden unterstützt.</div>
-          </div>
+    <div class="notiz-board" id="notiz-split">
+      <div class="notiz-count" id="notiz-count"></div>
+      <div id="notiz-list" class="notiz-grid">
+        <div class="empty-state" id="notiz-empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <div class="empty-title">Noch keine Notizen</div>
+          <div class="empty-hint">Tippe auf „+ Neue Notiz“ oder das „+“ unten rechts, um deine erste Notiz anzulegen. Formatierungen wie **fett**, Überschriften und Checklisten werden unterstützt.</div>
         </div>
       </div>
-      <div class="notiz-pane leer" id="notiz-editor-pane">
-        <div class="notiz-pane-platzhalter">
-          <div class="empty-state">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            <div class="empty-title">Keine Notiz ausgewählt</div>
-            <div class="empty-hint">Wähle eine Notiz aus oder lege über „+“ eine neue an.</div>
-          </div>
-        </div>
+    </div>
+
+    <!-- Editor als Overlay über der Notiz-Wand -->
+    <div class="notiz-overlay" id="notiz-editor-overlay" aria-hidden="true">
+      <div class="notiz-pane" id="notiz-editor-pane" role="dialog" aria-modal="true" aria-label="Notiz bearbeiten">
         <div class="notiz-pane-inhalt">
           <div class="notiz-pane-kopf">
-            <button class="btn-icon" id="notiz-modal-close" title="Zurück zur Übersicht">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            </button>
             <input type="text" id="notiz-modal-title" placeholder="Titel …" />
+            <button class="btn-icon notiz-pin-toggle" id="notiz-modal-pin" title="Notiz anpinnen">📌</button>
+            <button class="btn-icon" id="notiz-modal-close" title="Schließen (Esc)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
           </div>
           <div class="notiz-colorbar" id="notiz-colorbar">
             <span class="notiz-colorbar-label">FARBE</span>
@@ -3360,8 +3360,10 @@ new MutationObserver(muts => {
 // ── A11Y: Escape schließt das offene Modal bzw. den Notiz-Editor ──
 document.addEventListener("keydown", e => {
   if (e.key !== "Escape") return;
-  const notizPane = $("notiz-editor-pane");
-  if (notizPane && !notizPane.classList.contains("leer")) { closeNotizModal(); return; }
+  const notizOverlay = $("notiz-editor-overlay");
+  if (notizOverlay && notizOverlay.classList.contains("offen") && !document.querySelector(".modal-overlay")) {
+    closeNotizModal(); return;
+  }
   ["fab-todo-modal", "color-labels-modal", "share-modal", "join-modal", "radar-modal"].some(id => {
     const m = $(id);
     if (m && !m.classList.contains("hidden")) { m.classList.add("hidden"); return true; }
@@ -5744,6 +5746,7 @@ let notizAnsicht                 = localStorage.getItem("notiz_ansicht") || "gri
 // Notizen 3.0: Farbe pro Notiz (optional, rueckwaertskompatibel)
 const NOTIZ_FARBEN               = ["rot","orange","gelb","gruen","blau","lila","rosa"];
 let currentNotizFarbe            = "";
+let currentNotizPinned           = false;
 
 function initNotizen(userId) {
   const ordnerRef = db.collection(`users/${userId}/notizenOrdner`).orderBy("createdAt","asc");
@@ -5805,6 +5808,18 @@ function initNotizen(userId) {
   });
 
   $("notiz-modal-close").addEventListener("click", closeNotizModal);
+  // Backdrop-Klick schließt den Editor
+  $("notiz-editor-overlay").addEventListener("mousedown", e => {
+    if (e.target === $("notiz-editor-overlay")) closeNotizModal();
+  });
+  // Pin-Umschalter im Editor-Kopf
+  $("notiz-modal-pin").addEventListener("click", () => {
+    if (!currentNotizId || !currentNotizOrdnerId || currentNotizOrdnerId === "alle") return;
+    currentNotizPinned = !currentNotizPinned;
+    setNotizPinUI();
+    db.collection(`users/${userId}/notizenOrdner/${currentNotizOrdnerId}/notizen`)
+      .doc(currentNotizId).update({ pinned: currentNotizPinned }).catch(fsError);
+  });
   $("notiz-modal-delete").addEventListener("click", () => {
     if (!currentNotizId||!currentNotizOrdnerId) return;
     safeConfirm("Notiz löschen?").then(ok => {
@@ -6258,19 +6273,41 @@ function openNotizModal(id, titel, text, ordnerId = currentNotizenOrdnerId, farb
   $("notiz-modal-title").value = titel||"";
   $("notiz-modal-text").value  = text||"";
   $("notiz-save-hint").textContent = "";
-  // Editor-Bereich zeigen (Desktop: rechte Spalte, Mobile: Vollbild) + Karte markieren
-  $("notiz-editor-pane").classList.remove("leer");
-  $("notiz-split").classList.add("editor-offen");
+  // Pin-Status aus Cache übernehmen
+  const cached = notizAusCache(ordnerId, id);
+  currentNotizPinned = !!(cached && cached.pinned);
+  setNotizPinUI();
+  // Editor als Overlay öffnen + Karte markieren
+  $("notiz-editor-overlay").classList.add("offen");
+  $("notiz-editor-overlay").setAttribute("aria-hidden", "false");
+  document.body.classList.add("notiz-modal-open");
   document.querySelectorAll("#notiz-list .notiz-card").forEach(c =>
     c.classList.toggle("aktiv", c.dataset.id === id));
   // Anzeige-Modus auf letzten gewählten Stand bringen
   if (window._notizModusZuruecksetzen) window._notizModusZuruecksetzen();
   if (window._notizZaehlerAktualisieren) window._notizZaehlerAktualisieren();
+  // Fokus auf Titel bei neuer Notiz, sonst Text
+  setTimeout(() => {
+    if ((titel || "") === "Neue Notiz" && !(text || "")) $("notiz-modal-title").select();
+  }, 60);
+}
+
+function notizAusCache(ordnerId, id) {
+  const o = notizenOrdnerCache.get(ordnerId);
+  return o ? (o.notizen.find(n => n.id === id) || null) : null;
+}
+
+function setNotizPinUI() {
+  const btn = $("notiz-modal-pin");
+  if (!btn) return;
+  btn.classList.toggle("active", currentNotizPinned);
+  btn.title = currentNotizPinned ? "Fixierung aufheben" : "Notiz anpinnen";
 }
 
 function closeNotizModal() {
-  $("notiz-editor-pane").classList.add("leer");
-  $("notiz-split").classList.remove("editor-offen");
+  $("notiz-editor-overlay").classList.remove("offen");
+  $("notiz-editor-overlay").setAttribute("aria-hidden", "true");
+  document.body.classList.remove("notiz-modal-open");
   document.querySelectorAll("#notiz-list .notiz-card.aktiv").forEach(c => c.classList.remove("aktiv"));
   currentNotizId = null;
   currentNotizOrdnerId = null;
