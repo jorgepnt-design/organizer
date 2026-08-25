@@ -1157,6 +1157,47 @@
     .modal-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     .modal-save-hint { font-size: 0.73rem; color: var(--text-muted); }
 
+    /* ── KALENDER ── */
+    .kal-topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .kal-who { font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .kal-who b { color: var(--text); font-weight: 600; }
+    .kal-actions { display: flex; align-items: center; gap: 8px; }
+    .kal-connect-btn { font-size: 0.92rem; }
+    .kal-setup-hint { margin-top: 14px; font-size: 0.82rem; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 12px; max-width: 420px; }
+    [data-theme="dark"] .kal-setup-hint { color: #fbbf24; background: #3b2413; border-color: #92400e; }
+    .kal-agenda { display: flex; flex-direction: column; gap: 6px; }
+    .kal-day-head {
+      position: sticky; top: 0; display: flex; align-items: baseline; gap: 8px;
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+      color: var(--text-muted); padding: 12px 2px 4px; background: var(--bg); z-index: 1;
+    }
+    .kal-day-head.heute { color: var(--primary); }
+    .kal-day-head .kal-day-date { font-weight: 500; text-transform: none; letter-spacing: 0; }
+    .kal-event {
+      display: flex; align-items: stretch; gap: 12px; padding: 11px 14px; cursor: pointer;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      transition: box-shadow 0.15s, transform 0.15s, border-color 0.15s;
+    }
+    .kal-event:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .kal-event-bar { width: 4px; border-radius: 3px; background: var(--primary); flex-shrink: 0; }
+    .kal-event-body { min-width: 0; flex: 1; }
+    .kal-event-title { font-size: 0.95rem; font-weight: 600; color: var(--text); line-height: 1.3; word-break: break-word; }
+    .kal-event-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .kal-event-time { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); white-space: nowrap; }
+    .kal-event-loc { display: inline-flex; align-items: center; gap: 3px; }
+    .kal-status { font-size: 0.8rem; color: var(--text-muted); padding: 10px 2px; }
+    .kal-status.err { color: var(--danger); }
+    /* Termin-Editor Felder */
+    .kal-label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin: 10px 0 4px; }
+    .kal-checkline { display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; margin: 12px 0 2px; cursor: pointer; }
+    .kal-checkline input { width: 16px; height: 16px; accent-color: var(--primary); }
+    .kal-daterow { display: flex; gap: 12px; }
+    .kal-daterow > div { flex: 1; min-width: 0; }
+    .kal-dt { display: flex; gap: 6px; }
+    .kal-dt input { min-width: 0; }
+    #kal-modal .modal input[type="date"], #kal-modal .modal input[type="time"] { flex: 1; }
+    .kal-pane-allday .kal-dt input[type="time"] { display: none; }
+
     /* ── UTILS ── */
     .hidden { display: none !important; }
 
@@ -2120,6 +2161,7 @@
     <button class="tab-btn" data-tab="todos">To-dos</button>
     <button class="tab-btn" data-tab="notizen">Notizen</button>
     <button class="tab-btn" data-tab="einkauf">Einkauf</button>
+    <button class="tab-btn" data-tab="kalender">Kalender</button>
   </div>
 
   <!-- ══ TAB: DASHBOARD ══ -->
@@ -2468,6 +2510,84 @@
     </div>
   </div>
 
+  <!-- ══ TAB: KALENDER ══ -->
+  <div id="tab-kalender" class="tab-content">
+    <!-- Zustand: nicht verbunden -->
+    <div id="kal-connect">
+      <div class="empty-state">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div class="empty-title">Google Kalender verbinden</div>
+        <div class="empty-hint">Sieh deine Termine und trage neue ein — alles wird direkt mit deinem Google‑Kalender synchronisiert (Handy, Laptop, überall).</div>
+        <button class="btn-new-tabelle kal-connect-btn" id="kal-connect-btn" style="margin-top:16px">🔗 Mit Google Kalender verbinden</button>
+        <div class="kal-setup-hint hidden" id="kal-setup-hint">⚙️ Die einmalige Google‑Einrichtung ist noch nicht abgeschlossen. Sobald sie fertig ist, funktioniert das Verbinden.</div>
+      </div>
+    </div>
+
+    <!-- Zustand: verbunden -->
+    <div id="kal-main" class="hidden">
+      <div class="kal-topbar">
+        <div class="kal-who" id="kal-who"></div>
+        <div class="kal-actions">
+          <button class="btn-icon" id="kal-refresh" title="Aktualisieren">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </button>
+          <button class="btn-new-tabelle" id="kal-new">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Termin
+          </button>
+        </div>
+      </div>
+      <div id="kal-agenda" class="kal-agenda">
+        <div class="empty-state" id="kal-empty" style="display:none">
+          <div class="empty-title">Keine kommenden Termine</div>
+          <div class="empty-hint">Tippe auf „＋ Termin“, um einen neuen Termin anzulegen.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kalender: Termin-Editor -->
+  <div id="kal-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Termin bearbeiten">
+    <div class="modal" style="max-width:460px">
+      <div class="modal-header">
+        <h3 id="kal-modal-title" style="margin:0">Neuer Termin</h3>
+        <button class="btn-icon" id="kal-modal-close" title="Schließen">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div>
+        <label class="kal-label">Titel</label>
+        <input type="text" id="kal-f-title" placeholder="z. B. Zahnarzt" autocomplete="off" />
+      </div>
+      <label class="kal-checkline"><input type="checkbox" id="kal-f-allday" /> Ganztägig</label>
+      <div class="kal-daterow">
+        <div>
+          <label class="kal-label">Beginn</label>
+          <div class="kal-dt"><input type="date" id="kal-f-sdate" /><input type="time" id="kal-f-stime" /></div>
+        </div>
+        <div>
+          <label class="kal-label">Ende</label>
+          <div class="kal-dt"><input type="date" id="kal-f-edate" /><input type="time" id="kal-f-etime" /></div>
+        </div>
+      </div>
+      <div>
+        <label class="kal-label">Ort</label>
+        <input type="text" id="kal-f-loc" placeholder="optional" autocomplete="off" />
+      </div>
+      <div>
+        <label class="kal-label">Notiz</label>
+        <textarea id="kal-f-desc" placeholder="optional" style="min-height:70px"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-delete hidden" id="kal-f-delete" title="Termin löschen">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+        <span id="kal-f-msg" class="modal-save-hint"></span>
+        <button class="btn-new-tabelle" id="kal-f-save" style="margin-left:auto">Speichern</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ══ TAB: EINKAUF ══ -->
   <div id="tab-einkauf" class="tab-content">
 
@@ -2685,6 +2805,7 @@ service cloud.firestore {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
 // ── FIREBASE CONFIG ──────────────────────────────────────────
@@ -3313,6 +3434,7 @@ auth.onAuthStateChanged(user => {
     initEinkauf(user.uid);
     initFab(user.uid);
     initWetter(user.uid);
+    initKalender();
   } else {
     currentUserId = null;
     document.body.classList.remove("signed-in");
@@ -6314,6 +6436,201 @@ function closeNotizModal() {
 }
 
 // ════════════════════════════════════════════════════════════
+// TAB: KALENDER (Google Calendar, direkt synchronisiert)
+// ════════════════════════════════════════════════════════════
+// Nach dem Google-Setup hier die OAuth-Web-Client-ID eintragen:
+const CAL_CLIENT_ID = "%%CAL_CLIENT_ID%%";
+const CAL_SCOPE     = "https://www.googleapis.com/auth/calendar.events";
+const CAL_CONFIGURED = !!CAL_CLIENT_ID && CAL_CLIENT_ID.indexOf("%%") === -1;
+const CAL_API = "https://www.googleapis.com/calendar/v3";
+
+let kalInited = false, kalTokenClient = null, kalAccessToken = null, kalTokenExpiry = 0, kalTokenCb = null, kalEditId = null;
+function kalGISbereit() { return typeof google !== "undefined" && google.accounts && google.accounts.oauth2; }
+
+function initKalender() {
+  if (kalInited) return;
+  kalInited = true;
+  $("kal-connect-btn").addEventListener("click", () => kalVerbinden(true).catch(e => kalFehler(e)));
+  $("kal-refresh").addEventListener("click", () => kalLadeAgenda());
+  $("kal-new").addEventListener("click", () => kalOeffneEditor(null));
+  $("kal-modal-close").addEventListener("click", kalSchliesseEditor);
+  $("kal-modal").addEventListener("mousedown", e => { if (e.target === $("kal-modal")) kalSchliesseEditor(); });
+  $("kal-f-allday").addEventListener("change", () => {
+    $("kal-modal").querySelector(".modal").classList.toggle("kal-pane-allday", $("kal-f-allday").checked);
+  });
+  $("kal-f-save").addEventListener("click", kalSpeichern);
+  $("kal-f-delete").addEventListener("click", kalLoeschen);
+
+  if (!CAL_CONFIGURED) { $("kal-setup-hint").classList.remove("hidden"); $("kal-connect-btn").disabled = true; return; }
+
+  const setup = () => {
+    if (!kalGISbereit()) { setTimeout(setup, 300); return; }
+    kalTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CAL_CLIENT_ID, scope: CAL_SCOPE,
+      callback: (resp) => { const cb = kalTokenCb; kalTokenCb = null; if (cb) cb(resp); },
+    });
+    if (localStorage.getItem("kal_verbunden") === "1") kalVerbinden(false).catch(() => {});
+  };
+  setup();
+}
+
+function kalFehler(e) { showToast("Kalender: " + (e && e.message ? e.message : e), "error"); }
+
+function kalHoleToken(interaktiv) {
+  return new Promise((resolve, reject) => {
+    if (!CAL_CONFIGURED) return reject(new Error("nicht eingerichtet"));
+    if (!kalTokenClient) return reject(new Error("Google lädt noch – bitte kurz warten"));
+    if (kalAccessToken && Date.now() < kalTokenExpiry - 60000) return resolve(kalAccessToken);
+    kalTokenCb = (resp) => {
+      if (resp && resp.access_token) {
+        kalAccessToken = resp.access_token;
+        kalTokenExpiry = Date.now() + ((resp.expires_in || 3600) * 1000);
+        localStorage.setItem("kal_verbunden", "1");
+        resolve(kalAccessToken);
+      } else { reject(new Error((resp && resp.error) || "keine Freigabe")); }
+    };
+    try { kalTokenClient.requestAccessToken({ prompt: interaktiv ? "consent" : "" }); }
+    catch (e) { kalTokenCb = null; reject(e); }
+  });
+}
+
+async function kalVerbinden(interaktiv) {
+  await kalHoleToken(interaktiv);
+  $("kal-connect").classList.add("hidden");
+  $("kal-main").classList.remove("hidden");
+  await kalLadeAgenda();
+}
+
+async function kalApi(method, path, body) {
+  const doFetch = (tok) => fetch(CAL_API + path, {
+    method, headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  let res = await doFetch(await kalHoleToken(false));
+  if (res.status === 401) { kalAccessToken = null; res = await doFetch(await kalHoleToken(true)); }
+  if (!res.ok) { const t = await res.text().catch(() => ""); throw new Error("HTTP " + res.status + " " + t.slice(0, 160)); }
+  return res.status === 204 ? null : res.json();
+}
+
+async function kalLadeAgenda() {
+  const box = $("kal-agenda"), empty = $("kal-empty");
+  Array.from(box.querySelectorAll(".kal-day-head, .kal-event")).forEach(el => el.remove());
+  let statusEl = $("kal-status-line");
+  if (!statusEl) { statusEl = document.createElement("div"); statusEl.id = "kal-status-line"; statusEl.className = "kal-status"; box.appendChild(statusEl); }
+  statusEl.className = "kal-status"; statusEl.textContent = "Lade Termine …";
+  try {
+    const timeMin = new Date(); timeMin.setHours(0, 0, 0, 0);
+    const p = new URLSearchParams({ timeMin: timeMin.toISOString(), singleEvents: "true", orderBy: "startTime", maxResults: "50" });
+    const data = await kalApi("GET", "/calendars/primary/events?" + p.toString());
+    const items = (data && data.items) || [];
+    statusEl.textContent = "";
+    if (empty) empty.style.display = items.length ? "none" : "block";
+    let letzterTag = "";
+    const frag = document.createDocumentFragment();
+    for (const ev of items) {
+      const start = ev.start && (ev.start.dateTime || ev.start.date);
+      if (!start) continue;
+      const allday = !!(ev.start && ev.start.date && !ev.start.dateTime);
+      const d = new Date(allday ? start + "T00:00:00" : start);
+      if (d.toDateString() !== letzterTag) {
+        letzterTag = d.toDateString();
+        const head = document.createElement("div");
+        head.className = "kal-day-head" + (kalIstHeute(d) ? " heute" : "");
+        head.innerHTML = `<span>${kalTagLabel(d)}</span><span class="kal-day-date">${d.toLocaleDateString("de-DE", { day: "2-digit", month: "long" })}</span>`;
+        frag.appendChild(head);
+      }
+      const card = document.createElement("div");
+      card.className = "kal-event";
+      const zeit = allday ? "ganztägig" : d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+      const loc = ev.location ? `<span class="kal-event-loc">📍 ${escapeHtml(ev.location)}</span>` : "";
+      card.innerHTML = `<div class="kal-event-bar"></div><div class="kal-event-body">
+        <div class="kal-event-title">${escapeHtml(ev.summary || "(ohne Titel)")}</div>
+        <div class="kal-event-meta"><span class="kal-event-time">${zeit}</span>${loc}</div></div>`;
+      card.addEventListener("click", () => kalOeffneEditor(ev));
+      frag.appendChild(card);
+    }
+    box.insertBefore(frag, statusEl);
+  } catch (e) {
+    statusEl.className = "kal-status err";
+    statusEl.textContent = "Fehler beim Laden: " + (e.message || e);
+  }
+}
+
+function kalIstHeute(d) { return d.toDateString() === new Date().toDateString(); }
+function kalTagLabel(d) {
+  const n = new Date(), morgen = new Date(n); morgen.setDate(n.getDate() + 1);
+  if (d.toDateString() === n.toDateString()) return "Heute";
+  if (d.toDateString() === morgen.toDateString()) return "Morgen";
+  return d.toLocaleDateString("de-DE", { weekday: "long" });
+}
+
+function kalOeffneEditor(ev) {
+  kalEditId = ev ? ev.id : null;
+  $("kal-modal-title").textContent = ev ? "Termin bearbeiten" : "Neuer Termin";
+  $("kal-f-delete").classList.toggle("hidden", !ev);
+  $("kal-f-msg").textContent = "";
+  const allday = !!(ev && ev.start && ev.start.date && !ev.start.dateTime);
+  const start = ev && ev.start ? new Date((ev.start.dateTime || ev.start.date) + (allday ? "T00:00:00" : "")) : kalNaechsteStunde();
+  let end;
+  if (ev && ev.end) { end = new Date((ev.end.dateTime || ev.end.date) + (allday ? "T00:00:00" : "")); if (allday) end.setDate(end.getDate() - 1); }
+  else end = new Date(start.getTime() + 3600000);
+  $("kal-f-title").value = ev ? (ev.summary || "") : "";
+  $("kal-f-loc").value = ev ? (ev.location || "") : "";
+  $("kal-f-desc").value = ev ? (ev.description || "") : "";
+  $("kal-f-allday").checked = allday;
+  $("kal-modal").querySelector(".modal").classList.toggle("kal-pane-allday", allday);
+  $("kal-f-sdate").value = kalDateStr(start); $("kal-f-stime").value = kalTimeStr(start);
+  $("kal-f-edate").value = kalDateStr(end);   $("kal-f-etime").value = kalTimeStr(end);
+  $("kal-modal").classList.remove("hidden");
+  setTimeout(() => $("kal-f-title").focus(), 60);
+}
+function kalSchliesseEditor() { $("kal-modal").classList.add("hidden"); kalEditId = null; }
+function kalNaechsteStunde() { const d = new Date(); d.setMinutes(0, 0, 0); d.setHours(d.getHours() + 1); return d; }
+function kalDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function kalTimeStr(d) { return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; }
+
+async function kalSpeichern() {
+  const titel = $("kal-f-title").value.trim();
+  if (!titel) { $("kal-f-msg").textContent = "Bitte einen Titel eingeben."; return; }
+  const allday = $("kal-f-allday").checked;
+  const sdate = $("kal-f-sdate").value, edate = $("kal-f-edate").value || sdate;
+  if (!sdate) { $("kal-f-msg").textContent = "Bitte ein Startdatum wählen."; return; }
+  const body = { summary: titel, location: $("kal-f-loc").value.trim() || undefined, description: $("kal-f-desc").value.trim() || undefined };
+  if (allday) {
+    const endEx = new Date(edate + "T00:00:00"); endEx.setDate(endEx.getDate() + 1);
+    body.start = { date: sdate }; body.end = { date: kalDateStr(endEx) };
+  } else {
+    const stime = $("kal-f-stime").value || "09:00", etime = $("kal-f-etime").value || stime;
+    const startDT = new Date(`${sdate}T${stime}`); let endDT = new Date(`${edate}T${etime}`);
+    if (endDT <= startDT) endDT = new Date(startDT.getTime() + 3600000);
+    const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone) || "Europe/Berlin";
+    body.start = { dateTime: startDT.toISOString(), timeZone: tz };
+    body.end   = { dateTime: endDT.toISOString(),   timeZone: tz };
+  }
+  $("kal-f-save").disabled = true; $("kal-f-msg").textContent = "Speichert …";
+  try {
+    if (kalEditId) await kalApi("PATCH", `/calendars/primary/events/${encodeURIComponent(kalEditId)}`, body);
+    else           await kalApi("POST",  "/calendars/primary/events", body);
+    kalSchliesseEditor();
+    showToast(kalEditId ? "Termin aktualisiert" : "Termin erstellt", "success");
+    await kalLadeAgenda();
+  } catch (e) { $("kal-f-msg").textContent = "Fehler: " + (e.message || e); }
+  finally { $("kal-f-save").disabled = false; }
+}
+
+async function kalLoeschen() {
+  if (!kalEditId) return;
+  const ok = await safeConfirm("Diesen Termin wirklich löschen?");
+  if (!ok) return;
+  try {
+    await kalApi("DELETE", `/calendars/primary/events/${encodeURIComponent(kalEditId)}`);
+    kalSchliesseEditor();
+    showToast("Termin gelöscht", "success");
+    await kalLadeAgenda();
+  } catch (e) { $("kal-f-msg").textContent = "Fehler: " + (e.message || e); }
+}
+
+// ════════════════════════════════════════════════════════════
 // AUTOCOMPLETE
 // ════════════════════════════════════════════════════════════
 const AC_KEY = "todo_autocomplete";
@@ -7597,6 +7914,10 @@ document.addEventListener("keydown", e => {
   <button class="bottom-nav-btn" data-tab="einkauf">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     Einkauf
+  </button>
+  <button class="bottom-nav-btn" data-tab="kalender">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Kalender
   </button>
 </nav>
 
