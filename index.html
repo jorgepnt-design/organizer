@@ -1162,6 +1162,11 @@
     .kal-who { font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; min-width: 0; }
     .kal-who b { color: var(--text); font-weight: 600; }
     .kal-actions { display: flex; align-items: center; gap: 8px; }
+    .kal-owner-filter {
+      max-width: 230px; min-height: 36px; padding: 6px 30px 6px 10px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--surface); color: var(--text); font-size: 0.82rem;
+    }
     .kal-connect-btn { font-size: 0.92rem; }
     .kal-setup-hint { margin-top: 14px; font-size: 0.82rem; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 12px; max-width: 420px; }
     [data-theme="dark"] .kal-setup-hint { color: #fbbf24; background: #3b2413; border-color: #92400e; }
@@ -1185,6 +1190,14 @@
     .kal-event-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; }
     .kal-event-time { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); white-space: nowrap; }
     .kal-event-loc { display: inline-flex; align-items: center; gap: 3px; }
+    .kal-event-owner {
+      display: inline-flex; align-items: center; gap: 5px; min-width: 0;
+      font-size: 0.75rem; color: var(--text-muted); word-break: break-word;
+    }
+    .kal-event-owner-dot {
+      width: 7px; height: 7px; border-radius: 50%; flex: 0 0 7px;
+      background: var(--kal-owner-color, var(--primary));
+    }
     .kal-status { font-size: 0.8rem; color: var(--text-muted); padding: 10px 2px; }
     .kal-status.err { color: var(--danger); }
     /* Termin-Editor Felder */
@@ -2528,6 +2541,9 @@
       <div class="kal-topbar">
         <div class="kal-who" id="kal-who"></div>
         <div class="kal-actions">
+          <select id="kal-owner-filter" class="kal-owner-filter" aria-label="Termine nach Person filtern" title="Termine nach Person filtern">
+            <option value="">Alle Termine</option>
+          </select>
           <button class="btn-icon" id="kal-refresh" title="Aktualisieren">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           </button>
@@ -6452,6 +6468,10 @@ function initKalender() {
   kalInited = true;
   $("kal-connect-btn").addEventListener("click", () => kalVerbinden(true).catch(e => kalFehler(e)));
   $("kal-refresh").addEventListener("click", () => kalLadeAgenda());
+  $("kal-owner-filter").addEventListener("change", () => {
+    localStorage.setItem("kal_owner_filter", $("kal-owner-filter").value);
+    kalLadeAgenda();
+  });
   $("kal-new").addEventListener("click", () => kalOeffneEditor(null));
   $("kal-modal-close").addEventListener("click", kalSchliesseEditor);
   $("kal-modal").addEventListener("mousedown", e => { if (e.target === $("kal-modal")) kalSchliesseEditor(); });
@@ -6523,11 +6543,22 @@ async function kalLadeAgenda() {
     const p = new URLSearchParams({ timeMin: timeMin.toISOString(), singleEvents: "true", orderBy: "startTime", maxResults: "50" });
     const data = await kalApi("GET", "/calendars/primary/events?" + p.toString());
     const items = (data && data.items) || [];
+    kalFuellerOwnerFilter(items);
+    const ownerFilter = $("kal-owner-filter").value;
+    const sichtbareItems = ownerFilter
+      ? items.filter(ev => kalEventOwner(ev).email === ownerFilter)
+      : items;
     statusEl.textContent = "";
-    if (empty) empty.style.display = items.length ? "none" : "block";
+    if (empty) {
+      empty.style.display = sichtbareItems.length ? "none" : "block";
+      const emptyTitle = empty.querySelector(".empty-title");
+      const emptyHint = empty.querySelector(".empty-hint");
+      if (emptyTitle) emptyTitle.textContent = ownerFilter ? "Keine Termine für diese Person" : "Keine kommenden Termine";
+      if (emptyHint) emptyHint.textContent = ownerFilter ? "Wähle oben eine andere Person oder alle Termine aus." : "Tippe auf ‚＋ Termin‘, um einen neuen Termin anzulegen.";
+    }
     let letzterTag = "";
     const frag = document.createDocumentFragment();
-    for (const ev of items) {
+    for (const ev of sichtbareItems) {
       const start = ev.start && (ev.start.dateTime || ev.start.date);
       if (!start) continue;
       const allday = !!(ev.start && ev.start.date && !ev.start.dateTime);
@@ -6543,9 +6574,13 @@ async function kalLadeAgenda() {
       card.className = "kal-event";
       const zeit = allday ? "ganztägig" : d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
       const loc = ev.location ? `<span class="kal-event-loc">📍 ${escapeHtml(ev.location)}</span>` : "";
-      card.innerHTML = `<div class="kal-event-bar"></div><div class="kal-event-body">
+      const owner = kalEventOwner(ev);
+      const ownerColor = kalOwnerColor(owner.email);
+      card.style.setProperty("--kal-owner-color", ownerColor);
+      card.innerHTML = `<div class="kal-event-bar" style="background:${ownerColor}"></div><div class="kal-event-body">
         <div class="kal-event-title">${escapeHtml(ev.summary || "(ohne Titel)")}</div>
-        <div class="kal-event-meta"><span class="kal-event-time">${zeit}</span>${loc}</div></div>`;
+        <div class="kal-event-meta"><span class="kal-event-time">${zeit}</span>${loc}</div>
+        <div class="kal-event-owner" title="${escapeHtml(owner.email)}"><span class="kal-event-owner-dot"></span><span>Von: ${escapeHtml(owner.label)}</span></div></div>`;
       card.addEventListener("click", () => kalOeffneEditor(ev));
       frag.appendChild(card);
     }
@@ -6554,6 +6589,47 @@ async function kalLadeAgenda() {
     statusEl.className = "kal-status err";
     statusEl.textContent = "Fehler beim Laden: " + (e.message || e);
   }
+}
+
+function kalEventOwner(ev) {
+  const person = (ev && (ev.organizer || ev.creator)) || {};
+  const email = String(person.email || "Unbekannt").trim().toLowerCase();
+  return {
+    email,
+    label: person.displayName ? `${person.displayName} (${email})` : email,
+  };
+}
+
+function kalFuellerOwnerFilter(items) {
+  const select = $("kal-owner-filter");
+  const previous = select.value || localStorage.getItem("kal_owner_filter") || "";
+  const owners = new Map();
+  for (const ev of items) {
+    const owner = kalEventOwner(ev);
+    if (owner.email && owner.email !== "unbekannt") owners.set(owner.email, owner);
+  }
+  select.replaceChildren(new Option("Alle Termine", ""));
+  Array.from(owners.values())
+    .sort((a, b) => a.label.localeCompare(b.label, "de"))
+    .forEach(owner => {
+      const label = owner.email === "jorgepnt@gmail.com" ? "Meine Termine (Jorge)" : owner.label;
+      select.add(new Option(label, owner.email));
+    });
+  select.value = owners.has(previous) ? previous : "";
+  if (previous && !owners.has(previous)) localStorage.removeItem("kal_owner_filter");
+}
+
+function kalOwnerColor(email) {
+  const normalized = String(email || "").trim().toLowerCase();
+  const fixed = {
+    "jorgepnt@gmail.com": "#2563eb",
+    "nikitadacosta0702@gmail.com": "#eab308",
+  };
+  if (fixed[normalized]) return fixed[normalized];
+  const palette = ["#16a34a", "#dc2626", "#9333ea", "#ea580c", "#0891b2", "#db2777", "#4f46e5", "#0f766e"];
+  let hash = 0;
+  for (let i = 0; i < normalized.length; i++) hash = ((hash * 31) + normalized.charCodeAt(i)) >>> 0;
+  return palette[hash % palette.length];
 }
 
 function kalIstHeute(d) { return d.toDateString() === new Date().toDateString(); }
