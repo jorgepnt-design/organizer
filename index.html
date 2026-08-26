@@ -1170,7 +1170,40 @@
     .kal-connect-btn { font-size: 0.92rem; }
     .kal-setup-hint { margin-top: 14px; font-size: 0.82rem; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 12px; max-width: 420px; }
     [data-theme="dark"] .kal-setup-hint { color: #fbbf24; background: #3b2413; border-color: #92400e; }
-    .kal-agenda { display: flex; flex-direction: column; gap: 6px; }
+    .kal-layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 18px; align-items: start; }
+    .kal-agenda { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .kal-month-card {
+      position: sticky; top: 12px; padding: 14px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+    }
+    .kal-month-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+    .kal-month-title { font-size: 0.95rem; font-weight: 700; color: var(--text); text-transform: capitalize; }
+    .kal-month-nav { display: flex; gap: 3px; }
+    .kal-month-nav button { width: 32px; height: 32px; padding: 0; }
+    .kal-month-weekdays, .kal-month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+    .kal-month-weekdays span {
+      text-align: center; font-size: 0.66rem; font-weight: 700; color: var(--text-muted); padding-bottom: 4px;
+    }
+    .kal-month-day {
+      position: relative; aspect-ratio: 1; min-width: 0; border: none; border-radius: 50%;
+      background: transparent; color: var(--text); cursor: pointer; font-size: 0.76rem;
+      display: flex; align-items: center; justify-content: center; padding: 0;
+    }
+    .kal-month-day:hover { background: var(--surface2); }
+    .kal-month-day.outside { color: var(--text-muted); opacity: 0.42; }
+    .kal-month-day.today { background: var(--primary); color: #fff; font-weight: 800; }
+    .kal-month-day.has-events:not(.today) { background: var(--primary-light); font-weight: 700; }
+    .kal-month-dots {
+      position: absolute; left: 50%; bottom: 2px; transform: translateX(-50%);
+      display: flex; justify-content: center; gap: 2px; max-width: 80%;
+    }
+    .kal-month-dot { width: 4px; height: 4px; border-radius: 50%; flex: 0 0 4px; }
+    .kal-month-loading { min-height: 225px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.78rem; }
+    @media (max-width: 760px) {
+      .kal-layout { grid-template-columns: 1fr; }
+      .kal-month-card { position: static; grid-row: 1; max-width: 390px; width: 100%; margin: 0 auto 4px; }
+      .kal-agenda { grid-row: 2; }
+    }
     .kal-day-head {
       position: sticky; top: 0; display: flex; align-items: baseline; gap: 8px;
       font-size: 0.78rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
@@ -2553,11 +2586,24 @@
           </button>
         </div>
       </div>
-      <div id="kal-agenda" class="kal-agenda">
-        <div class="empty-state" id="kal-empty" style="display:none">
-          <div class="empty-title">Keine kommenden Termine</div>
-          <div class="empty-hint">Tippe auf „＋ Termin“, um einen neuen Termin anzulegen.</div>
+      <div class="kal-layout">
+        <div id="kal-agenda" class="kal-agenda">
+          <div class="empty-state" id="kal-empty" style="display:none">
+            <div class="empty-title">Keine kommenden Termine</div>
+            <div class="empty-hint">Tippe auf „＋ Termin“, um einen neuen Termin anzulegen.</div>
+          </div>
         </div>
+        <aside class="kal-month-card" aria-label="Monatskalender">
+          <div class="kal-month-head">
+            <div class="kal-month-title" id="kal-month-title"></div>
+            <div class="kal-month-nav">
+              <button class="btn-icon" id="kal-month-prev" title="Vorheriger Monat" aria-label="Vorheriger Monat">‹</button>
+              <button class="btn-icon" id="kal-month-next" title="Nächster Monat" aria-label="Nächster Monat">›</button>
+            </div>
+          </div>
+          <div class="kal-month-weekdays" aria-hidden="true"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
+          <div class="kal-month-grid" id="kal-month-grid"></div>
+        </aside>
       </div>
     </div>
   </div>
@@ -6461,17 +6507,21 @@ const CAL_CONFIGURED = !!CAL_CLIENT_ID && CAL_CLIENT_ID.indexOf("%%") === -1;
 const CAL_API = "https://www.googleapis.com/calendar/v3";
 
 let kalInited = false, kalTokenClient = null, kalAccessToken = null, kalTokenExpiry = 0, kalTokenCb = null, kalEditId = null;
+let kalMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1), kalMonthItems = [];
 function kalGISbereit() { return typeof google !== "undefined" && google.accounts && google.accounts.oauth2; }
 
 function initKalender() {
   if (kalInited) return;
   kalInited = true;
   $("kal-connect-btn").addEventListener("click", () => kalVerbinden(true).catch(e => kalFehler(e)));
-  $("kal-refresh").addEventListener("click", () => kalLadeAgenda());
+  $("kal-refresh").addEventListener("click", () => Promise.all([kalLadeAgenda(), kalLadeKalendermonat()]));
   $("kal-owner-filter").addEventListener("change", () => {
     localStorage.setItem("kal_owner_filter", $("kal-owner-filter").value);
     kalLadeAgenda();
+    kalRenderMonat();
   });
+  $("kal-month-prev").addEventListener("click", () => kalWechsleMonat(-1));
+  $("kal-month-next").addEventListener("click", () => kalWechsleMonat(1));
   $("kal-new").addEventListener("click", () => kalOeffneEditor(null));
   $("kal-modal-close").addEventListener("click", kalSchliesseEditor);
   $("kal-modal").addEventListener("mousedown", e => { if (e.target === $("kal-modal")) kalSchliesseEditor(); });
@@ -6518,7 +6568,7 @@ async function kalVerbinden(interaktiv) {
   await kalHoleToken(interaktiv);
   $("kal-connect").classList.add("hidden");
   $("kal-main").classList.remove("hidden");
-  await kalLadeAgenda();
+  await Promise.all([kalLadeAgenda(), kalLadeKalendermonat()]);
 }
 
 async function kalApi(method, path, body) {
@@ -6574,6 +6624,7 @@ async function kalLadeAgenda() {
       }
       const card = document.createElement("div");
       card.className = "kal-event";
+      card.dataset.date = kalDateStr(d);
       const zeit = allday ? "ganztägig" : d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
       const loc = ev.location ? `<span class="kal-event-loc">📍 ${escapeHtml(ev.location)}</span>` : "";
       const owner = kalEventOwner(ev);
@@ -6647,6 +6698,96 @@ function kalOwnerColor(email) {
   return palette[hash % palette.length];
 }
 
+async function kalWechsleMonat(delta) {
+  kalMonthDate = new Date(kalMonthDate.getFullYear(), kalMonthDate.getMonth() + delta, 1);
+  await kalLadeKalendermonat();
+}
+
+async function kalLadeKalendermonat() {
+  const grid = $("kal-month-grid");
+  $("kal-month-title").textContent = kalMonthDate.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+  grid.className = "kal-month-grid kal-month-loading";
+  grid.textContent = "Lade Termine …";
+  try {
+    const start = new Date(kalMonthDate.getFullYear(), kalMonthDate.getMonth(), 1);
+    const end = new Date(kalMonthDate.getFullYear(), kalMonthDate.getMonth() + 1, 1);
+    const p = new URLSearchParams({
+      timeMin: start.toISOString(), timeMax: end.toISOString(), singleEvents: "true",
+      orderBy: "startTime", maxResults: "500",
+    });
+    const data = await kalApi("GET", "/calendars/primary/events?" + p.toString());
+    kalMonthItems = (data && data.items) || [];
+    kalRenderMonat();
+  } catch (e) {
+    grid.className = "kal-month-loading";
+    grid.textContent = "Monat konnte nicht geladen werden";
+  }
+}
+
+function kalRenderMonat() {
+  const grid = $("kal-month-grid");
+  if (!grid) return;
+  $("kal-month-title").textContent = kalMonthDate.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+  grid.className = "kal-month-grid";
+  grid.replaceChildren();
+  const ownerFilter = $("kal-owner-filter").value;
+  const items = kalMonthItems.filter(ev => {
+    const email = kalEventOwner(ev).email;
+    return !ownerFilter || (ownerFilter === "__mine__" ? kalIstMeineEmail(email) : email === ownerFilter);
+  });
+  const eventsByDay = new Map();
+  for (const ev of items) {
+    for (const key of kalEventDateKeys(ev)) {
+      if (!eventsByDay.has(key)) eventsByDay.set(key, []);
+      eventsByDay.get(key).push(ev);
+    }
+  }
+  const first = new Date(kalMonthDate.getFullYear(), kalMonthDate.getMonth(), 1);
+  const mondayOffset = (first.getDay() + 6) % 7;
+  const gridStart = new Date(first); gridStart.setDate(first.getDate() - mondayOffset);
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(gridStart); d.setDate(gridStart.getDate() + i);
+    const key = kalDateStr(d), dayEvents = eventsByDay.get(key) || [];
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "kal-month-day";
+    if (d.getMonth() !== kalMonthDate.getMonth()) btn.classList.add("outside");
+    if (kalIstHeute(d)) btn.classList.add("today");
+    if (dayEvents.length) btn.classList.add("has-events");
+    btn.setAttribute("aria-label", `${d.toLocaleDateString("de-DE")}${dayEvents.length ? `, ${dayEvents.length} Termin${dayEvents.length === 1 ? "" : "e"}` : ""}`);
+    const number = document.createElement("span"); number.textContent = d.getDate(); btn.appendChild(number);
+    if (dayEvents.length) {
+      const dots = document.createElement("span"); dots.className = "kal-month-dots";
+      const colors = [...new Set(dayEvents.map(ev => kalOwnerColor(kalEventOwner(ev).email)))].slice(0, 4);
+      for (const color of colors) {
+        const dot = document.createElement("span"); dot.className = "kal-month-dot"; dot.style.background = color; dots.appendChild(dot);
+      }
+      btn.appendChild(dots);
+      btn.title = `${dayEvents.length} Termin${dayEvents.length === 1 ? "" : "e"}`;
+    }
+    btn.addEventListener("click", () => {
+      const agendaEvent = document.querySelector(`#kal-agenda .kal-event[data-date="${key}"]`);
+      if (agendaEvent) agendaEvent.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    grid.appendChild(btn);
+  }
+}
+
+function kalEventDateKeys(ev) {
+  const startRaw = ev.start && (ev.start.dateTime || ev.start.date);
+  if (!startRaw) return [];
+  const allday = !!(ev.start.date && !ev.start.dateTime);
+  const start = new Date(allday ? startRaw + "T00:00:00" : startRaw);
+  const endRaw = ev.end && (ev.end.dateTime || ev.end.date);
+  const end = endRaw ? new Date((allday ? endRaw + "T00:00:00" : endRaw)) : new Date(start);
+  if (allday && end > start) end.setDate(end.getDate() - 1);
+  const keys = [];
+  const cursor = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const last = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  for (let guard = 0; cursor <= last && guard < 366; guard++, cursor.setDate(cursor.getDate() + 1)) keys.push(kalDateStr(cursor));
+  return keys;
+}
+
 function kalIstHeute(d) { return d.toDateString() === new Date().toDateString(); }
 function kalTagLabel(d) {
   const n = new Date(), morgen = new Date(n); morgen.setDate(n.getDate() + 1);
@@ -6704,7 +6845,7 @@ async function kalSpeichern() {
     else           await kalApi("POST",  "/calendars/primary/events", body);
     kalSchliesseEditor();
     showToast(kalEditId ? "Termin aktualisiert" : "Termin erstellt", "success");
-    await kalLadeAgenda();
+    await Promise.all([kalLadeAgenda(), kalLadeKalendermonat()]);
   } catch (e) { $("kal-f-msg").textContent = "Fehler: " + (e.message || e); }
   finally { $("kal-f-save").disabled = false; }
 }
@@ -6717,7 +6858,7 @@ async function kalLoeschen() {
     await kalApi("DELETE", `/calendars/primary/events/${encodeURIComponent(kalEditId)}`);
     kalSchliesseEditor();
     showToast("Termin gelöscht", "success");
-    await kalLadeAgenda();
+    await Promise.all([kalLadeAgenda(), kalLadeKalendermonat()]);
   } catch (e) { $("kal-f-msg").textContent = "Fehler: " + (e.message || e); }
 }
 
