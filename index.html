@@ -1222,7 +1222,11 @@
     .kal-event-title { font-size: 0.95rem; font-weight: 600; color: var(--text); line-height: 1.3; word-break: break-word; }
     .kal-event-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; display: flex; gap: 8px; flex-wrap: wrap; }
     .kal-event-time { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--text); white-space: nowrap; }
-    .kal-event-loc { display: inline-flex; align-items: center; gap: 3px; }
+    .kal-event-loc {
+      display: inline-flex; align-items: center; gap: 3px; color: var(--primary);
+      text-decoration: none; font-weight: 500; cursor: pointer;
+    }
+    .kal-event-loc:hover { text-decoration: underline; }
     .kal-event-owner {
       display: inline-flex; align-items: center; gap: 5px; min-width: 0;
       font-size: 0.75rem; color: var(--text-muted); word-break: break-word;
@@ -6626,7 +6630,8 @@ async function kalLadeAgenda() {
       card.className = "kal-event";
       card.dataset.date = kalDateStr(d);
       const zeit = allday ? "ganztägig" : d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
-      const loc = ev.location ? `<span class="kal-event-loc">📍 ${escapeHtml(ev.location)}</span>` : "";
+      const mapsUrl = ev.location ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ev.location)}` : "";
+      const loc = ev.location ? `<a class="kal-event-loc" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer" title="Navigation mit Google Maps starten">📍 ${escapeHtml(ev.location)}</a>` : "";
       const owner = kalEventOwner(ev);
       const ownerColor = kalOwnerColor(owner.email);
       card.style.setProperty("--kal-owner-color", ownerColor);
@@ -6634,6 +6639,8 @@ async function kalLadeAgenda() {
         <div class="kal-event-title">${escapeHtml(ev.summary || "(ohne Titel)")}</div>
         <div class="kal-event-meta"><span class="kal-event-time">${zeit}</span>${loc}</div>
         <div class="kal-event-owner" title="${escapeHtml(owner.email)}"><span class="kal-event-owner-dot"></span><span>Von: ${escapeHtml(owner.label)}</span></div></div>`;
+      const locationLink = card.querySelector(".kal-event-loc");
+      if (locationLink) locationLink.addEventListener("click", e => e.stopPropagation());
       card.addEventListener("click", () => kalOeffneEditor(ev));
       frag.appendChild(card);
     }
