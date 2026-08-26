@@ -1235,6 +1235,11 @@
       width: 7px; height: 7px; border-radius: 50%; flex: 0 0 7px;
       background: var(--kal-owner-color, var(--primary));
     }
+    .kal-event-attendees {
+      display: flex; align-items: flex-start; gap: 5px; min-width: 0; margin-top: 2px;
+      font-size: 0.75rem; color: var(--text-muted); line-height: 1.35; word-break: break-word;
+    }
+    .kal-attendees-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
     .kal-status { font-size: 0.8rem; color: var(--text-muted); padding: 10px 2px; }
     .kal-status.err { color: var(--danger); }
     /* Termin-Editor Felder */
@@ -2639,6 +2644,11 @@
       <div>
         <label class="kal-label">Ort</label>
         <input type="text" id="kal-f-loc" placeholder="optional" autocomplete="off" />
+      </div>
+      <div>
+        <label class="kal-label">Teilnehmer einladen</label>
+        <input type="text" id="kal-f-attendees" placeholder="name@example.com, weitere@example.com" autocomplete="off" />
+        <div class="kal-attendees-hint">Mehrere E-Mail-Adressen mit Komma trennen.</div>
       </div>
       <div>
         <label class="kal-label">Notiz</label>
@@ -6510,7 +6520,7 @@ const CAL_SCOPE     = "https://www.googleapis.com/auth/calendar.events";
 const CAL_CONFIGURED = !!CAL_CLIENT_ID && CAL_CLIENT_ID.indexOf("%%") === -1;
 const CAL_API = "https://www.googleapis.com/calendar/v3";
 
-let kalInited = false, kalTokenClient = null, kalAccessToken = null, kalTokenExpiry = 0, kalTokenCb = null, kalEditId = null;
+let kalInited = false, kalTokenClient = null, kalAccessToken = null, kalTokenExpiry = 0, kalTokenCb = null, kalEditId = null, kalEditEvent = null;
 let kalMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1), kalMonthItems = [];
 function kalGISbereit() { return typeof google !== "undefined" && google.accounts && google.accounts.oauth2; }
 
@@ -6634,11 +6644,16 @@ async function kalLadeAgenda() {
       const loc = ev.location ? `<a class="kal-event-loc" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer" title="Navigation mit Google Maps starten">📍 ${escapeHtml(ev.location)}</a>` : "";
       const owner = kalEventOwner(ev);
       const ownerColor = kalOwnerColor(owner.email);
+      const attendees = kalEventAttendees(ev);
+      const attendeesHtml = attendees.length
+        ? `<div class="kal-event-attendees" title="${escapeHtml(attendees.join(", "))}"><span>👥</span><span>Teilnehmer: ${escapeHtml(attendees.join(", "))}</span></div>`
+        : `<div class="kal-event-attendees"><span>👥</span><span>Keine weiteren Teilnehmer</span></div>`;
       card.style.setProperty("--kal-owner-color", ownerColor);
       card.innerHTML = `<div class="kal-event-bar" style="background:${ownerColor}"></div><div class="kal-event-body">
         <div class="kal-event-title">${escapeHtml(ev.summary || "(ohne Titel)")}</div>
         <div class="kal-event-meta"><span class="kal-event-time">${zeit}</span>${loc}</div>
-        <div class="kal-event-owner" title="${escapeHtml(owner.email)}"><span class="kal-event-owner-dot"></span><span>Von: ${escapeHtml(owner.label)}</span></div></div>`;
+        <div class="kal-event-owner" title="${escapeHtml(owner.email)}"><span class="kal-event-owner-dot"></span><span>Erstellt von: ${escapeHtml(owner.label)}</span></div>
+        ${attendeesHtml}</div>`;
       const locationLink = card.querySelector(".kal-event-loc");
       if (locationLink) locationLink.addEventListener("click", e => e.stopPropagation());
       card.addEventListener("click", () => kalOeffneEditor(ev));
@@ -6660,6 +6675,16 @@ function kalEventOwner(ev) {
     email,
     label: person.displayName ? `${person.displayName} (${email})` : email,
   };
+}
+
+function kalEventAttendees(ev) {
+  return ((ev && ev.attendees) || []).map(person => {
+    const email = String(person.email || "").trim().toLowerCase();
+    if (!email) return "";
+    const name = person.displayName ? `${person.displayName} (${email})` : email;
+    const status = { accepted: "zugesagt", declined: "abgesagt", tentative: "vielleicht", needsAction: "offen" }[person.responseStatus];
+    return status ? `${name} – ${status}` : name;
+  }).filter(Boolean);
 }
 
 const KAL_MEINE_EMAILS = new Set(["jorgepnt@gmail.com", "jorge.pinto@evonik.com"]);
@@ -6805,6 +6830,7 @@ function kalTagLabel(d) {
 
 function kalOeffneEditor(ev) {
   kalEditId = ev ? ev.id : null;
+  kalEditEvent = ev || null;
   $("kal-modal-title").textContent = ev ? "Termin bearbeiten" : "Neuer Termin";
   $("kal-f-delete").classList.toggle("hidden", !ev);
   $("kal-f-msg").textContent = "";
@@ -6815,6 +6841,7 @@ function kalOeffneEditor(ev) {
   else end = new Date(start.getTime() + 3600000);
   $("kal-f-title").value = ev ? (ev.summary || "") : "";
   $("kal-f-loc").value = ev ? (ev.location || "") : "";
+  $("kal-f-attendees").value = ev ? ((ev.attendees || []).map(a => a.email).filter(Boolean).join(", ")) : "";
   $("kal-f-desc").value = ev ? (ev.description || "") : "";
   $("kal-f-allday").checked = allday;
   $("kal-modal").querySelector(".modal").classList.toggle("kal-pane-allday", allday);
@@ -6823,7 +6850,7 @@ function kalOeffneEditor(ev) {
   $("kal-modal").classList.remove("hidden");
   setTimeout(() => $("kal-f-title").focus(), 60);
 }
-function kalSchliesseEditor() { $("kal-modal").classList.add("hidden"); kalEditId = null; }
+function kalSchliesseEditor() { $("kal-modal").classList.add("hidden"); kalEditId = null; kalEditEvent = null; }
 function kalNaechsteStunde() { const d = new Date(); d.setMinutes(0, 0, 0); d.setHours(d.getHours() + 1); return d; }
 function kalDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 function kalTimeStr(d) { return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; }
@@ -6834,7 +6861,16 @@ async function kalSpeichern() {
   const allday = $("kal-f-allday").checked;
   const sdate = $("kal-f-sdate").value, edate = $("kal-f-edate").value || sdate;
   if (!sdate) { $("kal-f-msg").textContent = "Bitte ein Startdatum wählen."; return; }
-  const body = { summary: titel, location: $("kal-f-loc").value.trim() || undefined, description: $("kal-f-desc").value.trim() || undefined };
+  const attendeeEmails = [...new Set($("kal-f-attendees").value.split(/[;,\n]+/).map(v => v.trim().toLowerCase()).filter(Boolean))];
+  const invalidEmail = attendeeEmails.find(email => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+  if (invalidEmail) { $("kal-f-msg").textContent = `Ungültige E-Mail-Adresse: ${invalidEmail}`; return; }
+  const existingAttendees = new Map(((kalEditEvent && kalEditEvent.attendees) || []).map(a => [String(a.email || "").toLowerCase(), a]));
+  const body = {
+    summary: titel,
+    location: $("kal-f-loc").value.trim() || undefined,
+    description: $("kal-f-desc").value.trim() || undefined,
+    attendees: attendeeEmails.map(email => ({ ...(existingAttendees.get(email) || {}), email })),
+  };
   if (allday) {
     const endEx = new Date(edate + "T00:00:00"); endEx.setDate(endEx.getDate() + 1);
     body.start = { date: sdate }; body.end = { date: kalDateStr(endEx) };
@@ -6848,8 +6884,8 @@ async function kalSpeichern() {
   }
   $("kal-f-save").disabled = true; $("kal-f-msg").textContent = "Speichert …";
   try {
-    if (kalEditId) await kalApi("PATCH", `/calendars/primary/events/${encodeURIComponent(kalEditId)}`, body);
-    else           await kalApi("POST",  "/calendars/primary/events", body);
+    if (kalEditId) await kalApi("PATCH", `/calendars/primary/events/${encodeURIComponent(kalEditId)}?sendUpdates=all`, body);
+    else           await kalApi("POST",  "/calendars/primary/events?sendUpdates=all", body);
     kalSchliesseEditor();
     showToast(kalEditId ? "Termin aktualisiert" : "Termin erstellt", "success");
     await Promise.all([kalLadeAgenda(), kalLadeKalendermonat()]);
@@ -6862,7 +6898,7 @@ async function kalLoeschen() {
   const ok = await safeConfirm("Diesen Termin wirklich löschen?");
   if (!ok) return;
   try {
-    await kalApi("DELETE", `/calendars/primary/events/${encodeURIComponent(kalEditId)}`);
+    await kalApi("DELETE", `/calendars/primary/events/${encodeURIComponent(kalEditId)}?sendUpdates=all`);
     kalSchliesseEditor();
     showToast("Termin gelöscht", "success");
     await Promise.all([kalLadeAgenda(), kalLadeKalendermonat()]);
