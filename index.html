@@ -6545,9 +6545,11 @@ async function kalLadeAgenda() {
     const items = (data && data.items) || [];
     kalFuellerOwnerFilter(items);
     const ownerFilter = $("kal-owner-filter").value;
-    const sichtbareItems = ownerFilter
-      ? items.filter(ev => kalEventOwner(ev).email === ownerFilter)
-      : items;
+    const sichtbareItems = ownerFilter === "__mine__"
+      ? items.filter(ev => kalIstMeineEmail(kalEventOwner(ev).email))
+      : ownerFilter
+        ? items.filter(ev => kalEventOwner(ev).email === ownerFilter)
+        : items;
     statusEl.textContent = "";
     if (empty) {
       empty.style.display = sichtbareItems.length ? "none" : "block";
@@ -6592,7 +6594,9 @@ async function kalLadeAgenda() {
 }
 
 function kalEventOwner(ev) {
-  const person = (ev && (ev.organizer || ev.creator)) || {};
+  // "Von" meint den tatsächlichen Ersteller. Der Organizer kann bei
+  // importierten/geteilten Terminen lediglich der aktuelle Kalender sein.
+  const person = (ev && (ev.creator || ev.organizer)) || {};
   const email = String(person.email || "Unbekannt").trim().toLowerCase();
   return {
     email,
@@ -6600,29 +6604,40 @@ function kalEventOwner(ev) {
   };
 }
 
+const KAL_MEINE_EMAILS = new Set(["jorgepnt@gmail.com", "jorge.pinto@evonik.com"]);
+function kalIstMeineEmail(email) {
+  return KAL_MEINE_EMAILS.has(String(email || "").trim().toLowerCase());
+}
+
 function kalFuellerOwnerFilter(items) {
   const select = $("kal-owner-filter");
-  const previous = select.value || localStorage.getItem("kal_owner_filter") || "";
+  const savedFilter = select.value || localStorage.getItem("kal_owner_filter") || "";
+  const previous = kalIstMeineEmail(savedFilter) ? "__mine__" : savedFilter;
   const owners = new Map();
   for (const ev of items) {
     const owner = kalEventOwner(ev);
     if (owner.email && owner.email !== "unbekannt") owners.set(owner.email, owner);
   }
   select.replaceChildren(new Option("Alle Termine", ""));
+  if (Array.from(owners.keys()).some(kalIstMeineEmail)) select.add(new Option("Meine Termine", "__mine__"));
   Array.from(owners.values())
+    .filter(owner => !kalIstMeineEmail(owner.email))
     .sort((a, b) => a.label.localeCompare(b.label, "de"))
     .forEach(owner => {
-      const label = owner.email === "jorgepnt@gmail.com" ? "Meine Termine (Jorge)" : owner.label;
-      select.add(new Option(label, owner.email));
+      select.add(new Option(owner.label, owner.email));
     });
-  select.value = owners.has(previous) ? previous : "";
-  if (previous && !owners.has(previous)) localStorage.removeItem("kal_owner_filter");
+  const previousExists = previous === "__mine__"
+    ? Array.from(owners.keys()).some(kalIstMeineEmail)
+    : owners.has(previous);
+  select.value = previousExists ? previous : "";
+  if (previous && !previousExists) localStorage.removeItem("kal_owner_filter");
 }
 
 function kalOwnerColor(email) {
   const normalized = String(email || "").trim().toLowerCase();
   const fixed = {
     "jorgepnt@gmail.com": "#2563eb",
+    "jorge.pinto@evonik.com": "#2563eb",
     "nikitadacosta0702@gmail.com": "#eab308",
   };
   if (fixed[normalized]) return fixed[normalized];
