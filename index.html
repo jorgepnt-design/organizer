@@ -6519,6 +6519,8 @@ const CAL_CLIENT_ID = "202291981896-2q1pmupb6dgnsvo3o3gunvd650g370gk.apps.google
 const CAL_SCOPE     = "https://www.googleapis.com/auth/calendar.events";
 const CAL_CONFIGURED = !!CAL_CLIENT_ID && CAL_CLIENT_ID.indexOf("%%") === -1;
 const CAL_API = "https://www.googleapis.com/calendar/v3";
+const CAL_TOKEN_KEY = "kal_access_token";
+const CAL_TOKEN_EXPIRY_KEY = "kal_access_token_expiry";
 
 let kalInited = false, kalTokenClient = null, kalAccessToken = null, kalTokenExpiry = 0, kalTokenCb = null, kalEditId = null, kalEditEvent = null;
 let kalMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1), kalMonthItems = [];
@@ -6527,6 +6529,7 @@ function kalGISbereit() { return typeof google !== "undefined" && google.account
 function initKalender() {
   if (kalInited) return;
   kalInited = true;
+  kalLadeGespeichertesToken();
   $("kal-connect-btn").addEventListener("click", () => kalVerbinden(true).catch(e => kalFehler(e)));
   $("kal-refresh").addEventListener("click", () => Promise.all([kalLadeAgenda(), kalLadeKalendermonat()]));
   $("kal-owner-filter").addEventListener("change", () => {
@@ -6560,6 +6563,32 @@ function initKalender() {
 
 function kalFehler(e) { showToast("Kalender: " + (e && e.message ? e.message : e), "error"); }
 
+function kalLadeGespeichertesToken() {
+  const token = localStorage.getItem(CAL_TOKEN_KEY);
+  const expiry = Number(localStorage.getItem(CAL_TOKEN_EXPIRY_KEY) || 0);
+  if (token && expiry > Date.now() + 60000) {
+    kalAccessToken = token;
+    kalTokenExpiry = expiry;
+  } else {
+    kalLoescheGespeichertesToken();
+  }
+}
+
+function kalSpeichereToken(token, expiry) {
+  kalAccessToken = token;
+  kalTokenExpiry = expiry;
+  localStorage.setItem(CAL_TOKEN_KEY, token);
+  localStorage.setItem(CAL_TOKEN_EXPIRY_KEY, String(expiry));
+  localStorage.setItem("kal_verbunden", "1");
+}
+
+function kalLoescheGespeichertesToken() {
+  kalAccessToken = null;
+  kalTokenExpiry = 0;
+  localStorage.removeItem(CAL_TOKEN_KEY);
+  localStorage.removeItem(CAL_TOKEN_EXPIRY_KEY);
+}
+
 function kalHoleToken(interaktiv) {
   return new Promise((resolve, reject) => {
     if (!CAL_CONFIGURED) return reject(new Error("nicht eingerichtet"));
@@ -6567,9 +6596,7 @@ function kalHoleToken(interaktiv) {
     if (kalAccessToken && Date.now() < kalTokenExpiry - 60000) return resolve(kalAccessToken);
     kalTokenCb = (resp) => {
       if (resp && resp.access_token) {
-        kalAccessToken = resp.access_token;
-        kalTokenExpiry = Date.now() + ((resp.expires_in || 3600) * 1000);
-        localStorage.setItem("kal_verbunden", "1");
+        kalSpeichereToken(resp.access_token, Date.now() + ((resp.expires_in || 3600) * 1000));
         resolve(kalAccessToken);
       } else { reject(new Error((resp && resp.error) || "keine Freigabe")); }
     };
@@ -6591,7 +6618,10 @@ async function kalApi(method, path, body) {
     body: body ? JSON.stringify(body) : undefined,
   });
   let res = await doFetch(await kalHoleToken(false));
-  if (res.status === 401) { kalAccessToken = null; res = await doFetch(await kalHoleToken(true)); }
+  if (res.status === 401) {
+    kalLoescheGespeichertesToken();
+    res = await doFetch(await kalHoleToken(false));
+  }
   if (!res.ok) { const t = await res.text().catch(() => ""); throw new Error("HTTP " + res.status + " " + t.slice(0, 160)); }
   return res.status === 204 ? null : res.json();
 }
