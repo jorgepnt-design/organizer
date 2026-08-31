@@ -1253,6 +1253,9 @@
     .kal-repeat-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
     .kal-repeat-row > div { min-width: 0; }
     .kal-repeat-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+    .kal-reminder-custom { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; margin-top: 8px; }
+    .kal-reminder-custom input, .kal-reminder-custom select { min-width: 0; }
+    .kal-reminder-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; line-height: 1.35; }
     #kal-modal .modal input[type="date"], #kal-modal .modal input[type="time"] { flex: 1; }
     .kal-pane-allday .kal-dt input[type="time"] { display: none; }
     @media (max-width: 430px) { .kal-repeat-row { grid-template-columns: 1fr; gap: 0; } }
@@ -2662,6 +2665,34 @@
         </div>
       </div>
       <div id="kal-repeat-hint" class="kal-repeat-hint hidden">Ohne Enddatum wird der Termin unbegrenzt wiederholt.</div>
+      <div>
+        <label class="kal-label">Push-Erinnerung</label>
+        <select id="kal-f-reminder">
+          <option value="default">Google-Standard verwenden</option>
+          <option value="none">Keine Erinnerung</option>
+          <option value="0">Zum Terminbeginn</option>
+          <option value="5">5 Minuten vorher</option>
+          <option value="10">10 Minuten vorher</option>
+          <option value="15">15 Minuten vorher</option>
+          <option value="30">30 Minuten vorher</option>
+          <option value="60">1 Stunde vorher</option>
+          <option value="120">2 Stunden vorher</option>
+          <option value="1440">1 Tag vorher</option>
+          <option value="2880">2 Tage vorher</option>
+          <option value="10080">1 Woche vorher</option>
+          <option value="custom">Benutzerdefiniert …</option>
+        </select>
+        <div id="kal-reminder-custom" class="kal-reminder-custom hidden">
+          <input type="number" id="kal-f-reminder-value" min="0" step="1" value="1" aria-label="Zeit bis zur Erinnerung" />
+          <select id="kal-f-reminder-unit" aria-label="Einheit der Erinnerung">
+            <option value="1">Minuten vorher</option>
+            <option value="60">Stunden vorher</option>
+            <option value="1440">Tage vorher</option>
+            <option value="10080">Wochen vorher</option>
+          </select>
+        </div>
+        <div class="kal-reminder-hint">Die Mitteilung kommt über Google Kalender. Auf dem iPhone müssen Mitteilungen für Google Kalender erlaubt sein.</div>
+      </div>
       <div>
         <label class="kal-label">Ort</label>
         <input type="text" id="kal-f-loc" placeholder="optional" autocomplete="off" />
@@ -6546,6 +6577,7 @@ const CAL_TOKEN_EXPIRY_KEY = "kal_access_token_expiry";
 let kalInited = false, kalTokenClient = null, kalAccessToken = null, kalTokenExpiry = 0, kalTokenCb = null, kalEditId = null, kalEditEvent = null;
 let kalEditSeriesId = null, kalEditOriginalRecurrence = [];
 let kalEditOriginalRepeatValue = "", kalEditOriginalRepeatUntil = "";
+let kalEditOriginalReminderSignature = "";
 let kalMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1), kalMonthItems = [];
 function kalGISbereit() { return typeof google !== "undefined" && google.accounts && google.accounts.oauth2; }
 
@@ -6569,6 +6601,7 @@ function initKalender() {
     $("kal-modal").querySelector(".modal").classList.toggle("kal-pane-allday", $("kal-f-allday").checked);
   });
   $("kal-f-repeat").addEventListener("change", kalAktualisiereWiederholungsfelder);
+  $("kal-f-reminder").addEventListener("change", kalAktualisiereErinnerungsfelder);
   $("kal-f-save").addEventListener("click", kalSpeichern);
   $("kal-f-delete").addEventListener("click", kalLoeschen);
 
@@ -6697,6 +6730,8 @@ async function kalLadeAgenda() {
       const mapsUrl = ev.location ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ev.location)}` : "";
       const loc = ev.location ? `<a class="kal-event-loc" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer" title="Navigation mit Google Maps starten">📍 ${escapeHtml(ev.location)}</a>` : "";
       const repeat = (ev.recurringEventId || (ev.recurrence && ev.recurrence.length)) ? `<span title="Serientermin">🔁 Wiederholt</span>` : "";
+      const reminderLabel = kalEventErinnerungsLabel(ev);
+      const reminder = reminderLabel ? `<span title="Push-Erinnerung">🔔 ${escapeHtml(reminderLabel)}</span>` : "";
       const owner = kalEventOwner(ev);
       const ownerColor = kalOwnerColor(owner.email);
       const attendees = kalEventAttendees(ev);
@@ -6706,7 +6741,7 @@ async function kalLadeAgenda() {
       card.style.setProperty("--kal-owner-color", ownerColor);
       card.innerHTML = `<div class="kal-event-bar" style="background:${ownerColor}"></div><div class="kal-event-body">
         <div class="kal-event-title">${escapeHtml(ev.summary || "(ohne Titel)")}</div>
-        <div class="kal-event-meta"><span class="kal-event-time">${zeit}</span>${repeat}${loc}</div>
+        <div class="kal-event-meta"><span class="kal-event-time">${zeit}</span>${repeat}${reminder}${loc}</div>
         <div class="kal-event-owner" title="${escapeHtml(owner.email)}"><span class="kal-event-owner-dot"></span><span>Erstellt von: ${escapeHtml(owner.label)}</span></div>
         ${attendeesHtml}</div>`;
       const locationLink = card.querySelector(".kal-event-loc");
@@ -6901,6 +6936,7 @@ function kalOeffneEditor(ev) {
   $("kal-f-attendees").value = ev ? ((ev.attendees || []).map(a => a.email).filter(Boolean).join(", ")) : "";
   $("kal-f-desc").value = ev ? (ev.description || "") : "";
   kalSetzeWiederholung(kalEditOriginalRecurrence);
+  kalSetzeErinnerung(ev ? ev.reminders : null);
   $("kal-f-repeat").disabled = !!kalEditSeriesId;
   $("kal-f-allday").checked = allday;
   $("kal-modal").querySelector(".modal").classList.toggle("kal-pane-allday", allday);
@@ -6913,6 +6949,7 @@ function kalOeffneEditor(ev) {
 function kalSchliesseEditor() {
   $("kal-modal").classList.add("hidden");
   kalEditId = null; kalEditEvent = null; kalEditSeriesId = null; kalEditOriginalRecurrence = [];
+  kalEditOriginalReminderSignature = "";
 }
 function kalNaechsteStunde() { const d = new Date(); d.setMinutes(0, 0, 0); d.setHours(d.getHours() + 1); return d; }
 function kalDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
@@ -6942,7 +6979,7 @@ async function kalLadeSerienregel(ev, serienId) {
     if (!kalEditEvent || kalEditEvent.id !== ev.id) return;
     kalEditOriginalRecurrence = Array.isArray(master && master.recurrence) ? [...master.recurrence] : [];
     kalSetzeWiederholung(kalEditOriginalRecurrence);
-    $("kal-f-msg").textContent = "Änderungen an der Wiederholung gelten für die gesamte Serie.";
+    $("kal-f-msg").textContent = "Änderungen an Wiederholung oder Erinnerung gelten für die gesamte Serie.";
   } catch (e) {
     if (kalEditEvent && kalEditEvent.id === ev.id) $("kal-f-msg").textContent = "Wiederholung konnte nicht geladen werden.";
   } finally {
@@ -6966,6 +7003,67 @@ function kalBaueWiederholung() {
   return [teile.join(";")];
 }
 
+function kalAktualisiereErinnerungsfelder() {
+  $("kal-reminder-custom").classList.toggle("hidden", $("kal-f-reminder").value !== "custom");
+}
+
+function kalErinnerungsAuswahl(reminders) {
+  if (!reminders || reminders.useDefault !== false) return { auswahl: "default", minuten: null };
+  const popup = (reminders.overrides || []).find(r => r && r.method === "popup" && Number.isInteger(Number(r.minutes)));
+  if (!popup) return { auswahl: "none", minuten: null };
+  const minuten = Number(popup.minutes);
+  const presets = new Set([0, 5, 10, 15, 30, 60, 120, 1440, 2880, 10080]);
+  return { auswahl: presets.has(minuten) ? String(minuten) : "custom", minuten };
+}
+
+function kalSetzeErinnerung(reminders) {
+  const aktuell = kalErinnerungsAuswahl(reminders);
+  $("kal-f-reminder").value = aktuell.auswahl;
+  if (aktuell.auswahl === "custom") {
+    const einheiten = [10080, 1440, 60, 1];
+    const einheit = einheiten.find(wert => aktuell.minuten % wert === 0) || 1;
+    $("kal-f-reminder-value").value = String(aktuell.minuten / einheit);
+    $("kal-f-reminder-unit").value = String(einheit);
+  } else {
+    $("kal-f-reminder-value").value = "1";
+    $("kal-f-reminder-unit").value = "60";
+  }
+  kalAktualisiereErinnerungsfelder();
+  kalEditOriginalReminderSignature = kalErinnerungsSignatur(kalBaueErinnerung().reminders);
+}
+
+function kalBaueErinnerung() {
+  const auswahl = $("kal-f-reminder").value;
+  if (auswahl === "default") return { reminders: { useDefault: true } };
+  if (auswahl === "none") return { reminders: { useDefault: false, overrides: [] } };
+  let minuten;
+  if (auswahl === "custom") {
+    const wert = Number($("kal-f-reminder-value").value);
+    const einheit = Number($("kal-f-reminder-unit").value);
+    if (!Number.isInteger(wert) || wert < 0) return { error: "Bitte eine gültige Erinnerungszeit eingeben." };
+    minuten = wert * einheit;
+  } else minuten = Number(auswahl);
+  if (!Number.isInteger(minuten) || minuten < 0 || minuten > 40320) {
+    return { error: "Die Erinnerung darf höchstens 4 Wochen vor dem Termin liegen." };
+  }
+  return { reminders: { useDefault: false, overrides: [{ method: "popup", minutes: minuten }] } };
+}
+
+function kalErinnerungsSignatur(reminders) {
+  return JSON.stringify(reminders || null);
+}
+
+function kalEventErinnerungsLabel(ev) {
+  const aktuell = kalErinnerungsAuswahl(ev && ev.reminders);
+  if (aktuell.minuten === null) return "";
+  const m = aktuell.minuten;
+  if (m === 0) return "zum Beginn";
+  if (m % 10080 === 0) return `${m / 10080} Wo. vorher`;
+  if (m % 1440 === 0) return `${m / 1440} T. vorher`;
+  if (m % 60 === 0) return `${m / 60} Std. vorher`;
+  return `${m} Min. vorher`;
+}
+
 async function kalSpeichern() {
   const titel = $("kal-f-title").value.trim();
   if (!titel) { $("kal-f-msg").textContent = "Bitte einen Titel eingeben."; return; }
@@ -6974,6 +7072,8 @@ async function kalSpeichern() {
   if (!sdate) { $("kal-f-msg").textContent = "Bitte ein Startdatum wählen."; return; }
   const repeatUntil = $("kal-f-repeat").value ? $("kal-f-repeat-until").value : "";
   if (repeatUntil && repeatUntil < sdate) { $("kal-f-msg").textContent = "Das Ende der Wiederholung muss nach dem Start liegen."; return; }
+  const erinnerung = kalBaueErinnerung();
+  if (erinnerung.error) { $("kal-f-msg").textContent = erinnerung.error; return; }
   const attendeeEmails = [...new Set($("kal-f-attendees").value.split(/[;,\n]+/).map(v => v.trim().toLowerCase()).filter(Boolean))];
   const invalidEmail = attendeeEmails.find(email => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
   if (invalidEmail) { $("kal-f-msg").textContent = `Ungültige E-Mail-Adresse: ${invalidEmail}`; return; }
@@ -6987,6 +7087,8 @@ async function kalSpeichern() {
   const recurrence = kalBaueWiederholung();
   const recurrenceChanged = $("kal-f-repeat").value !== kalEditOriginalRepeatValue || repeatUntil !== kalEditOriginalRepeatUntil;
   if (!kalEditSeriesId && (!kalEditId ? recurrence.length : recurrenceChanged)) body.recurrence = recurrence;
+  const reminderChanged = kalErinnerungsSignatur(erinnerung.reminders) !== kalEditOriginalReminderSignature;
+  if (!kalEditSeriesId && (!kalEditId || reminderChanged)) body.reminders = erinnerung.reminders;
   if (allday) {
     const endEx = new Date(edate + "T00:00:00"); endEx.setDate(endEx.getDate() + 1);
     body.start = { date: sdate }; body.end = { date: kalDateStr(endEx) };
@@ -7003,8 +7105,11 @@ async function kalSpeichern() {
   try {
     if (kalEditId) await kalApi("PATCH", `/calendars/primary/events/${encodeURIComponent(kalEditId)}?sendUpdates=all`, body);
     else           await kalApi("POST",  "/calendars/primary/events?sendUpdates=all", body);
-    if (kalEditSeriesId && recurrenceChanged) {
-      await kalApi("PATCH", `/calendars/primary/events/${encodeURIComponent(kalEditSeriesId)}?sendUpdates=all`, { recurrence });
+    if (kalEditSeriesId && (recurrenceChanged || reminderChanged)) {
+      const serienAenderung = {};
+      if (recurrenceChanged) serienAenderung.recurrence = recurrence;
+      if (reminderChanged) serienAenderung.reminders = erinnerung.reminders;
+      await kalApi("PATCH", `/calendars/primary/events/${encodeURIComponent(kalEditSeriesId)}?sendUpdates=all`, serienAenderung);
     }
     kalSchliesseEditor();
     showToast(wirdBearbeitet ? "Termin aktualisiert" : "Termin erstellt", "success");
