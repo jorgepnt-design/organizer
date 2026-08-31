@@ -1250,8 +1250,12 @@
     .kal-daterow > div { flex: 1; min-width: 0; }
     .kal-dt { display: flex; gap: 6px; }
     .kal-dt input { min-width: 0; }
+    .kal-repeat-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+    .kal-repeat-row > div { min-width: 0; }
+    .kal-repeat-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
     #kal-modal .modal input[type="date"], #kal-modal .modal input[type="time"] { flex: 1; }
     .kal-pane-allday .kal-dt input[type="time"] { display: none; }
+    @media (max-width: 430px) { .kal-repeat-row { grid-template-columns: 1fr; gap: 0; } }
 
     /* ── UTILS ── */
     .hidden { display: none !important; }
@@ -2641,6 +2645,23 @@
           <div class="kal-dt"><input type="date" id="kal-f-edate" /><input type="time" id="kal-f-etime" /></div>
         </div>
       </div>
+      <div class="kal-repeat-row">
+        <div>
+          <label class="kal-label">Wiederholung</label>
+          <select id="kal-f-repeat">
+            <option value="">Keine Wiederholung</option>
+            <option value="DAILY">Täglich</option>
+            <option value="WEEKLY">Wöchentlich</option>
+            <option value="MONTHLY">Monatlich</option>
+            <option value="YEARLY">Jährlich</option>
+          </select>
+        </div>
+        <div id="kal-repeat-until-wrap" class="hidden">
+          <label class="kal-label">Wiederholen bis</label>
+          <input type="date" id="kal-f-repeat-until" />
+        </div>
+      </div>
+      <div id="kal-repeat-hint" class="kal-repeat-hint hidden">Ohne Enddatum wird der Termin unbegrenzt wiederholt.</div>
       <div>
         <label class="kal-label">Ort</label>
         <input type="text" id="kal-f-loc" placeholder="optional" autocomplete="off" />
@@ -6523,6 +6544,8 @@ const CAL_TOKEN_KEY = "kal_access_token";
 const CAL_TOKEN_EXPIRY_KEY = "kal_access_token_expiry";
 
 let kalInited = false, kalTokenClient = null, kalAccessToken = null, kalTokenExpiry = 0, kalTokenCb = null, kalEditId = null, kalEditEvent = null;
+let kalEditSeriesId = null, kalEditOriginalRecurrence = [];
+let kalEditOriginalRepeatValue = "", kalEditOriginalRepeatUntil = "";
 let kalMonthDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1), kalMonthItems = [];
 function kalGISbereit() { return typeof google !== "undefined" && google.accounts && google.accounts.oauth2; }
 
@@ -6545,6 +6568,7 @@ function initKalender() {
   $("kal-f-allday").addEventListener("change", () => {
     $("kal-modal").querySelector(".modal").classList.toggle("kal-pane-allday", $("kal-f-allday").checked);
   });
+  $("kal-f-repeat").addEventListener("change", kalAktualisiereWiederholungsfelder);
   $("kal-f-save").addEventListener("click", kalSpeichern);
   $("kal-f-delete").addEventListener("click", kalLoeschen);
 
@@ -6672,6 +6696,7 @@ async function kalLadeAgenda() {
       const zeit = allday ? "ganztägig" : d.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
       const mapsUrl = ev.location ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ev.location)}` : "";
       const loc = ev.location ? `<a class="kal-event-loc" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer" title="Navigation mit Google Maps starten">📍 ${escapeHtml(ev.location)}</a>` : "";
+      const repeat = (ev.recurringEventId || (ev.recurrence && ev.recurrence.length)) ? `<span title="Serientermin">🔁 Wiederholt</span>` : "";
       const owner = kalEventOwner(ev);
       const ownerColor = kalOwnerColor(owner.email);
       const attendees = kalEventAttendees(ev);
@@ -6681,7 +6706,7 @@ async function kalLadeAgenda() {
       card.style.setProperty("--kal-owner-color", ownerColor);
       card.innerHTML = `<div class="kal-event-bar" style="background:${ownerColor}"></div><div class="kal-event-body">
         <div class="kal-event-title">${escapeHtml(ev.summary || "(ohne Titel)")}</div>
-        <div class="kal-event-meta"><span class="kal-event-time">${zeit}</span>${loc}</div>
+        <div class="kal-event-meta"><span class="kal-event-time">${zeit}</span>${repeat}${loc}</div>
         <div class="kal-event-owner" title="${escapeHtml(owner.email)}"><span class="kal-event-owner-dot"></span><span>Erstellt von: ${escapeHtml(owner.label)}</span></div>
         ${attendeesHtml}</div>`;
       const locationLink = card.querySelector(".kal-event-loc");
@@ -6861,6 +6886,8 @@ function kalTagLabel(d) {
 function kalOeffneEditor(ev) {
   kalEditId = ev ? ev.id : null;
   kalEditEvent = ev || null;
+  kalEditSeriesId = ev && ev.recurringEventId ? ev.recurringEventId : null;
+  kalEditOriginalRecurrence = ev && Array.isArray(ev.recurrence) ? [...ev.recurrence] : [];
   $("kal-modal-title").textContent = ev ? "Termin bearbeiten" : "Neuer Termin";
   $("kal-f-delete").classList.toggle("hidden", !ev);
   $("kal-f-msg").textContent = "";
@@ -6873,17 +6900,71 @@ function kalOeffneEditor(ev) {
   $("kal-f-loc").value = ev ? (ev.location || "") : "";
   $("kal-f-attendees").value = ev ? ((ev.attendees || []).map(a => a.email).filter(Boolean).join(", ")) : "";
   $("kal-f-desc").value = ev ? (ev.description || "") : "";
+  kalSetzeWiederholung(kalEditOriginalRecurrence);
+  $("kal-f-repeat").disabled = !!kalEditSeriesId;
   $("kal-f-allday").checked = allday;
   $("kal-modal").querySelector(".modal").classList.toggle("kal-pane-allday", allday);
   $("kal-f-sdate").value = kalDateStr(start); $("kal-f-stime").value = kalTimeStr(start);
   $("kal-f-edate").value = kalDateStr(end);   $("kal-f-etime").value = kalTimeStr(end);
   $("kal-modal").classList.remove("hidden");
+  if (kalEditSeriesId) kalLadeSerienregel(ev, kalEditSeriesId);
   setTimeout(() => $("kal-f-title").focus(), 60);
 }
-function kalSchliesseEditor() { $("kal-modal").classList.add("hidden"); kalEditId = null; kalEditEvent = null; }
+function kalSchliesseEditor() {
+  $("kal-modal").classList.add("hidden");
+  kalEditId = null; kalEditEvent = null; kalEditSeriesId = null; kalEditOriginalRecurrence = [];
+}
 function kalNaechsteStunde() { const d = new Date(); d.setMinutes(0, 0, 0); d.setHours(d.getHours() + 1); return d; }
 function kalDateStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 function kalTimeStr(d) { return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; }
+
+function kalAktualisiereWiederholungsfelder() {
+  const wiederholt = !!$("kal-f-repeat").value;
+  $("kal-repeat-until-wrap").classList.toggle("hidden", !wiederholt);
+  $("kal-repeat-hint").classList.toggle("hidden", !wiederholt);
+}
+
+function kalSetzeWiederholung(regeln) {
+  const rrule = (regeln || []).find(regel => String(regel).toUpperCase().startsWith("RRULE:")) || "";
+  const freq = (rrule.match(/(?:^|[:;])FREQ=(DAILY|WEEKLY|MONTHLY|YEARLY)(?:;|$)/i) || [])[1] || "";
+  const until = (rrule.match(/(?:^|;)UNTIL=(\d{8})(?:T\d{6}Z)?(?:;|$)/i) || [])[1] || "";
+  $("kal-f-repeat").value = freq.toUpperCase();
+  $("kal-f-repeat-until").value = until ? `${until.slice(0,4)}-${until.slice(4,6)}-${until.slice(6,8)}` : "";
+  kalEditOriginalRepeatValue = $("kal-f-repeat").value;
+  kalEditOriginalRepeatUntil = $("kal-f-repeat-until").value;
+  kalAktualisiereWiederholungsfelder();
+}
+
+async function kalLadeSerienregel(ev, serienId) {
+  $("kal-f-msg").textContent = "Lade Serientermin …";
+  try {
+    const master = await kalApi("GET", `/calendars/primary/events/${encodeURIComponent(serienId)}`);
+    if (!kalEditEvent || kalEditEvent.id !== ev.id) return;
+    kalEditOriginalRecurrence = Array.isArray(master && master.recurrence) ? [...master.recurrence] : [];
+    kalSetzeWiederholung(kalEditOriginalRecurrence);
+    $("kal-f-msg").textContent = "Änderungen an der Wiederholung gelten für die gesamte Serie.";
+  } catch (e) {
+    if (kalEditEvent && kalEditEvent.id === ev.id) $("kal-f-msg").textContent = "Wiederholung konnte nicht geladen werden.";
+  } finally {
+    if (kalEditEvent && kalEditEvent.id === ev.id) $("kal-f-repeat").disabled = false;
+  }
+}
+
+function kalBaueWiederholung() {
+  const freq = $("kal-f-repeat").value;
+  if (!freq) return [];
+  const until = $("kal-f-repeat-until").value;
+  const originalRrule = (kalEditOriginalRecurrence || []).find(regel => String(regel).toUpperCase().startsWith("RRULE:")) || "";
+  const originalFreq = (originalRrule.match(/(?:^|[:;])FREQ=([^;]+)/i) || [])[1] || "";
+  if (originalRrule && originalFreq.toUpperCase() === freq) {
+    let rrule = originalRrule.replace(/;UNTIL=[^;]+/i, "");
+    if (until) rrule += `;UNTIL=${until.replaceAll("-", "")}T235959Z`;
+    return [rrule, ...kalEditOriginalRecurrence.filter(regel => regel !== originalRrule)];
+  }
+  const teile = [`RRULE:FREQ=${freq}`];
+  if (until) teile.push(`UNTIL=${until.replaceAll("-", "")}T235959Z`);
+  return [teile.join(";")];
+}
 
 async function kalSpeichern() {
   const titel = $("kal-f-title").value.trim();
@@ -6891,6 +6972,8 @@ async function kalSpeichern() {
   const allday = $("kal-f-allday").checked;
   const sdate = $("kal-f-sdate").value, edate = $("kal-f-edate").value || sdate;
   if (!sdate) { $("kal-f-msg").textContent = "Bitte ein Startdatum wählen."; return; }
+  const repeatUntil = $("kal-f-repeat").value ? $("kal-f-repeat-until").value : "";
+  if (repeatUntil && repeatUntil < sdate) { $("kal-f-msg").textContent = "Das Ende der Wiederholung muss nach dem Start liegen."; return; }
   const attendeeEmails = [...new Set($("kal-f-attendees").value.split(/[;,\n]+/).map(v => v.trim().toLowerCase()).filter(Boolean))];
   const invalidEmail = attendeeEmails.find(email => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
   if (invalidEmail) { $("kal-f-msg").textContent = `Ungültige E-Mail-Adresse: ${invalidEmail}`; return; }
@@ -6901,6 +6984,9 @@ async function kalSpeichern() {
     description: $("kal-f-desc").value.trim() || undefined,
     attendees: attendeeEmails.map(email => ({ ...(existingAttendees.get(email) || {}), email })),
   };
+  const recurrence = kalBaueWiederholung();
+  const recurrenceChanged = $("kal-f-repeat").value !== kalEditOriginalRepeatValue || repeatUntil !== kalEditOriginalRepeatUntil;
+  if (!kalEditSeriesId && (!kalEditId ? recurrence.length : recurrenceChanged)) body.recurrence = recurrence;
   if (allday) {
     const endEx = new Date(edate + "T00:00:00"); endEx.setDate(endEx.getDate() + 1);
     body.start = { date: sdate }; body.end = { date: kalDateStr(endEx) };
@@ -6913,11 +6999,15 @@ async function kalSpeichern() {
     body.end   = { dateTime: endDT.toISOString(),   timeZone: tz };
   }
   $("kal-f-save").disabled = true; $("kal-f-msg").textContent = "Speichert …";
+  const wirdBearbeitet = !!kalEditId;
   try {
     if (kalEditId) await kalApi("PATCH", `/calendars/primary/events/${encodeURIComponent(kalEditId)}?sendUpdates=all`, body);
     else           await kalApi("POST",  "/calendars/primary/events?sendUpdates=all", body);
+    if (kalEditSeriesId && recurrenceChanged) {
+      await kalApi("PATCH", `/calendars/primary/events/${encodeURIComponent(kalEditSeriesId)}?sendUpdates=all`, { recurrence });
+    }
     kalSchliesseEditor();
-    showToast(kalEditId ? "Termin aktualisiert" : "Termin erstellt", "success");
+    showToast(wirdBearbeitet ? "Termin aktualisiert" : "Termin erstellt", "success");
     await Promise.all([kalLadeAgenda(), kalLadeKalendermonat()]);
   } catch (e) { $("kal-f-msg").textContent = "Fehler: " + (e.message || e); }
   finally { $("kal-f-save").disabled = false; }
