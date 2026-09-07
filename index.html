@@ -6574,7 +6574,7 @@ const CAL_API = "https://www.googleapis.com/calendar/v3";
 const CAL_TOKEN_KEY = "kal_access_token";
 const CAL_TOKEN_EXPIRY_KEY = "kal_access_token_expiry";
 
-let kalInited = false, kalTokenClient = null, kalAccessToken = null, kalTokenExpiry = 0, kalTokenCb = null, kalEditId = null, kalEditEvent = null;
+let kalInited = false, kalTokenClient = null, kalAccessToken = null, kalTokenExpiry = 0, kalTokenPromise = null, kalEditId = null, kalEditEvent = null;
 let kalEditSeriesId = null, kalEditOriginalRecurrence = [];
 let kalEditOriginalRepeatValue = "", kalEditOriginalRepeatUntil = "";
 let kalEditOriginalReminderSignature = "";
@@ -6607,15 +6607,8 @@ function initKalender() {
 
   if (!CAL_CONFIGURED) { $("kal-setup-hint").classList.remove("hidden"); $("kal-connect-btn").disabled = true; return; }
 
-  const setup = () => {
-    if (!kalGISbereit()) { setTimeout(setup, 300); return; }
-    kalTokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CAL_CLIENT_ID, scope: CAL_SCOPE,
-      callback: (resp) => { const cb = kalTokenCb; kalTokenCb = null; if (cb) cb(resp); },
-    });
-    if (localStorage.getItem("kal_verbunden") === "1") kalVerbinden(false).catch(() => {});
-  };
-  setup();
+  // Restore a valid session without opening unsolicited or blocked popups.
+  if (kalAccessToken) kalVerbinden(false).catch(kalFehler);
 }
 
 function kalFehler(e) { showToast("Kalender: " + (e && e.message ? e.message : e), "error"); }
@@ -6647,19 +6640,62 @@ function kalLoescheGespeichertesToken() {
 }
 
 function kalHoleToken(interaktiv) {
-  return new Promise((resolve, reject) => {
-    if (!CAL_CONFIGURED) return reject(new Error("nicht eingerichtet"));
-    if (!kalTokenClient) return reject(new Error("Google lädt noch – bitte kurz warten"));
-    if (kalAccessToken && Date.now() < kalTokenExpiry - 60000) return resolve(kalAccessToken);
-    kalTokenCb = (resp) => {
-      if (resp && resp.access_token) {
-        kalSpeichereToken(resp.access_token, Date.now() + ((resp.expires_in || 3600) * 1000));
-        resolve(kalAccessToken);
-      } else { reject(new Error((resp && resp.error) || "keine Freigabe")); }
+  if (!CAL_CONFIGURED) return Promise.reject(new Error("nicht eingerichtet"));
+  if (kalAccessToken && Date.now() < kalTokenExpiry - 60000) return Promise.resolve(kalAccessToken);
+  // Agenda and month must await the same request, never overwrite callbacks.
+  if (kalTokenPromise) return kalTokenPromise;
+  if (!interaktiv) {
+    $("kal-connect").classList.remove("hidden");
+    return Promise.reject(new Error("Die Kalenderverbindung ist abgelaufen. Bitte auf ‚Mit Google Kalender verbinden‘ tippen."));
+  }
+  if (!kalGISbereit()) return Promise.reject(new Error("Die Google-Anmeldung ist noch nicht verfügbar. Bitte die Internetverbindung prüfen und erneut versuchen."));
+  const button = $("kal-connect-btn");
+  button.disabled = true;
+  button.textContent = "Verbindung wird hergestellt …";
+  const request = new Promise((resolve, reject) => {
+    let settled = false;
+    const finish = (error, token) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (error) reject(error); else resolve(token);
     };
-    try { kalTokenClient.requestAccessToken({ prompt: interaktiv ? "consent" : "" }); }
-    catch (e) { kalTokenCb = null; reject(e); }
+    const timer = setTimeout(() => finish(new Error("Die Google-Anmeldung hat zu lange gedauert. Bitte das Anmeldefenster schließen und erneut verbinden.")), 120000);
+    try {
+      // Each attempt owns its callbacks; late responses cannot complete a retry.
+      kalTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CAL_CLIENT_ID, scope: CAL_SCOPE,
+        callback: (resp) => {
+          if (settled) return;
+          if (!resp || resp.error || !resp.access_token) {
+            finish(new Error(resp?.error === "access_denied" ? "Der Kalenderzugriff wurde nicht freigegeben." : "Google konnte den Kalender nicht verbinden. Bitte erneut versuchen."));
+            return;
+          }
+          if (!google.accounts.oauth2.hasGrantedAllScopes(resp, CAL_SCOPE)) {
+            finish(new Error("Bitte den Zugriff auf Kalendertermine bei Google erlauben."));
+            return;
+          }
+          try {
+            kalSpeichereToken(resp.access_token, Date.now() + ((resp.expires_in || 3600) * 1000));
+            finish(null, kalAccessToken);
+          } catch (e) { finish(e); }
+        },
+        error_callback: (err) => finish(new Error(err?.type === "popup_closed"
+          ? "Das Google-Anmeldefenster wurde geschlossen. Du kannst erneut verbinden."
+          : err?.type === "popup_failed_to_open"
+            ? "Das Google-Anmeldefenster wurde blockiert. Bitte Pop-ups für diese Seite erlauben und erneut verbinden."
+            : "Die Google-Anmeldung konnte nicht abgeschlossen werden. Bitte erneut verbinden.")),
+      });
+      // Ask only when Google requires consent; do not force it on every click.
+      kalTokenClient.requestAccessToken({ prompt: "" });
+    } catch (e) { finish(e); }
   });
+  kalTokenPromise = request.finally(() => {
+    kalTokenPromise = null;
+    button.disabled = false;
+    button.textContent = "🔗 Mit Google Kalender verbinden";
+  });
+  return kalTokenPromise;
 }
 
 async function kalVerbinden(interaktiv) {
@@ -6670,17 +6706,29 @@ async function kalVerbinden(interaktiv) {
 }
 
 async function kalApi(method, path, body) {
-  const doFetch = (tok) => fetch(CAL_API + path, {
-    method, headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  let res = await doFetch(await kalHoleToken(false));
-  if (res.status === 401) {
-    kalLoescheGespeichertesToken();
-    res = await doFetch(await kalHoleToken(false));
+  const tok = await kalHoleToken(false);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+  try {
+    const res = await fetch(CAL_API + path, {
+      method, headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: controller.signal,
+    });
+    if (res.status === 401) {
+      // Do not erase a newer token if an older in-flight request fails.
+      if (kalAccessToken === tok) kalLoescheGespeichertesToken();
+      $("kal-connect").classList.remove("hidden");
+      throw new Error("Bitte den Google Kalender erneut verbinden.");
+    }
+    if (!res.ok) { const t = await res.text().catch(() => ""); throw new Error("HTTP " + res.status + " " + t.slice(0, 160)); }
+    return res.status === 204 ? null : await res.json();
+  } catch (e) {
+    if (e.name === "AbortError") throw new Error("Google Kalender antwortet nicht. Bitte erneut aktualisieren.");
+    throw e;
+  } finally {
+    clearTimeout(timer);
   }
-  if (!res.ok) { const t = await res.text().catch(() => ""); throw new Error("HTTP " + res.status + " " + t.slice(0, 160)); }
-  return res.status === 204 ? null : res.json();
 }
 
 async function kalLadeAgenda() {
