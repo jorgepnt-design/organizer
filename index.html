@@ -6665,10 +6665,6 @@ function kalHoleToken(interaktiv) {
       // Each attempt owns its callbacks; late responses cannot complete a retry.
       kalTokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CAL_CLIENT_ID, scope: CAL_SCOPE,
-        // Use the account that is already signed in to the Organizer. This
-        // avoids Chrome's multi-account chooser, which can end in Google's
-        // generic error 500 on some desktop sessions.
-        login_hint: auth.currentUser?.email || undefined,
         callback: (resp) => {
           if (settled) return;
           if (!resp || resp.error || !resp.access_token) {
@@ -6690,8 +6686,9 @@ function kalHoleToken(interaktiv) {
             ? "Das Google-Anmeldefenster wurde blockiert. Bitte Pop-ups für diese Seite erlauben und erneut verbinden."
             : "Die Google-Anmeldung konnte nicht abgeschlossen werden. Bitte erneut verbinden.")),
       });
-      // Ask only when Google requires consent; do not force it on every click.
-      kalTokenClient.requestAccessToken({ prompt: "" });
+      // Use Google's documented default flow. It selects an account and only
+      // asks for calendar consent when Google actually requires it.
+      kalTokenClient.requestAccessToken();
     } catch (e) { finish(e); }
   });
   kalTokenPromise = request.finally(() => {
