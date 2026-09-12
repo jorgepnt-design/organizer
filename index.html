@@ -7935,12 +7935,51 @@ let wetterAktivIdx      = -1;   // -1 = eigener Standort, sonst Index in wetterC
 let gpsOrt              = null; // {name, lat, lon}
 let wetterRefreshTimer  = null;
 let wetterSucheDebounce = null;
+let wetterLadevorgang   = null;
+
+const WETTER_TIMEOUT_MS = 12000;
+const WETTER_MAX_VERSUCHE = 3;
+
+async function wetterFetchJson(url, optionen = {}) {
+  const versuche = optionen.versuche || WETTER_MAX_VERSUCHE;
+  const timeoutMs = optionen.timeoutMs || WETTER_TIMEOUT_MS;
+  let letzterFehler = null;
+
+  for (let versuch = 1; versuch <= versuche; versuch++) {
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+    try {
+      const trennzeichen = url.includes("?") ? "&" : "?";
+      const requestUrl = `${url}${trennzeichen}_=${Date.now()}-${versuch}`;
+      const r = await fetch(requestUrl, {
+        cache: "no-store",
+        signal: controller ? controller.signal : undefined,
+        headers: { Accept: "application/json" }
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      if (!data || data.error) throw new Error((data && data.reason) || "Ungültige Wetterdaten");
+      return data;
+    } catch (e) {
+      letzterFehler = e;
+      if (versuch < versuche) {
+        await new Promise(resolve => setTimeout(resolve, versuch * 500));
+      }
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+  throw letzterFehler || new Error("Wetterdienst nicht erreichbar");
+}
 
 function initWetter(userId) {
   wetterSettingsRef = db.doc(`users/${userId}/settings/wetter`);
 
   $("btn-radar-open").addEventListener("click", openRadar);
-  $("btn-wetter-refresh").addEventListener("click", () => { ladeAktivesWetter(); showToast("Wetter aktualisiert"); });
+  $("btn-wetter-refresh").addEventListener("click", async () => {
+    const erfolgreich = await ladeAktivesWetter(true);
+    showToast(erfolgreich ? "Wetter aktualisiert" : "Wetter konnte nicht aktualisiert werden", erfolgreich ? "success" : "error");
+  });
 
   const addInput = $("wetter-add-input");
   addInput.addEventListener("input", () => {
@@ -8018,12 +8057,22 @@ function aktiverOrt() {
   return wetterCities[wetterAktivIdx] || null;
 }
 
-async function ladeAktivesWetter() {
+async function ladeAktivesWetter(neuLaden = false) {
+  if (wetterLadevorgang && !neuLaden) return wetterLadevorgang;
+  wetterLadevorgang = ladeAktivesWetterIntern();
+  try {
+    return await wetterLadevorgang;
+  } finally {
+    wetterLadevorgang = null;
+  }
+}
+
+async function ladeAktivesWetterIntern() {
   const wrap = $("wetter-content");
   const ort = aktiverOrt();
   if (!ort) {
     wrap.innerHTML = `<div class="dash-empty">📍 Standort nicht verfügbar – bitte unten eine Stadt hinzufügen.</div>`;
-    return;
+    return false;
   }
   try {
     const url =
@@ -8032,14 +8081,17 @@ async function ladeAktivesWetter() {
       `&hourly=temperature_2m,precipitation_probability,weather_code` +
       `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max` +
       `&timezone=auto&forecast_days=14`;
-    const r = await fetch(url);
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const data = await r.json();
+    const data = await wetterFetchJson(url);
+    if (!data.current || !data.hourly || !data.daily) throw new Error("Unvollständige Wetterdaten");
     renderWetter(ort, data);
+    return true;
   } catch (e) {
-    wrap.innerHTML = `<div class="dash-empty">⚠️ Wetter konnte nicht geladen werden. <button type="button" class="btn-toggle active" id="wetter-retry">Erneut versuchen</button></div>`;
+    console.warn("Wetterabruf fehlgeschlagen:", e);
+    const offline = typeof navigator !== "undefined" && navigator.onLine === false;
+    wrap.innerHTML = `<div class="dash-empty">⚠️ ${offline ? "Keine Internetverbindung." : "Wetterdienst momentan nicht erreichbar."} <button type="button" class="btn-toggle active" id="wetter-retry">Erneut versuchen</button></div>`;
     const btn = $("wetter-retry");
-    if (btn) btn.addEventListener("click", ladeAktivesWetter);
+    if (btn) btn.addEventListener("click", () => ladeAktivesWetter(true));
+    return false;
   }
 }
 
@@ -8211,9 +8263,10 @@ function renderWetterChips() {
 
 async function wetterOrtSuche(q) {
   try {
-    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=de&format=json`);
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const data = await r.json();
+    const data = await wetterFetchJson(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=6&language=de&format=json`,
+      { versuche: 2 }
+    );
     zeigeWetterSuchErgebnisse(data.results || []);
   } catch (e) {
     zeigeWetterSuchErgebnisse([]);
@@ -8376,7 +8429,7 @@ async function ladeRadarRegenPrognose() {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${ort.lat}&longitude=${ort.lon}` +
       `&hourly=precipitation,precipitation_probability&current=precipitation` +
       `&timezone=auto&forecast_days=2`;
-    const data = await fetch(url).then(r => r.json());
+    const data = await wetterFetchJson(url, { versuche: 2 });
     const hourly = (data && data.hourly) || {};
     const cur    = (data && data.current) || {};
     const times  = hourly.time || [];
