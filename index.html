@@ -1549,7 +1549,7 @@
     .ws-regen.regen { color: #2563eb; }
     [data-theme="dark"] .ws-regen.regen { color: #93c5fd; }
 
-    /* 14-Tage-Trend */
+    /* Mehrtages-Trend */
     .wetter-trend-toggle { margin-top: 10px; }
     .wetter-trend-chevron { display: inline-block; width: 10px; }
     .wetter-tage { display: none; flex-direction: column; gap: 2px; margin-top: 8px; }
@@ -1648,6 +1648,7 @@
     /* 5-Stunden-Regenprognose im Radar-Modal */
     .radar-regen-prognose { display: flex; gap: 6px; margin-top: 10px; }
     .radar-regen-prognose:empty { display: none; }
+    .radar-regen-heading { margin-top: 10px; font-size: 0.76rem; font-weight: 600; color: var(--text-muted); }
     .radar-regen-stunde {
       flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
       padding: 7px 4px 6px; border: 1px solid var(--border); border-radius: 8px;
@@ -2912,6 +2913,7 @@ service cloud.firestore {
       <div id="radar-map"></div>
       <div id="radar-loading" class="radar-loading">Radar wird geladen …</div>
     </div>
+    <div class="radar-regen-heading">Regenprognose: jetzt bis +5 Stunden</div>
     <div id="radar-regen-prognose" class="radar-regen-prognose" title="Regenprognose für die nächsten 5 Stunden"></div>
     <div class="radar-controls">
       <button class="radar-play-btn" id="radar-play" title="Animation abspielen/pausieren">&#9654;</button>
@@ -8047,6 +8049,109 @@ function wttrZuWetterdaten(data) {
   };
 }
 
+function wetterZeitzone(ort) {
+  if (ort && typeof ort.timezone === "string" && ort.timezone.includes("/")) return ort.timezone;
+  const name = String((ort && ort.name) || "").toLowerCase();
+  if (name.includes("lissabon") || name.includes("lisboa")) return "Europe/Lisbon";
+  if (name.includes("darmstadt")) return "Europe/Berlin";
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Berlin"; }
+  catch (_) { return "Europe/Berlin"; }
+}
+
+function datumPlusTage(tage) {
+  const d = new Date();
+  d.setHours(12, 0, 0, 0);
+  d.setDate(d.getDate() + tage);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function brightskyCodeZuWmo(eintrag) {
+  const icon = String((eintrag && eintrag.icon) || "").toLowerCase();
+  const condition = String((eintrag && eintrag.condition) || "").toLowerCase();
+  if (icon.includes("thunder") || condition.includes("thunder")) return 95;
+  if (icon.includes("hail") || condition.includes("hail")) return 96;
+  if (icon.includes("snow") || condition.includes("snow")) return 73;
+  if (icon.includes("sleet") || condition.includes("sleet")) return 66;
+  if (icon.includes("fog") || condition.includes("fog")) return 45;
+  if (icon.includes("rain") || condition.includes("rain")) {
+    return Number(eintrag.precipitation) >= 2.5 ? 65 : 61;
+  }
+  if (icon.includes("clear")) return 0;
+  if (icon.includes("partly")) return 2;
+  return 3;
+}
+
+function brightskyZuWetterdaten(data) {
+  const zeilen = ((data && data.weather) || []).filter(z => z && z.timestamp && Number.isFinite(Number(z.temperature)));
+  if (!zeilen.length) throw new Error("Unvollständige Bright-Sky-Wetterdaten");
+
+  let aktuell = zeilen[0];
+  let kleinsterAbstand = Infinity;
+  zeilen.forEach(z => {
+    const abstand = Math.abs(new Date(z.timestamp).getTime() - Date.now());
+    if (abstand < kleinsterAbstand) { kleinsterAbstand = abstand; aktuell = z; }
+  });
+
+  const hourly = { time: [], temperature_2m: [], precipitation_probability: [], weather_code: [], precipitation: [] };
+  zeilen.forEach(z => {
+    hourly.time.push(String(z.timestamp).slice(0, 16));
+    hourly.temperature_2m.push(Number(z.temperature));
+    hourly.precipitation_probability.push(z.precipitation_probability == null
+      ? (Number(z.precipitation) > 0 ? 100 : 0) : Number(z.precipitation_probability));
+    hourly.precipitation.push(Number(z.precipitation) || 0);
+    hourly.weather_code.push(brightskyCodeZuWmo(z));
+  });
+
+  const gruppen = {};
+  zeilen.forEach(z => {
+    const tag = String(z.timestamp).slice(0, 10);
+    if (!gruppen[tag]) gruppen[tag] = [];
+    gruppen[tag].push(z);
+  });
+  const daily = {
+    time: [], weather_code: [], temperature_2m_max: [], temperature_2m_min: [],
+    precipitation_probability_max: []
+  };
+  Object.keys(gruppen).sort().slice(0, 10).forEach(tag => {
+    const werte = gruppen[tag];
+    const temps = werte.map(z => Number(z.temperature)).filter(Number.isFinite);
+    const regen = werte.map(z => z.precipitation_probability == null
+      ? (Number(z.precipitation) > 0 ? 100 : 0) : Number(z.precipitation_probability)).filter(Number.isFinite);
+    const mittag = werte.reduce((beste, z) =>
+      Math.abs(Number(String(z.timestamp).slice(11, 13)) - 12) < Math.abs(Number(String(beste.timestamp).slice(11, 13)) - 12) ? z : beste,
+    werte[0]);
+    daily.time.push(tag);
+    daily.weather_code.push(brightskyCodeZuWmo(mittag));
+    daily.temperature_2m_max.push(Math.max(...temps));
+    daily.temperature_2m_min.push(Math.min(...temps));
+    daily.precipitation_probability_max.push(regen.length ? Math.max(...regen) : null);
+  });
+
+  const aktuelleStunde = Number(String(aktuell.timestamp).slice(11, 13));
+  return {
+    current: {
+      time: String(aktuell.timestamp).slice(0, 16),
+      temperature_2m: Number(aktuell.temperature),
+      apparent_temperature: Number(aktuell.temperature),
+      is_day: !String(aktuell.icon || "").includes("night") && aktuelleStunde >= 6 && aktuelleStunde < 21 ? 1 : 0,
+      precipitation: Number(aktuell.precipitation) || 0,
+      weather_code: brightskyCodeZuWmo(aktuell),
+      wind_speed_10m: Number(aktuell.wind_speed) || 0
+    },
+    hourly,
+    daily,
+    _quelle: "Bright Sky"
+  };
+}
+
+async function ladeBrightSkyWetter(ort, tage = 10) {
+  const letzterTag = datumPlusTage(Math.max(0, tage - 1));
+  const url = `https://api.brightsky.dev/weather?lat=${Number(ort.lat)}&lon=${Number(ort.lon)}` +
+    `&date=${datumPlusTage(0)}&last_date=${letzterTag}&tz=${encodeURIComponent(wetterZeitzone(ort))}`;
+  const data = await wetterFetchJson(url, { versuche: 2, timeoutMs: 12000 });
+  return brightskyZuWetterdaten(data);
+}
+
 function wetterCacheKey(ort) {
   return `organizer-wetter-${Number(ort.lat).toFixed(2)}-${Number(ort.lon).toFixed(2)}`;
 }
@@ -8124,7 +8229,8 @@ function fordereStandort() {
     gpsOrt = {
       name: "Mein Standort",
       lat: Math.round(pos.coords.latitude * 100) / 100,
-      lon: Math.round(pos.coords.longitude * 100) / 100
+      lon: Math.round(pos.coords.longitude * 100) / 100,
+      timezone: wetterZeitzone(null)
     };
     renderWetterChips();
     reverseGeocode(gpsOrt.lat, gpsOrt.lon);
@@ -8185,10 +8291,12 @@ async function ladeAktivesWetterIntern() {
       `&current=temperature_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m` +
       `&hourly=temperature_2m,precipitation_probability,weather_code` +
       `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max` +
-      `&timezone=auto&forecast_days=14`;
+      `&timezone=auto&forecast_days=10`;
     const wttrUrl = `https://wttr.in/${Number(ort.lat)},${Number(ort.lon)}?format=j1&lang=de`;
     const data = await ersterErfolgreicher([
       wetterFetchJson(url, { versuche: 2, timeoutMs: 10000 }),
+      new Promise(resolve => setTimeout(resolve, 400))
+        .then(() => ladeBrightSkyWetter(ort, 10)),
       new Promise(resolve => setTimeout(resolve, 800))
         .then(() => wetterFetchJson(wttrUrl, { versuche: 2, timeoutMs: 12000, cacheBust: false }))
         .then(wttrZuWetterdaten)
@@ -8262,12 +8370,12 @@ function renderWetter(ort, data) {
     </div>`;
   }).join("");
 
-  // ── 14-Tage-Trend mit Min/Max-Balken ──
+  // ── Mehrtages-Trend mit Min/Max-Balken ──
   const dCodes = daily.weather_code || [];
   const dMaxT  = daily.temperature_2m_max || [];
   const dMinT  = daily.temperature_2m_min || [];
   const dRainP = daily.precipitation_probability_max || [];
-  const nTage  = Math.min(14, dMaxT.length);
+  const nTage  = Math.min(10, dMaxT.length);
   let gMin = Infinity, gMax = -Infinity;
   for (let i = 0; i < nTage; i++) {
     if (typeof dMinT[i] === "number" && dMinT[i] < gMin) gMin = dMinT[i];
@@ -8423,7 +8531,8 @@ function zeigeWetterSuchErgebnisse(results) {
       wetterCities.push({
         name: res.name,
         lat: Math.round(res.latitude * 100) / 100,
-        lon: Math.round(res.longitude * 100) / 100
+        lon: Math.round(res.longitude * 100) / 100,
+        timezone: res.timezone || ""
       });
       wetterAktivIdx = wetterCities.length - 1;
       speicherWetterEinstellungen();
@@ -8540,7 +8649,7 @@ function toggleRadarPlayback() {
   if (radarPlaying) stopRadarPlayback(); else startRadarPlayback();
 }
 
-// 5-Stunden-Regenprognose im Radar-Modal (Open-Meteo, Stundenschritte)
+// Regenprognose im Radar-Modal: Jetzt plus volle 5 Stunden im Voraus.
 async function ladeRadarRegenPrognose() {
   const box = $("radar-regen-prognose");
   const ort = aktiverOrt();
@@ -8551,22 +8660,28 @@ async function ladeRadarRegenPrognose() {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${ort.lat}&longitude=${ort.lon}` +
       `&hourly=precipitation,precipitation_probability&current=precipitation` +
       `&timezone=auto&forecast_days=2`;
-    const data = await wetterFetchJson(url, { versuche: 2 });
+    const cache = ladeWetterCache(ort);
+    const cacheGeeignet = cache && cache._quelle !== "wttr.in" &&
+      cache.hourly && Array.isArray(cache.hourly.time) && cache.hourly.time.length >= 6;
+    const data = cacheGeeignet ? cache : await ersterErfolgreicher([
+      wetterFetchJson(url, { versuche: 2, timeoutMs: 10000 }),
+      new Promise(resolve => setTimeout(resolve, 400)).then(() => ladeBrightSkyWetter(ort, 2))
+    ]);
     const hourly = (data && data.hourly) || {};
     const cur    = (data && data.current) || {};
     const times  = hourly.time || [];
-    const mm     = hourly.precipitation || [];
+    const mm     = hourly.precipitation || new Array(times.length).fill(0);
     const prob   = hourly.precipitation_probability || [];
     const nowKey = String(cur.time || "").slice(0, 13);
     let start = times.findIndex(t => String(t).slice(0, 13) === nowKey);
     if (start < 0) start = 0;
     let html = "";
-    for (let i = start; i < Math.min(start + 5, times.length); i++) {
+    for (let i = start; i < Math.min(start + 6, times.length); i++) {
       const p = prob[i];
       const m = mm[i];
       const hatRegen = (m !== null && m !== undefined && m > 0) ||
                        (p !== null && p !== undefined && p >= 40);
-      html += `<div class="radar-regen-stunde${hatRegen ? " regen" : ""}" title="Regenprognose Open-Meteo">
+      html += `<div class="radar-regen-stunde${hatRegen ? " regen" : ""}" title="Regenprognose">
         <div class="rr-zeit">${i === start ? "Jetzt" : String(times[i]).slice(11, 13) + " Uhr"}</div>
         <div class="rr-wert">💧 ${p !== null && p !== undefined ? p : "–"}%</div>
         <div class="rr-mm">${m !== null && m !== undefined && m > 0 ? String(m).replace(".", ",") + " mm" : "&ndash;"}</div>
