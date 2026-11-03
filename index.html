@@ -2096,6 +2096,24 @@
       .notiz-card:hover::before { opacity: 1; }
     }
 
+    /* ── MOBILE: Notiz-Kacheln kompakt ──
+       iOS Safari berechnet Karten in CSS-Spalten (columns) zusammen mit
+       -webkit-line-clamp falsch und bläht sie riesig auf. Deshalb auf dem
+       Handy eine einfache Flex-Liste und eine Vorschau mit fester Max-Höhe. */
+    @media (max-width: 600px) {
+      .notiz-grid:not(.list-mode) {
+        columns: auto; column-gap: 0;
+        display: flex; flex-direction: column; gap: 10px;
+      }
+      .notiz-grid:not(.list-mode) > * { margin-bottom: 0; }
+      .notiz-card { min-height: 0; padding: 10px 12px 8px; }
+      .notiz-card-preview {
+        display: block; -webkit-line-clamp: unset; flex: 0 0 auto;
+        max-height: calc(1.5em * 3); line-height: 1.5; overflow: hidden;
+      }
+      .notiz-card-meta { margin-top: 6px; padding-top: 4px; }
+    }
+
     /* ── MOBILE (iPhone): Zoom-Fix + Touch-Ziele ── */
     @media (max-width: 600px) {
       /* iOS Safari zoomt automatisch in Inputs mit Schrift < 16px.
